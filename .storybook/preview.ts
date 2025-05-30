@@ -1,5 +1,6 @@
 import type { Preview } from "@storybook/react-vite";
 import { INITIAL_VIEWPORTS } from "storybook/viewport";
+import "./autodocs.css";
 import "../public/index-84976af5.css";
 
 const preview: Preview = {
