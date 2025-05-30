@@ -1,8 +1,8 @@
-// import commonjs from "@rollup/plugin-commonjs";
+import commonjs from "@rollup/plugin-commonjs";
 import copy from "rollup-plugin-copy";
 // import del from "rollup-plugin-delete";
-// import { nodeResolve } from "@rollup/plugin-node-resolve";
-// import peerDepsExternal from "rollup-plugin-peer-deps-external";
+import { nodeResolve } from "@rollup/plugin-node-resolve";
+import peerDepsExternal from "rollup-plugin-peer-deps-external";
 // import postcss from "rollup-plugin-postcss";
 // import replace from "@rollup/plugin-replace";
 import terser from '@rollup/plugin-terser';
@@ -40,27 +40,29 @@ const banner = `window.require = function(name) {
 }`;
 
 export default {
-  input: "src/main.tsx",
+  input: "plugin/main.tsx",
   output: {
     banner,
     file: "dist/" + pluginID + ".js",
     format: "cjs",
   },
   plugins: [
-    // commonjs(),
+    commonjs(),
     copy({
       targets: [
-        { src: "src/source.yml", dest: "dist", rename: pluginID + ".yml" },
+        { src: "plugin/source.yml", dest: "dist", rename: pluginID + ".yml" },
       ],
     }),
     // del({ targets: "dist" }),
-    // nodeResolve(),
-    // peerDepsExternal(),
+    nodeResolve(),
+    peerDepsExternal(),
     // replace({
     //   preventAssignment: true,
     //   "process.env.NODE_ENV": JSON.stringify("production"),
     // }),
-    typescript(),
+    typescript({
+        tsconfig: "./tsconfig.rollup.json"
+    }),
     // postcss({ extract: pluginID + ".css", minimize: true, sourceMap: false }),
     terser()
   ],
