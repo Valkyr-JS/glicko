@@ -1,0 +1,6 @@
+@use "./helpers";
+
+@mixin minimum-size {
+  min-height: helpers.pxToRem(40);
+  min-width: helpers.pxToRem(40);
+}
