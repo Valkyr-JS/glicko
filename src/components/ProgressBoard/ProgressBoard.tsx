@@ -14,6 +14,7 @@ interface ProgressBoardProps {
   title: string;
 }
 
+/** A component displaying the results of an in-progress tournament. */
 const ProgressBoard: React.FC<ProgressBoardProps> = (props) => {
   const tableData = props.reverse
     ? [...props.tableData].reverse()

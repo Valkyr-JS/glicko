@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { expect, within } from "storybook/test";
 import ProgressBoard from "./ProgressBoard";
 
 const meta = {
@@ -7,16 +8,16 @@ const meta = {
   args: {
     columnTitles: ["A", "B"],
     tableData: [
-      ["Lotti", "Sabine", 1],
-      ["Marina", "Sabine", 1],
-      ["Giselle", "Sabine", 0],
-      ["Giselle", "Aria", 0],
-      ["Giselle", "Sophie", 0],
-      ["Giselle", "Rhian", 1],
-      ["Kelly", "Rhian", 0],
-      ["Kelly", "Lizz", 1],
-      ["Sammy", "Lizz", 0],
-      ["Sammy", "Taylor", 0],
+      ["Mia", "Monique", 0],
+      ["Jo", "Alyx", 1],
+      ["Poppy", "Lotti", 1],
+      ["Jay", "sammy", 0],
+      ["Anna", "Serena", 1],
+      ["Danni", "Maddy", 0],
+      ["Melody", "Kelly", 0],
+      ["Danielle", "Ryana", 0],
+      ["Lizz", "Sophie", 1],
+      ["Sammi", "Ginebra", 0],
     ],
     title: "Progress board",
   },
@@ -25,4 +26,12 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
+export const Default: Story = {
+  /** Table data should be displayed in ascending order (match 1 at the top) by
+   * default. */
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const firstColumn = canvas.getAllByRole("cell");
+    expect(firstColumn[0].textContent).toBe("1");
+  },
+};
