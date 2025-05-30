@@ -1,10 +1,5 @@
-import commonjs from "@rollup/plugin-commonjs";
 import copy from "rollup-plugin-copy";
-// import del from "rollup-plugin-delete";
-import { nodeResolve } from "@rollup/plugin-node-resolve";
 import peerDepsExternal from "rollup-plugin-peer-deps-external";
-// import postcss from "rollup-plugin-postcss";
-// import replace from "@rollup/plugin-replace";
 import terser from '@rollup/plugin-terser';
 import typescript from "@rollup/plugin-typescript";
 import * as pkg from "./package.json" with { type: "json" };
@@ -47,23 +42,15 @@ export default {
     format: "cjs",
   },
   plugins: [
-    commonjs(),
     copy({
       targets: [
         { src: "plugin/source.yml", dest: "dist", rename: pluginID + ".yml" },
       ],
     }),
-    // del({ targets: "dist" }),
-    nodeResolve(),
     peerDepsExternal(),
-    // replace({
-    //   preventAssignment: true,
-    //   "process.env.NODE_ENV": JSON.stringify("production"),
-    // }),
     typescript({
         tsconfig: "./tsconfig.rollup.json"
     }),
-    // postcss({ extract: pluginID + ".css", minimize: true, sourceMap: false }),
     terser()
   ],
 };
