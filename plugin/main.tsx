@@ -1,8 +1,13 @@
-// import React from "react";
+import { default as StashReact } from "react";
 import { faChessRook } from "@fortawesome/free-solid-svg-icons";
+import * as FontAwesomeRegular from "@fortawesome/free-regular-svg-icons";
+import * as FontAwesomeSolid from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import type { JSXElementConstructor } from "react";
 
-const { PluginApi } = window;
-const FontAwesomeIcon = PluginApi.components.Icon;
+const PluginApi = window.PluginApi;
+const FAIcon = PluginApi.components.Icon;
+const React = PluginApi.React;
 
 // Wait for the navbar to load, as this contains the
 PluginApi.patch.instead(
@@ -24,7 +29,7 @@ PluginApi.patch.instead(
             className="minimal p-4 p-xl-2 d-flex d-xl-inline-block flex-column justify-content-between align-items-center btn btn-primary"
             target="_blank"
           >
-            <FontAwesomeIcon
+            <FAIcon
               className="fa-icon nav-menu-icon d-block d-xl-inline mb-2 mb-xl-0"
               icon={faChessRook}
             />
@@ -35,3 +40,30 @@ PluginApi.patch.instead(
     ];
   }
 );
+
+declare global {
+  interface Window {
+    PluginApi: {
+      components: {
+        Icon: typeof FontAwesomeIcon;
+      };
+      libraries: {
+        FontAwesomeRegular: typeof FontAwesomeRegular;
+        FontAwesomeSolid: typeof FontAwesomeSolid;
+      };
+      patch: {
+        instead: {
+          (
+            component: "MainNavBar.MenuItems",
+            fn: (
+              props: React.PropsWithChildren,
+              _: object,
+              Original: JSXElementConstructor<React.PropsWithChildren>
+            ) => React.JSX.Element[]
+          ): void;
+        };
+      };
+      React: typeof StashReact;
+    };
+  }
+}
