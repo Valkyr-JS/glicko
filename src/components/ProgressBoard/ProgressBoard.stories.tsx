@@ -19,16 +19,15 @@ const meta = {
       ["Lizz", "Sophie", 1],
       ["Sammi", "Ginebra", 0],
     ],
-    title: "Progress board",
   },
 } satisfies Meta<typeof ProgressBoard>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+/** Table data should be displayed in ascending order (first match at the top)
+ * by default. */
 export const Default: Story = {
-  /** Table data should be displayed in ascending order (first match at the top)
-   * by default. */
   play: async ({ args, canvasElement }) => {
     const canvas = within(canvasElement);
     const cells = canvas.getAllByRole("cell");
@@ -37,26 +36,27 @@ export const Default: Story = {
   },
 };
 
-export const NoReverse: Story = {
+/** If no table data is passed, render a warning. */
+export const NoData: Story = {
   args: {
-    reverse: false,
+    tableData: [],
+    title: "No table data",
   },
-  /** Table data should be displayed in ascending order (first match at the
-   * top). */
-  play: async ({ args, canvasElement }) => {
+  play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const cells = canvas.getAllByRole("cell");
-    expect(cells[0].textContent).toBe("1");
-    expect(cells[1].textContent).toBe(args.tableData[0][0]);
+    const cell = canvas.getByRole("cell");
+    expect(cell).toBeInTheDocument();
+    expect(cell.textContent?.length).toBeTruthy();
   },
 };
 
+/** Table data should be displayed in descending order (last match at the
+ * top). */
 export const Reverse: Story = {
   args: {
     reverse: true,
+    title: "Recorded in reverse order",
   },
-  /** Table data should be displayed in descending order (last match at the
-   * top). */
   play: async ({ args, canvasElement }) => {
     const canvas = within(canvasElement);
     const cells = canvas.getAllByRole("cell");
@@ -64,5 +64,20 @@ export const Reverse: Story = {
     expect(cells[1].textContent).toBe(
       args.tableData[args.tableData.length - 1][0]
     );
+  },
+};
+
+/** Table data should be displayed in ascending order (first match at the
+ * top). */
+export const NoReverse: Story = {
+  args: {
+    reverse: false,
+    title: "Recorded in play order",
+  },
+  play: async ({ args, canvasElement }) => {
+    const canvas = within(canvasElement);
+    const cells = canvas.getAllByRole("cell");
+    expect(cells[0].textContent).toBe("1");
+    expect(cells[1].textContent).toBe(args.tableData[0][0]);
   },
 };

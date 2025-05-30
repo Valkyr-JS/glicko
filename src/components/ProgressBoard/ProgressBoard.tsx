@@ -11,7 +11,7 @@ interface ProgressBoardProps {
   /** The column data, and the index of the winner. */
   tableData: [optionA: string, optionB: string, winner: 0 | 0.5 | 1][];
   /** The progress board title. */
-  title: string;
+  title?: string;
 }
 
 /** A component displaying the results of an in-progress tournament. */
@@ -22,7 +22,7 @@ const ProgressBoard: React.FC<ProgressBoardProps> = (props) => {
 
   const noDataRow = (
     <tr>
-      <td colSpan={3}>The tournament has not yet started.</td>
+      <td colSpan={3}>Match results have yet to be recorded.</td>
     </tr>
   );
 
