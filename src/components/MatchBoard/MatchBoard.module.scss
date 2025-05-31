@@ -1,0 +1,96 @@
+@use "sass:math";
+@use "@/scss/helpers";
+@use "@/scss/spacing";
+@use "@/scss/buttons";
+
+.one-vs-one-board {
+  display: grid;
+  grid-template-rows:
+    [board-top profiles-top] 1fr [profiles-bottom
+    tools-top] auto [tools-bottom board-bottom];
+  gap: spacing.$default;
+
+  width: 100%;
+  padding: spacing.$default;
+
+  .profiles {
+    grid-row: profiles-top/profiles-bottom;
+
+    display: grid;
+    grid-template-columns:
+      [profiles-start profile-1-start] 1fr [profile-1-end
+      profile-2-start] 1fr [profile-2-end profiles-end];
+    grid-template-rows:
+      [profile-top name-top] 1fr [name-bottom
+      image-top] auto [image-bottom
+      rating-top] auto [rating-bottom
+      select-button-top] auto [select-button-bottom
+      image-button-top] auto [image-button-bottom profile-bottom];
+    column-gap: spacing.$default;
+  }
+
+  .tools {
+    grid-row: tools-top/tools-bottom;
+    display: flex;
+    justify-content: center;
+    gap: spacing.$default;
+    margin-top: spacing.$default;
+
+    button {
+      @include buttons.minimum-size;
+    }
+  }
+
+  .links {
+    grid-row: links-top/links-bottom;
+    display: flex;
+    justify-content: center;
+  }
+}
+
+.profile {
+  display: grid;
+  grid-template-columns: subgrid;
+  grid-template-rows: subgrid;
+  grid-row: profile-top/profile-bottom;
+  row-gap: spacing.$small;
+
+  .rating {
+    grid-row: rating-top/rating-bottom;
+    font-style: italic;
+
+    font-size: 1rem;
+    text-align: center;
+  }
+
+  // Keep images at a 2:3 aspect ratio
+  .profile-image {
+    grid-row: image-top/image-bottom;
+    height: 0;
+    width: 100%;
+    overflow: hidden;
+    padding-top: 150%;
+    position: relative;
+
+    img {
+      object-fit: cover;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  button {
+    @include buttons.minimum-size;
+    &:first-of-type {
+      grid-row: select-button-top/select-button-bottom;
+    }
+
+    &:nth-of-type(2) {
+      grid-row: image-button-top/image-button-bottom;
+      justify-self: center;
+    }
+  }
+}
