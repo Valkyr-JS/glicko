@@ -1,0 +1,35 @@
+@use "@/scss/spacing";
+
+.progress-board {
+  display: grid;
+  width: 100%;
+  padding: spacing.$default;
+
+  h2 {
+    font-size: 1.25rem;
+  }
+
+  table {
+    th,
+    td {
+      vertical-align: middle;
+      &:first-child {
+        text-align: center;
+      }
+    }
+  }
+  .winner {
+    position: relative;
+    font-weight: 700;
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background-color: rgba(white, 0.15);
+      z-index: -1;
+    }
+  }
+}

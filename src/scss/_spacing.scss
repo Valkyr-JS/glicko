@@ -1,0 +1,4 @@
+@use "./helpers";
+
+$default: helpers.pxToRem(15);
+$small: helpers.pxToRem(10);
