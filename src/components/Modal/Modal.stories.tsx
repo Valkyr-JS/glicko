@@ -3,14 +3,6 @@ import Modal from "./Modal";
 import { fn } from "storybook/test";
 
 const meta = {
-  title: "Components/Modal",
-  component: Modal,
-} satisfies Meta<typeof Modal>;
-
-export default meta;
-type Story = StoryObj<typeof meta>;
-
-export const EndGlicko: Story = {
   args: {
     buttons: [],
     closeModalHandler: fn(),
@@ -30,4 +22,11 @@ export const EndGlicko: Story = {
       <Story />
     </div>
   ),
-};
+  title: "Components/Modal",
+  component: Modal,
+} satisfies Meta<typeof Modal>;
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+export const Default: Story = {};
