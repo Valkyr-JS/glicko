@@ -2,6 +2,7 @@ import React from "react";
 import { default as cx } from "classnames";
 import type { IconDefinition } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import styles from "./Modal.module.scss";
 
 interface ModalProps extends React.PropsWithChildren {
   /** Buttons displayed in the modal footer. */
@@ -9,8 +10,6 @@ interface ModalProps extends React.PropsWithChildren {
     React.ButtonHTMLAttributes<HTMLButtonElement>,
     HTMLButtonElement
   >[];
-  /** Function to handle closing the modal. */
-  closeModalHandler: () => void;
   /** The icon displayed in the top-left corner of the modal. */
   icon: IconDefinition;
   /** Whether the modal is currently being rendered. */
@@ -24,6 +23,7 @@ const Modal: React.FC<ModalProps> = (props) => {
   const modalStyles = {
     display: "block",
   };
+  const modalFooterClasses = cx("modal-footer", styles["button-container"]);
 
   if (!props.show) return null;
   return (
@@ -44,7 +44,7 @@ const Modal: React.FC<ModalProps> = (props) => {
             </div>
             <div className="modal-body">{props.children}</div>
             {props.buttons.length ? (
-              <div className="modal-footer">
+              <div className={modalFooterClasses}>
                 {props.buttons.map((btn) => (
                   <button {...btn} />
                 ))}
