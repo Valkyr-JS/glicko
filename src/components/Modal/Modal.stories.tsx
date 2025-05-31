@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import Modal from "./Modal";
 import { fn } from "storybook/test";
-import { faCircleQuestion } from "@fortawesome/free-solid-svg-icons";
+import { faCircleQuestion } from "@fortawesome/pro-solid-svg-icons/faCircleQuestion";
 
 const meta = {
   args: {
