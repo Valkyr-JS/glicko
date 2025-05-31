@@ -1,7 +1,7 @@
 import React from "react";
-import { default as cx } from "classnames";
 import type { IconDefinition } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { default as cx } from "classnames";
 import styles from "./Modal.module.scss";
 
 interface ModalProps extends React.PropsWithChildren {
@@ -30,9 +30,10 @@ const Modal: React.FC<ModalProps> = (props) => {
     <>
       <div className="modal-backdrop show" />
       <section
-        role="dialog"
-        aria-model
+        aria-labelledby="modalTitle"
+        aria-modal
         className={modalClasses}
+        role="dialog"
         style={modalStyles}
         tabIndex={-1}
       >
@@ -40,7 +41,7 @@ const Modal: React.FC<ModalProps> = (props) => {
           <div className="modal-content">
             <div className="modal-header">
               <FontAwesomeIcon icon={props.icon} />
-              <span>{props.title}</span>
+              <span id="modalTitle">{props.title}</span>
             </div>
             <div className="modal-body">{props.children}</div>
             {props.buttons.length ? (
