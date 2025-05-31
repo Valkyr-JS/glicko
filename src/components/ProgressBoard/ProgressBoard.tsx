@@ -26,9 +26,11 @@ const ProgressBoard: React.FC<ProgressBoardProps> = (props) => {
     </tr>
   );
 
+  const title = props.title ? <h2>{props.title}</h2> : null;
+
   return (
     <section className={styles["progress-board"]}>
-      <h2>{props.title}</h2>
+      {title}
       <table className="table table-striped">
         <thead>
           <tr>
