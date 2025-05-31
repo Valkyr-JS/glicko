@@ -46,8 +46,8 @@ const Modal: React.FC<ModalProps> = (props) => {
             <div className="modal-body">{props.children}</div>
             {props.buttons.length ? (
               <div className={modalFooterClasses}>
-                {props.buttons.map((btn) => (
-                  <button {...btn} />
+                {props.buttons.map((btn, i) => (
+                  <button key={i} {...btn} />
                 ))}
               </div>
             ) : null}
