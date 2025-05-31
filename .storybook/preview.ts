@@ -16,6 +16,7 @@ const preview: Preview = {
         color: /(background|color)$/i,
         date: /Date$/i,
       },
+      sort: "requiredFirst",
     },
     initialGlobals: {
       viewport: { value: "iphone5", isRotated: false },
