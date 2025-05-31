@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { fn } from "storybook/test";
+import { expect, fn, within } from "storybook/test";
 import MatchBoard from "./MatchBoard";
 // import { Glicko2 } from "glicko2";
 
@@ -23,4 +23,14 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
+/** Expect the undo button to be disabled on start, otherwise enabled. */
+export const UndoButtonStatus: Story = {
+  play: async ({ args, canvasElement }) => {
+    const canvas = within(canvasElement);
+    const btn = canvas.getByRole<HTMLButtonElement>("button", {
+      name: "Undo match",
+    });
+    if (args.matchIndex === 0) expect(btn).toBeDisabled();
+    else expect(btn).not.toBeDisabled();
+  },
+};

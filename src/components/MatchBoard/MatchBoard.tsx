@@ -7,19 +7,19 @@ import { faStop } from "@fortawesome/pro-solid-svg-icons/faStop";
 import styles from "./MatchBoard.module.scss";
 
 interface OneVsOneBoardProps {
-  /** Executes when the user clicks to change the current performer image. */
-  changeImageHandler: (performerID: string, prevID: number) => void;
-  /** Executes when the user click the pause button. */
+  /** Handler for clicking the change player image button. */
+  changeImageHandler: (playerID: string, prevID: number) => void;
+  /** Handler for clicking the pause button. */
   clickPauseHandler: React.MouseEventHandler<HTMLButtonElement>;
-  /** Executes when the user selects the winning performer. */
+  /** Executes when the user selects the winning player. */
   clickSelectHandler: (winner: 0 | 1) => void;
-  /** Executes when the user click the skip button. */
+  /** Handler for clicking the skip button. */
   clickSkipHandler: React.MouseEventHandler<HTMLButtonElement>;
-  /** Executes when the user click the stop button. */
+  /** Handler for clicking the stop button. */
   clickStopHandler: React.MouseEventHandler<HTMLButtonElement>;
-  /** Executes when the user click the undo button. */
+  /** Handler for clicking the undo button. */
   clickUndoHandler: React.MouseEventHandler<HTMLButtonElement>;
-  /** The zero-based index of the current match. */
+  /** The zero-based index of the current match in the match list. */
   matchIndex: number;
 }
 
@@ -36,11 +36,11 @@ const OneVsOneBoard: React.FC<OneVsOneBoardProps> = (props) => {
           disabled={props.matchIndex === 0}
           onClick={props.clickUndoHandler}
         >
-          <span className="sr-only">Undo</span>
+          <span className="sr-only">Undo match</span>
           <FontAwesomeIcon icon={faRotateLeft} />
         </button>
         <button className="btn btn-danger" onClick={props.clickStopHandler}>
-          <span className="sr-only">End tournament</span>
+          <span className="sr-only">Abandon tournament</span>
           <FontAwesomeIcon icon={faStop} />
         </button>
         <button className="btn btn-secondary" onClick={props.clickPauseHandler}>
@@ -48,7 +48,7 @@ const OneVsOneBoard: React.FC<OneVsOneBoardProps> = (props) => {
           <FontAwesomeIcon icon={faPause} />
         </button>
         <button className="btn btn-secondary" onClick={props.clickSkipHandler}>
-          <span className="sr-only">Skip</span>
+          <span className="sr-only">Skip match</span>
           <FontAwesomeIcon icon={faForwardStep} />
         </button>
       </div>
