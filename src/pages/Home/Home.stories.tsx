@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { expect, fn, within } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
 import Home from "./Home";
 
 const meta = {
@@ -32,14 +32,37 @@ export const InProgress: Story = {
   args: {
     inProgress: true,
   },
-  play: async ({ canvasElement }) => {
+  play: async ({ canvasElement, step }) => {
     const canvas = within(canvasElement);
-    const continueBtn = canvas.queryByRole<HTMLButtonElement>("button", {
-      name: "Continue tournament",
-    });
-    await expect(continueBtn).toBeInTheDocument();
 
-    const allBtns = canvas.getAllByRole<HTMLButtonElement>("button");
-    await expect(allBtns[0].textContent).toBe("Continue tournament");
+    await step('The "Continue tournament" button should be available', () => {
+      const continueBtn = canvas.getByRole<HTMLButtonElement>("button", {
+        name: "Continue tournament",
+      });
+      expect(continueBtn).toBeInTheDocument();
+    });
+
+    await step(
+      'The "Continue tournament" button should be the first button in the list',
+      () => {
+        const allBtns = canvas.getAllByRole<HTMLButtonElement>("button");
+        expect(allBtns[0].textContent).toBe("Continue tournament");
+      }
+    );
+
+    await step(
+      'On clicking "New tournament", a modal should ask if you want to lose your existing progress',
+      async () => {
+        const newBtn = canvas.getByRole("button", {
+          name: "New tournament",
+        });
+        await userEvent.click(newBtn);
+
+        const modal = canvas.getByRole("dialog", {
+          name: "Tournament in progress",
+        });
+        expect(modal).toBeInTheDocument();
+      }
+    );
   },
 };
