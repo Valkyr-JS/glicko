@@ -4,7 +4,7 @@ import { faChessRook } from "@fortawesome/pro-solid-svg-icons/faChessRook";
 import { faHand } from "@fortawesome/pro-solid-svg-icons/faHand";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { default as cx } from "classnames";
-import { Link } from "react-router";
+import { Link, type LinkProps } from "react-router";
 import Modal from "@/components/Modal/Modal";
 import { PATH } from "@/constants";
 import styles from "./Home.module.scss";
@@ -39,13 +39,15 @@ const HomePage: React.FC<HomeProps> = (props) => {
     ) : null;
 
   /** Handle clicking the new tournament button. */
-  const handleNewTournament: React.MouseEventHandler<
-    HTMLAnchorElement
-  > = () => {
+  const handleNewTournament: React.MouseEventHandler<HTMLAnchorElement> = (
+    e
+  ) => {
     // If there is already a tournament in progress, display the modal. Else
     // continue.
-    if (props.inProgress) setShowNewTournamentModal(true);
-    else props.newTournamentHandler();
+    if (props.inProgress) {
+      e.preventDefault();
+      setShowNewTournamentModal(true);
+    } else props.newTournamentHandler();
   };
 
   /** Handle clicking the change filters button */
@@ -104,6 +106,7 @@ const HomePage: React.FC<HomeProps> = (props) => {
       <InProgressModal
         closeModalHandler={() => setShowNewTournamentModal(false)}
         continueHandler={props.newTournamentHandler}
+        path={PATH.TOURNAMENT}
         show={showNewTournamentModal}
       >
         <p>
@@ -115,6 +118,7 @@ const HomePage: React.FC<HomeProps> = (props) => {
       <InProgressModal
         closeModalHandler={() => setShowChangeFiltersModal(false)}
         continueHandler={props.changeFiltersHandler}
+        path={PATH.FILTERS}
         show={showChangeFiltersModal}
       >
         <p>
@@ -138,6 +142,7 @@ interface InProgressModalProps extends React.PropsWithChildren {
   closeModalHandler: () => void;
   /** Handler for continuing with the action. */
   continueHandler: () => void;
+  path: LinkProps["to"];
   /** Dictates whether the modal is currently rendered. */
   show: boolean;
 }
@@ -147,16 +152,18 @@ const InProgressModal: React.FC<InProgressModalProps> = (props) => {
     <Modal
       buttons={[
         {
+          element: "button",
           children: "Cancel",
           className: "btn btn-secondary",
           onClick: props.closeModalHandler,
           type: "button",
         },
         {
-          children: "Continue",
+          element: "link",
           className: "btn btn-danger",
-          onClick: props.continueHandler,
+          children: "Continue",
           type: "button",
+          to: props.path,
         },
       ]}
       icon={faHand}

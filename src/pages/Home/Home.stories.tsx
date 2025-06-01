@@ -54,7 +54,7 @@ export const InProgress: Story = {
     await step(
       'On clicking "New tournament", a modal should ask if you want to lose your existing progress',
       async () => {
-        const newBtn = canvas.getByRole("button", {
+        const newBtn = canvas.getByRole("link", {
           name: "New tournament",
         });
         await userEvent.click(newBtn);

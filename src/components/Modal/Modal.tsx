@@ -3,13 +3,18 @@ import type { IconDefinition } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { default as cx } from "classnames";
 import styles from "./Modal.module.scss";
+import { Link, type LinkProps } from "react-router";
+
+type ButtonOrLinkProps =
+  | ({ element: "button" } & React.DetailedHTMLProps<
+      React.ButtonHTMLAttributes<HTMLButtonElement>,
+      HTMLButtonElement
+    >)
+  | ({ element: "link" } & LinkProps);
 
 interface ModalProps extends React.PropsWithChildren {
   /** Buttons displayed in the modal footer. */
-  buttons: React.DetailedHTMLProps<
-    React.ButtonHTMLAttributes<HTMLButtonElement>,
-    HTMLButtonElement
-  >[];
+  buttons: ButtonOrLinkProps[];
   /** The icon displayed in the top-left corner of the modal. */
   icon: IconDefinition;
   /** Whether the modal is currently being rendered. */
@@ -46,9 +51,14 @@ const Modal: React.FC<ModalProps> = (props) => {
             <div className="modal-body">{props.children}</div>
             {props.buttons.length ? (
               <div className={modalFooterClasses}>
-                {props.buttons.map((btn, i) => (
-                  <button key={i} {...btn} />
-                ))}
+                {props.buttons.map((el, i) => {
+                  if (el.element === "button") {
+                    const { element, ...btnProps } = el;
+                    return <button key={element + i} {...btnProps} />;
+                  }
+                  const { element, ...linkProps } = el;
+                  return <Link key={element + i} {...linkProps} />;
+                })}
               </div>
             ) : null}
           </div>
