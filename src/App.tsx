@@ -1,23 +1,31 @@
 import { BrowserRouter, Routes, Route } from "react-router";
 import HomePage from "./pages/Home/Home";
+import { useState } from "react";
 
 const changeFiltersHandler = () => console.log("changeFiltersHandler");
 const continueTournamentHandler = () =>
   console.log("continueTournamentHandler");
 const newTournamentHandler = () => console.log("newTournamentHandler");
-const inProgress = false;
+
+const basePath = "/plugin/glicko/assets/app/";
 
 function App() {
+  /* -------------------------------------- State management -------------------------------------- */
+
+  const [tourneyInProgress] = useState(false);
+
+  /* --------------------------------------------- App -------------------------------------------- */
+
   return (
     <BrowserRouter>
       <Routes>
         <Route
-          path="/plugin/glicko/assets/app/"
+          path={basePath}
           element={
             <HomePage
               changeFiltersHandler={changeFiltersHandler}
               continueTournamentHandler={continueTournamentHandler}
-              inProgress={inProgress}
+              inProgress={tourneyInProgress}
               newTournamentHandler={newTournamentHandler}
             />
           }
