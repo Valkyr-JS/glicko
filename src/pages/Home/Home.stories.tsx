@@ -27,7 +27,8 @@ export const NotInProgress: Story = {
   },
 };
 
-/** If a tournament is in progress, a "Continue" option should be available at the top of the list. */
+/** If a tournament is in progress, a "Continue" option should be available at
+ * the top of the list. */
 export const InProgress: Story = {
   args: {
     inProgress: true,
@@ -64,5 +65,25 @@ export const InProgress: Story = {
         expect(modal).toBeInTheDocument();
       }
     );
+  },
+};
+
+/** If a tournament is in progress, alert in a modal when clicking to change the
+ * filters. */
+export const InProgressChangeFilters: Story = {
+  args: {
+    inProgress: true,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const filtersBtn = canvas.getByRole("button", {
+      name: "Change filters",
+    });
+    await userEvent.click(filtersBtn);
+
+    const modal = canvas.getByRole("dialog", {
+      name: "Tournament in progress",
+    });
+    expect(modal).toBeInTheDocument();
   },
 };

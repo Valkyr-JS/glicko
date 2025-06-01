@@ -19,7 +19,8 @@ interface HomeProps {
 }
 
 const HomePage: React.FC<HomeProps> = (props) => {
-  const [showModal, setShowModal] = useState(false);
+  const [showChangeFiltersModal, setShowChangeFiltersModal] = useState(false);
+  const [showNewTournamentModal, setShowNewTournamentModal] = useState(false);
 
   // Add the "Continue tournament" option if required
   const ContinueItem = () =>
@@ -41,8 +42,18 @@ const HomePage: React.FC<HomeProps> = (props) => {
   > = () => {
     // If there is already a tournament in progress, display the modal. Else
     // continue.
-    if (props.inProgress) setShowModal(true);
+    if (props.inProgress) setShowNewTournamentModal(true);
     else props.newTournamentHandler();
+  };
+
+  /** Handle clicking the change filters button */
+  const handleChangeFilters: React.MouseEventHandler<
+    HTMLButtonElement
+  > = () => {
+    // If there is already a tournament in progress, display the modal. Else
+    // continue.
+    if (props.inProgress) setShowChangeFiltersModal(true);
+    else props.changeFiltersHandler();
   };
 
   const classes = cx("container", styles.Home);
@@ -69,7 +80,7 @@ const HomePage: React.FC<HomeProps> = (props) => {
               <button
                 type="button"
                 className="btn btn-secondary"
-                onClick={props.changeFiltersHandler}
+                onClick={handleChangeFilters}
               >
                 Change filters
               </button>
@@ -88,33 +99,69 @@ const HomePage: React.FC<HomeProps> = (props) => {
           </a>
         </footer>
       </main>
-      <Modal
-        buttons={[
-          {
-            children: "Cancel",
-            className: "btn btn-secondary",
-            onClick: () => setShowModal(false),
-            type: "button",
-          },
-          {
-            children: "Continue",
-            className: "btn btn-danger",
-            onClick: props.newTournamentHandler,
-            type: "button",
-          },
-        ]}
-        icon={faHand}
-        show={showModal}
-        title="Tournament in progress"
+      <InProgressModal
+        closeModalHandler={() => setShowNewTournamentModal(false)}
+        continueHandler={props.newTournamentHandler}
+        show={showNewTournamentModal}
       >
         <p>
           A tournament is already in progress. If you start a new tournament,
           your previous progress will be deleted. This cannot be undone.
         </p>
         <p>Would you still like to start a new tournament?</p>
-      </Modal>
+      </InProgressModal>
+      <InProgressModal
+        closeModalHandler={() => setShowChangeFiltersModal(false)}
+        continueHandler={props.changeFiltersHandler}
+        show={showChangeFiltersModal}
+      >
+        <p>
+          A tournament is already in progress. If you update your filters, your
+          previous progress will be deleted. This cannot be undone.
+        </p>
+        <p>Would you still like to update the filters?</p>
+      </InProgressModal>
     </>
   );
 };
 
 export default HomePage;
+
+/* ---------------------------------------------------------------------------------------------- */
+/*                                 "Tournament in progress" modal                                 */
+/* ---------------------------------------------------------------------------------------------- */
+
+interface InProgressModalProps extends React.PropsWithChildren {
+  /** Handler for closing the modal. */
+  closeModalHandler: () => void;
+  /** Handler for continuing with the action. */
+  continueHandler: () => void;
+  /** Dictates whether the modal is currently rendered. */
+  show: boolean;
+}
+
+const InProgressModal: React.FC<InProgressModalProps> = (props) => {
+  return (
+    <Modal
+      buttons={[
+        {
+          children: "Cancel",
+          className: "btn btn-secondary",
+          onClick: props.closeModalHandler,
+          type: "button",
+        },
+        {
+          children: "Continue",
+          className: "btn btn-danger",
+          onClick: props.continueHandler,
+          type: "button",
+        },
+      ]}
+      icon={faHand}
+      show={props.show}
+      title="Tournament in progress"
+    >
+      {props.children}
+    </Modal>
+  );
+};
