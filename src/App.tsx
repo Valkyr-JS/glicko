@@ -1,13 +1,12 @@
 import { BrowserRouter, Routes, Route } from "react-router";
 import HomePage from "./pages/Home/Home";
 import { useState } from "react";
+import { PATH } from "./constants";
 
 const changeFiltersHandler = () => console.log("changeFiltersHandler");
 const continueTournamentHandler = () =>
   console.log("continueTournamentHandler");
 const newTournamentHandler = () => console.log("newTournamentHandler");
-
-const basePath = "/plugin/glicko/assets/app/";
 
 function App() {
   /* -------------------------------------- State management -------------------------------------- */
@@ -20,7 +19,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route
-          path={basePath}
+          path={PATH.HOME}
           element={
             <HomePage
               changeFiltersHandler={changeFiltersHandler}

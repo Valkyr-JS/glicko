@@ -1,11 +1,13 @@
 import React, { useState } from "react";
-import { default as cx } from "classnames";
+import { faGithub } from "@fortawesome/free-brands-svg-icons/faGithub";
 import { faChessRook } from "@fortawesome/pro-solid-svg-icons/faChessRook";
 import { faHand } from "@fortawesome/pro-solid-svg-icons/faHand";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { default as cx } from "classnames";
+import { Link } from "react-router";
 import Modal from "@/components/Modal/Modal";
+import { PATH } from "@/constants";
 import styles from "./Home.module.scss";
-import { faGithub } from "@fortawesome/free-brands-svg-icons/faGithub";
 
 interface HomeProps {
   /** Click handler for changing the tournament filters. */
@@ -38,7 +40,7 @@ const HomePage: React.FC<HomeProps> = (props) => {
 
   /** Handle clicking the new tournament button. */
   const handleNewTournament: React.MouseEventHandler<
-    HTMLButtonElement
+    HTMLAnchorElement
   > = () => {
     // If there is already a tournament in progress, display the modal. Else
     // continue.
@@ -68,13 +70,13 @@ const HomePage: React.FC<HomeProps> = (props) => {
           <ul>
             <ContinueItem />
             <li>
-              <button
-                type="button"
+              <Link
                 className="btn btn-primary"
                 onClick={handleNewTournament}
+                to={PATH.TOURNAMENT}
               >
                 New tournament
-              </button>
+              </Link>
             </li>
             <li>
               <button
