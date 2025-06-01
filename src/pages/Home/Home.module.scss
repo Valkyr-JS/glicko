@@ -1,0 +1,27 @@
+@use "@/scss/lists";
+@use "@/scss/spacing";
+
+.Home {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  nav {
+    width: 100%;
+  }
+
+  ul {
+    @include lists.unstyled;
+  }
+
+  li {
+    &:not(:last-child) {
+      margin-bottom: spacing.$default;
+    }
+  }
+
+  a, button {
+    width: 100%;
+  }
+}
