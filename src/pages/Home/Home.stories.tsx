@@ -1,0 +1,89 @@
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { expect, fn, userEvent, within } from "storybook/test";
+import Home from "./Home";
+
+const meta = {
+  title: "Pages/Home",
+  component: Home,
+  args: {
+    changeFiltersHandler: fn(),
+    continueTournamentHandler: fn(),
+    inProgress: false,
+    newTournamentHandler: fn(),
+  },
+} satisfies Meta<typeof Home>;
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+/** If no tournament is in progress, no "Continue" option should be available. */
+export const NotInProgress: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const continueBtn = canvas.queryByRole<HTMLButtonElement>("button", {
+      name: "Continue tournament",
+    });
+    await expect(continueBtn).not.toBeInTheDocument();
+  },
+};
+
+/** If a tournament is in progress, a "Continue" option should be available at
+ * the top of the list. */
+export const InProgress: Story = {
+  args: {
+    inProgress: true,
+  },
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+
+    await step('The "Continue tournament" button should be available', () => {
+      const continueBtn = canvas.getByRole<HTMLButtonElement>("button", {
+        name: "Continue tournament",
+      });
+      expect(continueBtn).toBeInTheDocument();
+    });
+
+    await step(
+      'The "Continue tournament" button should be the first button in the list',
+      () => {
+        const allBtns = canvas.getAllByRole<HTMLButtonElement>("button");
+        expect(allBtns[0].textContent).toBe("Continue tournament");
+      }
+    );
+
+    await step(
+      'On clicking "New tournament", a modal should ask if you want to lose your existing progress',
+      async () => {
+        const newBtn = canvas.getByRole("button", {
+          name: "New tournament",
+        });
+        await userEvent.click(newBtn);
+
+        const modal = canvas.getByRole("dialog", {
+          name: "Tournament in progress",
+        });
+        expect(modal).toBeInTheDocument();
+      }
+    );
+  },
+};
+
+/** If a tournament is in progress, alert in a modal when clicking to change the
+ * filters. */
+export const InProgressChangeFilters: Story = {
+  args: {
+    inProgress: true,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const filtersBtn = canvas.getByRole("button", {
+      name: "Change filters",
+    });
+    await userEvent.click(filtersBtn);
+
+    const modal = canvas.getByRole("dialog", {
+      name: "Tournament in progress",
+    });
+    expect(modal).toBeInTheDocument();
+  },
+};
