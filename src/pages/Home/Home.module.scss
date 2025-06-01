@@ -1,14 +1,35 @@
+@use "@/scss/helpers";
 @use "@/scss/lists";
 @use "@/scss/spacing";
 
 .Home {
   min-height: 100vh;
-  display: flex;
+  display: grid;
+  grid-template-columns: [home-start] 100% [home-end];
+  grid-template-rows:
+    [home-top header-top] auto[header-bottom
+    nav-top] auto [nav-bottom
+    footer-top] max-content [footer-bottom home-bottom];
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 
+  header {
+    display: flex;
+    flex-direction: column;
+    margin-top: auto;
+    margin-bottom: spacing.$default;
+    align-items: center;
+
+    svg {
+      font-size: 4em;
+      margin-bottom: spacing.$small;
+    }
+  }
+
   nav {
     width: 100%;
+    margin-bottom: auto;
   }
 
   ul {
@@ -21,7 +42,17 @@
     }
   }
 
-  a, button {
+  a,
+  button {
     width: 100%;
+  }
+
+  footer {
+    text-align: center;
+    padding-bottom: spacing.$default;
+
+    a {
+      font-size: helpers.pxToRem(18);
+    }
   }
 }

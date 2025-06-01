@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import { default as cx } from "classnames";
-import { faHand } from "@fortawesome/pro-solid-svg-icons";
+import { faChessRook } from "@fortawesome/pro-solid-svg-icons/faChessRook";
+import { faHand } from "@fortawesome/pro-solid-svg-icons/faHand";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Modal from "@/components/Modal/Modal";
 import styles from "./Home.module.scss";
+import { faGithub } from "@fortawesome/free-brands-svg-icons/faGithub";
 
 interface HomeProps {
   /** Click handler for changing the tournament filters. */
@@ -46,6 +49,10 @@ const HomePage: React.FC<HomeProps> = (props) => {
   return (
     <>
       <main className={classes}>
+        <header>
+          <FontAwesomeIcon icon={faChessRook} />
+          <h1>Glicko</h1>
+        </header>
         <nav>
           <ul>
             <ContinueItem />
@@ -74,6 +81,12 @@ const HomePage: React.FC<HomeProps> = (props) => {
             </li>
           </ul>
         </nav>
+        <footer>
+          <a href="https://github.com/Valkyr-JS/glicko">
+            <FontAwesomeIcon icon={faGithub} />
+            <span className="sr-only">Visit the Github repository</span>
+          </a>
+        </footer>
       </main>
       <Modal
         buttons={[
