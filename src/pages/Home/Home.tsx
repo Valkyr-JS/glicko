@@ -5,6 +5,8 @@ import styles from "./Home.module.scss";
 interface HomeProps {
   /** Click handler for changing the tournament filters. */
   changeFiltersHandler: () => void;
+  /** Dictates whether a tournament is in progress. */
+  inProgress: boolean;
   /** Click handler for starting a new tournament. */
   newTournamentHandler: () => void;
 }
