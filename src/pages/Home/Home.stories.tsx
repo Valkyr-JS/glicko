@@ -7,6 +7,7 @@ const meta = {
   component: Home,
   args: {
     changeFiltersHandler: fn(),
+    continueTournamentHandler: fn(),
     inProgress: false,
     newTournamentHandler: fn(),
   },
@@ -15,13 +16,30 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-/** By default, e.g. a fresh install, no "Continue" option should be available. */
-export const NewTournament: Story = {
+/** If no tournament is in progress, no "Continue" option should be available. */
+export const NotInProgress: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const continueBtn = canvas.queryByRole<HTMLButtonElement>("button", {
       name: "Continue tournament",
     });
     await expect(continueBtn).not.toBeInTheDocument();
+  },
+};
+
+/** If a tournament is in progress, a "Continue" option should be available at the top of the list. */
+export const InProgress: Story = {
+  args: {
+    inProgress: true,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const continueBtn = canvas.queryByRole<HTMLButtonElement>("button", {
+      name: "Continue tournament",
+    });
+    await expect(continueBtn).toBeInTheDocument();
+
+    const allBtns = canvas.getAllByRole<HTMLButtonElement>("button");
+    await expect(allBtns[0].textContent).toBe("Continue tournament");
   },
 };
