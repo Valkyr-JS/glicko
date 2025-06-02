@@ -1,16 +1,24 @@
 import React, { useState } from "react";
+import { default as cx } from "classnames";
+import formStyles from "../forms.module.scss";
 
 interface CheckboxGroupProps extends React.PropsWithChildren {
   /** The unique group ID. */
   checkboxes: CheckboxProps[];
+  /** The title for the group. */
+  title: string;
 }
 
 const CheckboxGroup: React.FC<CheckboxGroupProps> = (props) => {
+  const headingClasses = cx("form-label", "col-form-label", formStyles.heading);
+
   return (
     <div className="form-group">
+      <div className={headingClasses}>{props.title}</div>
       {props.checkboxes.map((c, i) => (
         <Checkbox key={i} {...c} />
       ))}
+      {props.children}
     </div>
   );
 };

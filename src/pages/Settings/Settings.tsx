@@ -3,6 +3,7 @@ import { default as cx } from "classnames";
 import styles from "./Settings.module.scss";
 import type { PlayerFilters } from "@/types/global";
 import NumberInput from "@/components/forms/NumberInput/NumberInput";
+import CheckboxGroup from "@/components/forms/CheckboxGroup/CheckboxGroup";
 
 interface SettingsPageProps {
   /** The current filters. */
@@ -65,6 +66,54 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
           </p>
         </small>
       </NumberInput>
+      <CheckboxGroup
+        title="Genders"
+        checkboxes={[
+          {
+            isChecked: false,
+            id: "genderMale",
+            label: "Male",
+            name: "gender-male",
+          },
+          {
+            isChecked: false,
+            id: "genderFemale",
+            label: "Female",
+            name: "gender-female",
+          },
+          {
+            isChecked: false,
+            id: "genderTransgenderMale",
+            label: "Transgender male",
+            name: "gender-transgender_male",
+          },
+          {
+            isChecked: false,
+            id: "genderTransgenderFemale",
+            label: "Transgender Female",
+            name: "gender-transgender_female",
+          },
+          {
+            isChecked: false,
+            id: "genderIntersex",
+            label: "Intersex",
+            name: "gender-intersex",
+          },
+          {
+            isChecked: false,
+            id: "genderNonBinary",
+            label: "Non-Binary",
+            name: "gender-non_binary",
+          },
+        ]}
+      >
+        <small>
+          <p className="mt-2">
+            Select all the genders that qualify for the tournament. Selecting
+            none will qualify any gender.
+          </p>
+        </small>
+      </CheckboxGroup>
     </main>
   );
 };

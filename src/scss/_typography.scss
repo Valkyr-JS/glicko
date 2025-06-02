@@ -1,3 +1,9 @@
+@use "./spacing";
+
 @mixin title {
   font-size: 1.75rem;
+}
+
+@mixin heading {
+  font-size: 1.25rem;
 }

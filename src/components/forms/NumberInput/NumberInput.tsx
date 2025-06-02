@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { default as cx } from "classnames";
+import formStyles from "../forms.module.scss";
 
 interface NumberInputProps extends React.PropsWithChildren {
   /** The unique input ID. */
@@ -29,6 +31,8 @@ interface NumberInputProps extends React.PropsWithChildren {
 const NumberInput: React.FC<NumberInputProps> = (props) => {
   const [value, setValue] = useState(props.initialValue);
 
+  const labelClasses = cx("form-label", "col-form-label", formStyles.heading);
+
   const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     const newValue = +e.target.value;
     setValue(newValue);
@@ -53,7 +57,7 @@ const NumberInput: React.FC<NumberInputProps> = (props) => {
 
   return (
     <div className="form-group">
-      <label htmlFor={props.id} className="form-label col-form-label">
+      <label htmlFor={props.id} className={labelClasses}>
         {props.label}
       </label>
       <input

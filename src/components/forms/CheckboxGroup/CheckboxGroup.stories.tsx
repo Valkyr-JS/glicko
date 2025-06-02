@@ -7,18 +7,19 @@ const meta = {
   title: "Components/Forms/CheckboxGroup",
   component: CheckboxGroup,
   args: {
+    title: "Checkbox group",
     checkboxes: [
       {
         isChecked: false,
         id: "genderFemale",
         label: "Female",
-        name: "gender_female",
+        name: "gender-female",
       },
       {
         isChecked: false,
         id: "genderMale",
         label: "Male",
-        name: "gender_male",
+        name: "gender-male",
       },
     ],
   },
