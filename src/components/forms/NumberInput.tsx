@@ -1,11 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 
 interface NumberInputProps {
-  value: number;
+  initialValue: number;
 }
 
 const NumberInput: React.FC<NumberInputProps> = (props) => {
-  return <div>{props.value}</div>;
+  const [value, setValue] = useState(props.initialValue);
+
+  const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) =>
+    setValue(+e.target.value);
+
+  return (
+    <div>
+      <input type="number" value={value} onChange={handleChange} />
+    </div>
+  );
 };
 
 export default NumberInput;
