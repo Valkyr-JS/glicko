@@ -4,7 +4,12 @@ import CheckboxGroup from "./CheckboxGroup";
 const meta = {
   title: "Components/Forms/CheckboxGroup",
   component: CheckboxGroup,
-  args: {},
+  args: {
+    checkboxes: [
+      { id: "genderFemale", label: "Female", value: "FEMALE" },
+      { id: "genderMale", label: "Male", value: "MALE" },
+    ],
+  },
   parameters: {
     layout: "padded",
   },
