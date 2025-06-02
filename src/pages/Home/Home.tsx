@@ -151,6 +151,7 @@ interface InProgressModalProps extends React.PropsWithChildren {
   closeModalHandler: () => void;
   /** Handler for continuing with the action. */
   continueHandler: () => void;
+  /** The path to the page to continue to. */
   path: LinkProps["to"];
   /** Dictates whether the modal is currently rendered. */
   show: boolean;
