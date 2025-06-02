@@ -9,7 +9,7 @@ import Modal from "@/components/Modal/Modal";
 import { PATH } from "@/constants";
 import styles from "./Home.module.scss";
 
-interface HomeProps {
+interface HomePageProps {
   /** Click handler for changing the tournament settings. */
   changeSettingsHandler: () => void;
   /** Click handler for continuing a saved tournament. */
@@ -20,7 +20,7 @@ interface HomeProps {
   newTournamentHandler: () => void;
 }
 
-const HomePage: React.FC<HomeProps> = (props) => {
+const HomePage: React.FC<HomePageProps> = (props) => {
   const [showChangeSettingsModal, setShowChangeSettingsModal] = useState(false);
   const [showNewTournamentModal, setShowNewTournamentModal] = useState(false);
 
