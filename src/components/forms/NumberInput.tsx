@@ -25,6 +25,7 @@ const NumberInput: React.FC<NumberInputProps> = (props) => {
       <input
         type="number"
         className="text-input form-control"
+        id={props.id}
         name={props.name}
         onChange={handleChange}
         value={value}
