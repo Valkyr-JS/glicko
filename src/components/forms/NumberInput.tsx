@@ -9,6 +9,20 @@ interface NumberInputProps {
   label: string;
   /** The property name for the input which appears in the response. */
   name: string;
+  /** The maximum possible value of the input. */
+  max?: number;
+  /** The minimum possible value of the input. */
+  min?: number;
+  /** When entering a value over the soft max, a warning will be triggered. */
+  softMax?: {
+    value: number;
+    warning: string;
+  };
+  /** When entering a value under the soft max, a warning will be triggered. */
+  softMin?: {
+    value: number;
+    warning: string;
+  };
 }
 
 const NumberInput: React.FC<NumberInputProps> = (props) => {
@@ -26,6 +40,8 @@ const NumberInput: React.FC<NumberInputProps> = (props) => {
         type="number"
         className="text-input form-control"
         id={props.id}
+        max={props.max}
+        min={props.min}
         name={props.name}
         onChange={handleChange}
         value={value}
