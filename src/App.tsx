@@ -1,9 +1,9 @@
+import { useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router";
 import HomePage from "./pages/Home/Home";
-import { useState } from "react";
 import { PATH } from "./constants";
 
-const changeFiltersHandler = () => console.log("changeFiltersHandler");
+const changeSettingsHandler = () => console.log("changeSettingsHandler");
 const continueTournamentHandler = () =>
   console.log("continueTournamentHandler");
 const newTournamentHandler = () => console.log("newTournamentHandler");
@@ -22,7 +22,7 @@ function App() {
           path={PATH.HOME}
           element={
             <HomePage
-              changeFiltersHandler={changeFiltersHandler}
+              changeSettingsHandler={changeSettingsHandler}
               continueTournamentHandler={continueTournamentHandler}
               inProgress={tourneyInProgress}
               newTournamentHandler={newTournamentHandler}

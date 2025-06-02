@@ -10,8 +10,8 @@ import { PATH } from "@/constants";
 import styles from "./Home.module.scss";
 
 interface HomeProps {
-  /** Click handler for changing the tournament filters. */
-  changeFiltersHandler: () => void;
+  /** Click handler for changing the tournament settings. */
+  changeSettingsHandler: () => void;
   /** Click handler for continuing a saved tournament. */
   continueTournamentHandler: () => void;
   /** Dictates whether a tournament is in progress. */
@@ -21,7 +21,7 @@ interface HomeProps {
 }
 
 const HomePage: React.FC<HomeProps> = (props) => {
-  const [showChangeFiltersModal, setShowChangeFiltersModal] = useState(false);
+  const [showChangeSettingsModal, setShowChangeSettingsModal] = useState(false);
   const [showNewTournamentModal, setShowNewTournamentModal] = useState(false);
 
   // Add the "Continue tournament" option if required
@@ -50,14 +50,14 @@ const HomePage: React.FC<HomeProps> = (props) => {
     } else props.newTournamentHandler();
   };
 
-  /** Handle clicking the change filters button */
-  const handleChangeFilters: React.MouseEventHandler<
+  /** Handle clicking the change settings button */
+  const handleChangeSettings: React.MouseEventHandler<
     HTMLButtonElement
   > = () => {
     // If there is already a tournament in progress, display the modal. Else
     // continue.
-    if (props.inProgress) setShowChangeFiltersModal(true);
-    else props.changeFiltersHandler();
+    if (props.inProgress) setShowChangeSettingsModal(true);
+    else props.changeSettingsHandler();
   };
 
   const classes = cx("container", styles.Home);
@@ -92,9 +92,9 @@ const HomePage: React.FC<HomeProps> = (props) => {
               <button
                 type="button"
                 className="btn btn-secondary"
-                onClick={handleChangeFilters}
+                onClick={handleChangeSettings}
               >
-                Change filters
+                Tournament settings
               </button>
             </li>
             <li>
@@ -124,16 +124,17 @@ const HomePage: React.FC<HomeProps> = (props) => {
         <p>Would you still like to start a new tournament?</p>
       </InProgressModal>
       <InProgressModal
-        closeModalHandler={() => setShowChangeFiltersModal(false)}
-        continueHandler={props.changeFiltersHandler}
-        path={PATH.FILTERS}
-        show={showChangeFiltersModal}
+        closeModalHandler={() => setShowChangeSettingsModal(false)}
+        continueHandler={props.changeSettingsHandler}
+        path={PATH.SETTINGS}
+        show={showChangeSettingsModal}
       >
         <p>
-          A tournament is already in progress. If you update your filters, your
-          previous progress will be deleted. This cannot be undone.
+          A tournament is already in progress. If you change your tournament
+          settings, your previous progress will be deleted. This cannot be
+          undone.
         </p>
-        <p>Would you still like to update the filters?</p>
+        <p>Would you still like to update the settings?</p>
       </InProgressModal>
     </>
   );
