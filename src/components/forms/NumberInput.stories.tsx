@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, userEvent, within } from "storybook/test";
+import { FormSubmissionDecorator } from "../../../.storybook/decorators";
 import NumberInput from "./NumberInput";
 
 const meta = {
@@ -19,7 +20,24 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
+/** On submit, data should appear as { "name": "value" } */
+export const Default: Story = {
+  decorators: [FormSubmissionDecorator],
+  play: async ({ args, canvasElement }) => {
+    const canvas = within(canvasElement);
+    const submit = canvas.getByRole<HTMLButtonElement>("button", {
+      name: "Submit form",
+    });
+
+    await userEvent.click(submit);
+    const response = canvas.getByTestId("form-response");
+    expect(response.textContent).toBe(
+      JSON.stringify({
+        [args.name]: args.initialValue.toString(),
+      })
+    );
+  },
+};
 
 export const Minimums: Story = {
   args: {

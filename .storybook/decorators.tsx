@@ -31,7 +31,7 @@ export const FormSubmissionDecorator: Decorator = (Story) => {
   };
 
   const responseEl = Object.keys(response).length ? (
-    <code className="d-block mt-3">{JSON.stringify(response)}</code>
+    <code className="d-block mt-3" data-testid="form-response">{JSON.stringify(response)}</code>
   ) : null;
 
   return (
