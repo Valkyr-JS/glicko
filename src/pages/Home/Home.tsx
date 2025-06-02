@@ -61,6 +61,14 @@ const HomePage: React.FC<HomeProps> = (props) => {
   };
 
   const classes = cx("container", styles.Home);
+
+  // The "New tournament" button should only be primary if there is not already
+  // a tournament in progress.
+  const newTournamentClasses = cx("btn", {
+    "btn-primary": !props.inProgress,
+    "btn-secondary": props.inProgress,
+  });
+
   return (
     <>
       <main className={classes}>
@@ -73,7 +81,7 @@ const HomePage: React.FC<HomeProps> = (props) => {
             <ContinueItem />
             <li>
               <Link
-                className="btn btn-primary"
+                className={newTournamentClasses}
                 onClick={handleNewTournament}
                 to={PATH.TOURNAMENT}
               >
