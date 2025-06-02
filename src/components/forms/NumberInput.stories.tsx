@@ -5,7 +5,10 @@ const meta = {
   title: "Components/Forms/NumberInput",
   component: NumberInput,
   args: {
+    id: "numberInput",
     initialValue: 1,
+    label: "My number input",
+    name: "my-number-input",
   },
 } satisfies Meta<typeof NumberInput>;
 
