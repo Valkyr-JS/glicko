@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { default as cx } from "classnames";
 import styles from "./Settings.module.scss";
 import type { GendersEnum, PlayerFilters } from "@/types/global";
 import NumberInput from "@/components/forms/NumberInput/NumberInput";
 import CheckboxGroup from "@/components/forms/CheckboxGroup/CheckboxGroup";
+import { useNavigate } from "react-router";
+import { PATH } from "@/constants";
 
 interface SettingsPageProps {
   /** The current filters. */
@@ -15,7 +17,12 @@ interface SettingsPageProps {
 }
 
 const SettingsPage: React.FC<SettingsPageProps> = (props) => {
-  console.log(props.inProgress);
+  const [shouldNavigate, setShouldNavigate] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (shouldNavigate) navigate(PATH.HOME);
+  }, [shouldNavigate, navigate]);
 
   const classes = cx("container", styles.Settings);
 
@@ -53,6 +60,9 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
     };
 
     props.saveSettingsHandler(updatedFilters);
+
+    // Redirect to the homepage
+    setShouldNavigate(true);
   };
 
   /* ------------------------------------------ Component ----------------------------------------- */
