@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { default as cx } from "classnames";
 import styles from "./Settings.module.scss";
 import type { PlayerFilters } from "@/types/global";
-import NumberInput from "@/components/forms/NumberInput";
+import NumberInput from "@/components/forms/NumberInput/NumberInput";
 
 interface SettingsPageProps {
   /** The current filters. */

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, userEvent, within } from "storybook/test";
-import { FormSubmissionDecorator } from "../../../.storybook/decorators";
+import { FormSubmissionDecorator } from "../../../../.storybook/decorators";
 import NumberInput from "./NumberInput";
 
 const meta = {
