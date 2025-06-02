@@ -2,6 +2,7 @@ import { useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router";
 import HomePage from "./pages/Home/Home";
 import { PATH } from "./constants";
+import SettingsPage from "./pages/Settings/Settings";
 
 const changeSettingsHandler = () => console.log("changeSettingsHandler");
 const continueTournamentHandler = () =>
@@ -28,6 +29,10 @@ function App() {
               newTournamentHandler={newTournamentHandler}
             />
           }
+        />
+        <Route
+          path={PATH.SETTINGS}
+          element={<SettingsPage inProgress={tourneyInProgress} />}
         />
       </Routes>
     </BrowserRouter>

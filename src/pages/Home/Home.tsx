@@ -52,7 +52,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
 
   /** Handle clicking the change settings button */
   const handleChangeSettings: React.MouseEventHandler<
-    HTMLButtonElement
+    HTMLAnchorElement
   > = () => {
     // If there is already a tournament in progress, display the modal. Else
     // continue.
@@ -89,13 +89,13 @@ const HomePage: React.FC<HomePageProps> = (props) => {
               </Link>
             </li>
             <li>
-              <button
-                type="button"
+              <Link
                 className="btn btn-secondary"
                 onClick={handleChangeSettings}
+                to={PATH.SETTINGS}
               >
                 Tournament settings
-              </button>
+              </Link>
             </li>
             <li>
               <a className="btn btn-secondary" href="#">
