@@ -31,6 +31,14 @@ const NumberInput: React.FC<NumberInputProps> = (props) => {
   const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) =>
     setValue(+e.target.value);
 
+  // Soft minimum warning
+  const softMinWarning =
+    props.softMin && value < props.softMin.value ? (
+      <div role="status" className="invalid-feedback">
+        {props.softMin.warning}
+      </div>
+    ) : null;
+
   return (
     <div className="form-group">
       <label htmlFor={props.id} className="form-label col-form-label">
@@ -46,6 +54,7 @@ const NumberInput: React.FC<NumberInputProps> = (props) => {
         onChange={handleChange}
         value={value}
       />
+      {softMinWarning}
     </div>
   );
 };
