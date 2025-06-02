@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { fn } from "storybook/test";
 import Settings from "./Settings";
 
 const meta = {
@@ -7,6 +8,7 @@ const meta = {
   args: {
     filters: {},
     inProgress: false,
+    saveSettingsHandler: fn(),
   },
 } satisfies Meta<typeof Settings>;
 
