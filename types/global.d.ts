@@ -10,3 +10,8 @@ interface PlayerData {
   /** The player's glicko player data. */
   glicko: Player;
 }
+
+interface PlayerFilters {
+  /** The maximum number of performers that will be pulled from Stash. */
+  limit?: number;
+}

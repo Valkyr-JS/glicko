@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-interface NumberInputProps {
+interface NumberInputProps extends React.PropsWithChildren {
   /** The unique input ID. */
   id: string;
   /** The initial value of the input. */
@@ -23,13 +23,17 @@ interface NumberInputProps {
     value: number;
     warning: string;
   };
+  valueCallback?: (val: number) => void;
 }
 
 const NumberInput: React.FC<NumberInputProps> = (props) => {
   const [value, setValue] = useState(props.initialValue);
 
-  const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) =>
-    setValue(+e.target.value);
+  const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+    const newValue = +e.target.value;
+    setValue(newValue);
+    if (props.valueCallback) props.valueCallback(newValue);
+  };
 
   // Soft maximum warning
   const softMaxWarning =
@@ -64,6 +68,7 @@ const NumberInput: React.FC<NumberInputProps> = (props) => {
       />
       {softMinWarning}
       {softMaxWarning}
+      {props.children}
     </div>
   );
 };

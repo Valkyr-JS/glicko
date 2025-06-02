@@ -5,6 +5,7 @@ const meta = {
   title: "Pages/Settings",
   component: Settings,
   args: {
+    filters: {},
     inProgress: false,
   },
 } satisfies Meta<typeof Settings>;
