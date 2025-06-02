@@ -42,7 +42,7 @@ export const Minimums: Story = {
     });
 
     await step(
-      "A warning should appear on changing the input value to under the soft minimum",
+      "A warning should appear on changing the input value to under the soft minimum.",
       async () => {
         await userEvent.clear(input);
         await userEvent.type(input, "14");
@@ -52,11 +52,53 @@ export const Minimums: Story = {
     );
 
     await step(
-      "The warning should disappear on changing the input value to the soft minimum",
+      "The warning should disappear on changing the input value to the soft minimum.",
       async () => {
         await userEvent.clear(input);
         await userEvent.type(input, "15");
         const warning = canvas.queryByText("The recommended minimum is 15.");
+        expect(warning).not.toBeInTheDocument();
+      }
+    );
+  },
+};
+
+export const Maximums: Story = {
+  args: {
+    initialValue: 20,
+    max: 50,
+    softMax: {
+      value: 25,
+      warning: "The recommended maximum is 25.",
+    },
+  },
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByRole<HTMLInputElement>("spinbutton", {
+      name: "My number input",
+    });
+
+    await step("No warning message should be available", () => {
+      const warning = canvas.queryByText("The recommended maximum is 25.");
+      expect(warning).not.toBeInTheDocument();
+    });
+
+    await step(
+      "A warning should appear on changing the input value to over the soft maximum.",
+      async () => {
+        await userEvent.clear(input);
+        await userEvent.type(input, "26");
+        const warning = canvas.getByText("The recommended maximum is 25.");
+        expect(warning).toBeInTheDocument();
+      }
+    );
+
+    await step(
+      "The warning should disappear on changing the input value to the soft maximum.",
+      async () => {
+        await userEvent.clear(input);
+        await userEvent.type(input, "25");
+        const warning = canvas.queryByText("The recommended maximum is 25.");
         expect(warning).not.toBeInTheDocument();
       }
     );

@@ -31,6 +31,14 @@ const NumberInput: React.FC<NumberInputProps> = (props) => {
   const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) =>
     setValue(+e.target.value);
 
+  // Soft maximum warning
+  const softMaxWarning =
+    props.softMax && value > props.softMax.value ? (
+      <div role="status" className="invalid-feedback">
+        {props.softMax.warning}
+      </div>
+    ) : null;
+
   // Soft minimum warning
   const softMinWarning =
     props.softMin && value < props.softMin.value ? (
@@ -55,6 +63,7 @@ const NumberInput: React.FC<NumberInputProps> = (props) => {
         value={value}
       />
       {softMinWarning}
+      {softMaxWarning}
     </div>
   );
 };
