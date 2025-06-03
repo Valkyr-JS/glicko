@@ -24,12 +24,14 @@ export const Example: Story = {
   args: {
     buttons: [
       {
+        element: "button",
         children: "Cancel",
         className: "btn btn-secondary",
         onClick: fn(),
         type: "button",
       },
       {
+        element: "button",
         children: "Confirm",
         className: "btn btn-primary",
         onClick: fn(),
