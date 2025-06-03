@@ -18,23 +18,33 @@ type Story = StoryObj<typeof meta>;
 export const NotInProgress: Story = {};
 
 export const CancelChangedSettings: Story = {
-  args: {
-    filters: {
-      genders: ["FEMALE"],
-      limit: 69,
-    },
-  },
-  play: async ({ canvasElement }) => {
+  play: async ({ canvasElement, step }) => {
     const canvas = within(canvasElement);
     const cancelBtn = canvas.getByRole<HTMLButtonElement>("button", {
       name: "Cancel",
     });
-
-    await userEvent.click(cancelBtn);
-
-    const modal = canvas.getByRole("dialog", {
-      name: "Changes will not be saved",
+    const input = canvas.getByRole<HTMLInputElement>("spinbutton", {
+      name: "Performer limit",
     });
-    await expect(modal).toBeInTheDocument();
+
+    await step("Check the initial value of the limit input", () => {
+      expect(input.value).toBe("20");
+    });
+
+    await step("Make a change to the limit value", () => {
+      userEvent.clear(input);
+      userEvent.type(input, "5");
+    });
+
+    await step(
+      "Click the 'Cancel' button and expecta modal to appear",
+      async () => {
+        await userEvent.click(cancelBtn);
+        const modal = canvas.getByRole("dialog", {
+          name: "Changes will not be saved",
+        });
+        await expect(modal).toBeInTheDocument();
+      }
+    );
   },
 };
