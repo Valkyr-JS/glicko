@@ -49,6 +49,7 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
 
   const [showCancelModal, setShowCancelModal] = useState(false);
 
+  /** Handler for clicking the cancel button at the bottom of the page. */
   const handleCancel: React.MouseEventHandler = (e) => {
     if (!formRef.current) return;
 
@@ -168,7 +169,7 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
               </p>
             </small>
           </CheckboxGroup>
-          <div className="d-flex mt-5">
+          <div className={styles["button-container"]}>
             <button
               type="button"
               className="btn btn-secondary ml-auto"
@@ -183,11 +184,31 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
         </form>
       </main>
       <Modal
-        buttons={[]}
+        buttons={[
+          {
+            element: "button",
+            children: "Cancel",
+            className: "btn btn-secondary",
+            onClick: () => setShowCancelModal(false),
+            type: "button",
+          },
+          {
+            element: "link",
+            className: "btn btn-danger",
+            children: "Continue",
+            type: "button",
+            to: PATH.HOME,
+          },
+        ]}
         icon={faHand}
         show={showCancelModal}
         title="Changes will not be saved"
-      />
+      >
+        <p>
+          You have changed your settings without saving them. If you continue,
+          your changes will be lost.
+        </p>
+      </Modal>
     </>
   );
 };

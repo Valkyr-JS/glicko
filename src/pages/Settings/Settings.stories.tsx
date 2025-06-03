@@ -18,6 +18,11 @@ type Story = StoryObj<typeof meta>;
 export const NotInProgress: Story = {};
 
 export const CancelChangedSettings: Story = {
+  args: {
+    filters: {
+      limit: 20,
+    },
+  },
   play: async ({ canvasElement, step }) => {
     const canvas = within(canvasElement);
     const cancelBtn = canvas.getByRole<HTMLButtonElement>("button", {
@@ -31,9 +36,10 @@ export const CancelChangedSettings: Story = {
       expect(input.value).toBe("20");
     });
 
-    await step("Make a change to the limit value", () => {
-      userEvent.clear(input);
-      userEvent.type(input, "5");
+    await step("Make a change to the limit value", async () => {
+      await userEvent.clear(input);
+      await userEvent.type(input, "5");
+      expect(input.value).toBe("5");
     });
 
     await step(
