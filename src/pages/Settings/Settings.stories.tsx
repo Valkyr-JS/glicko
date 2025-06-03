@@ -64,10 +64,25 @@ export const CancelUnchangedSettings: Story = {
   args: {
     filters: { ...defaultFilters, limit: 20 },
   },
-  play: async ({ canvasElement, step }) => {
+  play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const cancelBtn = canvas.getByRole<HTMLButtonElement>("button", {
       name: "Cancel",
+    });
+
+    await userEvent.click(cancelBtn);
+    const modal = canvas.queryByRole("dialog", {
+      name: "Changes will not be saved",
+    });
+    await expect(modal).not.toBeInTheDocument();
+  },
+};
+
+export const SaveChangedSettings: Story = {
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+    const saveBtn = canvas.getByRole<HTMLButtonElement>("button", {
+      name: "Save settings",
     });
     const input = canvas.getByRole<HTMLInputElement>("spinbutton", {
       name: "Performer limit",
@@ -77,15 +92,24 @@ export const CancelUnchangedSettings: Story = {
       expect(input.value).toBe("20");
     });
 
-    await step(
-      "Click the 'Cancel' button and expect no modal to appear.",
-      async () => {
-        await userEvent.click(cancelBtn);
-        const modal = canvas.queryByRole("dialog", {
-          name: "Changes will not be saved",
-        });
-        await expect(modal).not.toBeInTheDocument();
-      }
-    );
+    await step("Make a change to the limit value.", async () => {
+      await userEvent.clear(input);
+      await userEvent.type(input, "5");
+      expect(input.value).toBe("5");
+    });
+
+    await step("Check the button is no longer disabled", () => {
+      expect(saveBtn).not.toBeDisabled();
+    });
+  },
+};
+
+export const SaveUnchangedSettings: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const btn = canvas.getByRole<HTMLButtonElement>("button", {
+      name: "Save settings",
+    });
+    expect(btn).toBeDisabled();
   },
 };

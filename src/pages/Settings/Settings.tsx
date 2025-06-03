@@ -19,6 +19,7 @@ interface SettingsPageProps {
 }
 
 const SettingsPage: React.FC<SettingsPageProps> = (props) => {
+  const [settingsChanged, setSettingsChanged] = useState(false);
   const [shouldNavigate, setShouldNavigate] = useState(false);
   const navigate = useNavigate();
 
@@ -29,6 +30,23 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
   }, [shouldNavigate, navigate]);
 
   const classes = cx("container", styles.Settings);
+
+  /* --------------------------------------- General changes -------------------------------------- */
+
+  const onFormChange: React.FormEventHandler<HTMLFormElement> = () => {
+    if (!formRef.current) return setShouldNavigate(true);
+
+    const formData = new FormData(formRef.current);
+    const currentFilters = convertFormDataToPlayerFilters(formData);
+    const filtersHaveChanged = !comparePlayerFilters(
+      props.filters,
+      currentFilters
+    );
+
+    console.log(filtersHaveChanged);
+
+    setSettingsChanged(filtersHaveChanged);
+  };
 
   /* -------------------------------------------- Limit ------------------------------------------- */
 
@@ -81,7 +99,12 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
   return (
     <>
       <main className={classes}>
-        <form method="POST" onSubmit={handleSaveSettings} ref={formRef}>
+        <form
+          method="POST"
+          onSubmit={handleSaveSettings}
+          ref={formRef}
+          onChange={onFormChange}
+        >
           <h1>Tournament settings</h1>
           <NumberInput
             id="playerLimit"
@@ -173,7 +196,11 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
             >
               Cancel
             </button>
-            <button type="submit" className="btn btn-primary">
+            <button
+              type="submit"
+              className="btn btn-primary"
+              disabled={!settingsChanged}
+            >
               Save settings
             </button>
           </div>
