@@ -213,7 +213,7 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
               className="btn btn-primary"
               disabled={!settingsChanged}
             >
-              Save settings
+              Save
             </button>
           </div>
         </form>
@@ -222,7 +222,7 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
         buttons={[
           {
             element: "button",
-            children: "Cancel",
+            children: "No",
             className: "btn btn-secondary",
             onClick: () => setShowInProgressModal(false),
             type: "button",
@@ -230,7 +230,7 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
           {
             element: "button",
             className: "btn btn-danger",
-            children: "Continue",
+            children: "Yes",
             onClick: handleSaveSettingsInProgress,
             type: "button",
           },
@@ -240,20 +240,19 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
         title="Tournament progress will be lost"
       >
         <p>
-          You currently have a tournament in progress. Saving your changes now
-          will cause this tournament's progress to be lost. This is cannot be
-          undone.
+          A tournament is currently in progress. Changing your settings now will
+          cause the tournament's progress to be lost. This cannot be undone.
         </p>
         <p>
           Are you sure you want to save your changes and lose all progress in
-          your current tournament?
+          the current tournament?
         </p>
       </Modal>
       <Modal
         buttons={[
           {
             element: "button",
-            children: "Cancel",
+            children: "No",
             className: "btn btn-secondary",
             onClick: () => setShowCancelModal(false),
             type: "button",
@@ -261,7 +260,7 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
           {
             element: "link",
             className: "btn btn-danger",
-            children: "Continue",
+            children: "Yes",
             type: "button",
             to: PATH.HOME,
           },
@@ -271,8 +270,8 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
         title="Changes will not be saved"
       >
         <p>
-          You have changed your settings without saving them. If you continue,
-          your changes will be lost.
+          You have not saved your changes. Are you sure you want to leave
+          without saving your changes?
         </p>
       </Modal>
     </>

@@ -163,7 +163,7 @@ const InProgressModal: React.FC<InProgressModalProps> = (props) => {
       buttons={[
         {
           element: "button",
-          children: "Cancel",
+          children: "No",
           className: "btn btn-secondary",
           onClick: props.closeModalHandler,
           type: "button",
@@ -171,7 +171,7 @@ const InProgressModal: React.FC<InProgressModalProps> = (props) => {
         {
           element: "link",
           className: "btn btn-danger",
-          children: "Continue",
+          children: "Yes",
           type: "button",
           to: props.path,
         },

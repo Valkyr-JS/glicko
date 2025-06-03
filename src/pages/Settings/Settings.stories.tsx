@@ -82,7 +82,7 @@ export const SaveChangedSettings: Story = {
   play: async ({ canvasElement, step }) => {
     const canvas = within(canvasElement);
     const saveBtn = canvas.getByRole<HTMLButtonElement>("button", {
-      name: "Save settings",
+      name: "Save",
     });
     const input = canvas.getByRole<HTMLInputElement>("spinbutton", {
       name: "Performer limit",
@@ -111,13 +111,13 @@ export const SaveChangedSettingsInProgress: Story = {
   play: async ({ context, canvasElement, step }) => {
     const canvas = within(canvasElement);
     const saveBtn = canvas.getByRole<HTMLButtonElement>("button", {
-      name: "Save settings",
+      name: "Save",
     });
 
     if (SaveChangedSettings.play) await SaveChangedSettings.play(context);
 
     await step(
-      "Click the 'Save settings' button and expect a modal to appear.",
+      "Click the 'Save' button and expect a modal to appear.",
       async () => {
         await userEvent.click(saveBtn);
         const modal = canvas.getByRole("dialog", {
@@ -133,7 +133,7 @@ export const SaveUnchangedSettings: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const btn = canvas.getByRole<HTMLButtonElement>("button", {
-      name: "Save settings",
+      name: "Save",
     });
     expect(btn).toBeDisabled();
   },
