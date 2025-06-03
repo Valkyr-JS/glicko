@@ -1,12 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, fn, userEvent, within } from "storybook/test";
 import Home from "./Home";
+import { WithMemoryRouter } from "../../../.storybook/decorators";
 
 const meta = {
   title: "Pages/Home",
   component: Home,
+  decorators: [WithMemoryRouter],
   args: {
-    changeFiltersHandler: fn(),
+    changeSettingsHandler: fn(),
     continueTournamentHandler: fn(),
     inProgress: false,
     newTournamentHandler: fn(),
@@ -69,17 +71,17 @@ export const InProgress: Story = {
 };
 
 /** If a tournament is in progress, alert in a modal when clicking to change the
- * filters. */
-export const InProgressChangeFilters: Story = {
+ * settings. */
+export const InProgressChangeSettings: Story = {
   args: {
     inProgress: true,
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const filtersBtn = canvas.getByRole("button", {
-      name: "Change filters",
+    const settingsBtn = canvas.getByRole("link", {
+      name: "Tournament settings",
     });
-    await userEvent.click(filtersBtn);
+    await userEvent.click(settingsBtn);
 
     const modal = canvas.getByRole("dialog", {
       name: "Tournament in progress",

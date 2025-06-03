@@ -1,0 +1,5 @@
+@use "@/scss/typography";
+
+.heading {
+  @include typography.heading;
+}

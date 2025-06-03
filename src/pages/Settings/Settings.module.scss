@@ -1,0 +1,21 @@
+@use "@/scss/spacing";
+@use "@/scss/typography";
+
+.Settings {
+  padding-top: spacing.$default;
+
+  h1 {
+    @include typography.title;
+  }
+
+  .button-container {
+    display: flex;
+    margin-top: spacing.$large;
+
+    button {
+      &:not(:last-child) {
+        margin-right: spacing.$small;
+      }
+    }
+  }
+}

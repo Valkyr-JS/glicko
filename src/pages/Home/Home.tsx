@@ -9,9 +9,9 @@ import Modal from "@/components/Modal/Modal";
 import { PATH } from "@/constants";
 import styles from "./Home.module.scss";
 
-interface HomeProps {
-  /** Click handler for changing the tournament filters. */
-  changeFiltersHandler: () => void;
+interface HomePageProps {
+  /** Click handler for changing the tournament settings. */
+  changeSettingsHandler: () => void;
   /** Click handler for continuing a saved tournament. */
   continueTournamentHandler: () => void;
   /** Dictates whether a tournament is in progress. */
@@ -20,8 +20,8 @@ interface HomeProps {
   newTournamentHandler: () => void;
 }
 
-const HomePage: React.FC<HomeProps> = (props) => {
-  const [showChangeFiltersModal, setShowChangeFiltersModal] = useState(false);
+const HomePage: React.FC<HomePageProps> = (props) => {
+  const [showChangeSettingsModal, setShowChangeSettingsModal] = useState(false);
   const [showNewTournamentModal, setShowNewTournamentModal] = useState(false);
 
   // Add the "Continue tournament" option if required
@@ -50,14 +50,14 @@ const HomePage: React.FC<HomeProps> = (props) => {
     } else props.newTournamentHandler();
   };
 
-  /** Handle clicking the change filters button */
-  const handleChangeFilters: React.MouseEventHandler<
-    HTMLButtonElement
+  /** Handle clicking the change settings button */
+  const handleChangeSettings: React.MouseEventHandler<
+    HTMLAnchorElement
   > = () => {
     // If there is already a tournament in progress, display the modal. Else
     // continue.
-    if (props.inProgress) setShowChangeFiltersModal(true);
-    else props.changeFiltersHandler();
+    if (props.inProgress) setShowChangeSettingsModal(true);
+    else props.changeSettingsHandler();
   };
 
   const classes = cx("container", styles.Home);
@@ -89,13 +89,13 @@ const HomePage: React.FC<HomeProps> = (props) => {
               </Link>
             </li>
             <li>
-              <button
-                type="button"
+              <Link
                 className="btn btn-secondary"
-                onClick={handleChangeFilters}
+                onClick={handleChangeSettings}
+                to={PATH.SETTINGS}
               >
-                Change filters
-              </button>
+                Tournament settings
+              </Link>
             </li>
             <li>
               <a className="btn btn-secondary" href="#">
@@ -124,16 +124,17 @@ const HomePage: React.FC<HomeProps> = (props) => {
         <p>Would you still like to start a new tournament?</p>
       </InProgressModal>
       <InProgressModal
-        closeModalHandler={() => setShowChangeFiltersModal(false)}
-        continueHandler={props.changeFiltersHandler}
-        path={PATH.FILTERS}
-        show={showChangeFiltersModal}
+        closeModalHandler={() => setShowChangeSettingsModal(false)}
+        continueHandler={props.changeSettingsHandler}
+        path={PATH.SETTINGS}
+        show={showChangeSettingsModal}
       >
         <p>
-          A tournament is already in progress. If you update your filters, your
-          previous progress will be deleted. This cannot be undone.
+          A tournament is already in progress. If you change your tournament
+          settings, your previous progress will be deleted. This cannot be
+          undone.
         </p>
-        <p>Would you still like to update the filters?</p>
+        <p>Would you still like to update the settings?</p>
       </InProgressModal>
     </>
   );
@@ -150,6 +151,7 @@ interface InProgressModalProps extends React.PropsWithChildren {
   closeModalHandler: () => void;
   /** Handler for continuing with the action. */
   continueHandler: () => void;
+  /** The path to the page to continue to. */
   path: LinkProps["to"];
   /** Dictates whether the modal is currently rendered. */
   show: boolean;
@@ -161,7 +163,7 @@ const InProgressModal: React.FC<InProgressModalProps> = (props) => {
       buttons={[
         {
           element: "button",
-          children: "Cancel",
+          children: "No",
           className: "btn btn-secondary",
           onClick: props.closeModalHandler,
           type: "button",
@@ -169,7 +171,7 @@ const InProgressModal: React.FC<InProgressModalProps> = (props) => {
         {
           element: "link",
           className: "btn btn-danger",
-          children: "Continue",
+          children: "Yes",
           type: "button",
           to: props.path,
         },
