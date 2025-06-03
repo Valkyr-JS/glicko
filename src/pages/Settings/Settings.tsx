@@ -43,8 +43,6 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
       currentFilters
     );
 
-    console.log(filtersHaveChanged);
-
     setSettingsChanged(filtersHaveChanged);
   };
 
@@ -66,31 +64,45 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
   /** Handler for clicking the cancel button at the bottom of the page. */
   const handleCancel: React.MouseEventHandler = () => {
     if (!formRef.current) return setShouldNavigate(true);
-
-    const formData = new FormData(formRef.current);
-    const currentFilters = convertFormDataToPlayerFilters(formData);
-    const filtersHaveChanged = !comparePlayerFilters(
-      props.filters,
-      currentFilters
-    );
-
-    if (filtersHaveChanged) setShowCancelModal(true);
+    if (settingsChanged) setShowCancelModal(true);
     else setShouldNavigate(true);
   };
 
   /* ---------------------------------------- Save settings --------------------------------------- */
 
+  const [showInProgressModal, setShowInProgressModal] = useState(false);
+
+  /** Save settings to the App control state. */
+  const handleSaveToControl = () => {
+    if (formRef.current) {
+      // Process the form values
+      const updatedFilters = convertFormDataToPlayerFilters(
+        new FormData(formRef.current)
+      );
+
+      // Save settings to the App control state
+      props.saveSettingsHandler(updatedFilters);
+    }
+  };
+
+  /** Handler for clicking the form 'Save settings' button */
   const handleSaveSettings: React.FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
 
-    // Process the form values
-    const updatedFilters = convertFormDataToPlayerFilters(
-      new FormData(e.target as HTMLFormElement)
-    );
+    // If there is a tournament in progress, render a modal.
+    if (props.inProgress) return setShowInProgressModal(true);
 
-    props.saveSettingsHandler(updatedFilters);
+    // Save, then redirect to the homepage
+    handleSaveToControl();
+    setShouldNavigate(true);
+  };
 
-    // Redirect to the homepage
+  /** Handler for clicking the 'Continue' button in the modal for saving
+   * settings whilst a tournament is in progress */
+  const handleSaveSettingsInProgress: React.MouseEventHandler<
+    HTMLButtonElement
+  > = () => {
+    handleSaveToControl();
     setShouldNavigate(true);
   };
 
@@ -206,6 +218,37 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
           </div>
         </form>
       </main>
+      <Modal
+        buttons={[
+          {
+            element: "button",
+            children: "Cancel",
+            className: "btn btn-secondary",
+            onClick: () => setShowInProgressModal(false),
+            type: "button",
+          },
+          {
+            element: "button",
+            className: "btn btn-danger",
+            children: "Continue",
+            onClick: handleSaveSettingsInProgress,
+            type: "button",
+          },
+        ]}
+        icon={faHand}
+        show={showInProgressModal}
+        title="Tournament progress will be lost"
+      >
+        <p>
+          You currently have a tournament in progress. Saving your changes now
+          will cause this tournament's progress to be lost. This is cannot be
+          undone.
+        </p>
+        <p>
+          Are you sure you want to save your changes and lose all progress in
+          your current tournament?
+        </p>
+      </Modal>
       <Modal
         buttons={[
           {
