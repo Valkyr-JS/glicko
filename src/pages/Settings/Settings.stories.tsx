@@ -98,9 +98,34 @@ export const SaveChangedSettings: Story = {
       expect(input.value).toBe("5");
     });
 
-    await step("Check the button is no longer disabled", () => {
+    await step("Check the button is no longer disabled.", () => {
       expect(saveBtn).not.toBeDisabled();
     });
+  },
+};
+
+export const SaveChangedSettingsInProgress: Story = {
+  args: {
+    inProgress: true,
+  },
+  play: async ({ context, canvasElement, step }) => {
+    const canvas = within(canvasElement);
+    const saveBtn = canvas.getByRole<HTMLButtonElement>("button", {
+      name: "Save settings",
+    });
+
+    if (SaveChangedSettings.play) await SaveChangedSettings.play(context);
+
+    await step(
+      "Click the 'Save settings' button and expect a modal to appear.",
+      async () => {
+        await userEvent.click(saveBtn);
+        const modal = canvas.getByRole("dialog", {
+          name: "Tournament progress will be lost",
+        });
+        await expect(modal).toBeInTheDocument();
+      }
+    );
   },
 };
 
