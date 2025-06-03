@@ -1,10 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, fn, userEvent, within } from "storybook/test";
 import Home from "./Home";
+import { WithMemoryRouter } from "../../../.storybook/decorators";
 
 const meta = {
   title: "Pages/Home",
   component: Home,
+  decorators: [WithMemoryRouter],
   args: {
     changeSettingsHandler: fn(),
     continueTournamentHandler: fn(),
@@ -76,7 +78,7 @@ export const InProgressChangeSettings: Story = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const settingsBtn = canvas.getByRole("button", {
+    const settingsBtn = canvas.getByRole("link", {
       name: "Tournament settings",
     });
     await userEvent.click(settingsBtn);
