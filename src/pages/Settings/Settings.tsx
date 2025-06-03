@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { default as cx } from "classnames";
-import styles from "./Settings.module.scss";
-import type { GendersEnum, PlayerFilters } from "@/types/global";
-import NumberInput from "@/components/forms/NumberInput/NumberInput";
-import CheckboxGroup from "@/components/forms/CheckboxGroup/CheckboxGroup";
 import { useNavigate } from "react-router";
+import CheckboxGroup from "@/components/forms/CheckboxGroup/CheckboxGroup";
+import NumberInput from "@/components/forms/NumberInput/NumberInput";
 import { PATH } from "@/constants";
+import type { PlayerFilters } from "@/types/global";
+import styles from "./Settings.module.scss";
 
 interface SettingsPageProps {
   /** The current filters. */
@@ -54,8 +54,8 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
       .filter((p) => p.match("gender-"))
       .map((p) => p.split("gender-")[1].toUpperCase());
 
-    const updatedFilters = {
-      genders: genders as unknown as GendersEnum[],
+    const updatedFilters: PlayerFilters = {
+      genders: genders as PlayerFilters["genders"],
       limit: +formJson["player-limit"],
     };
 
@@ -104,37 +104,39 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
           title="Genders"
           checkboxes={[
             {
-              isChecked: false,
+              isChecked: props.filters.genders?.includes("MALE") ?? false,
               id: "genderMale",
               label: "Male",
               name: "gender-male",
             },
             {
-              isChecked: false,
+              isChecked: props.filters.genders?.includes("FEMALE") ?? false,
               id: "genderFemale",
               label: "Female",
               name: "gender-female",
             },
             {
-              isChecked: false,
+              isChecked:
+                props.filters.genders?.includes("TRANSGENDER_MALE") ?? false,
               id: "genderTransgenderMale",
               label: "Transgender male",
               name: "gender-transgender_male",
             },
             {
-              isChecked: false,
+              isChecked:
+                props.filters.genders?.includes("TRANSGENDER_FEMALE") ?? false,
               id: "genderTransgenderFemale",
               label: "Transgender Female",
               name: "gender-transgender_female",
             },
             {
-              isChecked: false,
+              isChecked: props.filters.genders?.includes("INTERSEX") ?? false,
               id: "genderIntersex",
               label: "Intersex",
               name: "gender-intersex",
             },
             {
-              isChecked: false,
+              isChecked: props.filters.genders?.includes("NON_BINARY") ?? false,
               id: "genderNonBinary",
               label: "Non-Binary",
               name: "gender-non_binary",

@@ -1,12 +1,12 @@
 import { Player } from "glicko2";
 
 enum GendersEnum {
-  "MALE" = MALE,
-  "FEMALE" = FEMALE,
-  "TRANSGENDER_MALE" = TRANSGENDER_MALE,
-  "TRANSGENDER_FEMALE" = TRANSGENDER_MALE,
-  "INTERSEX" = INTERSEX,
-  "NON_BINARY" = NON_BINARY,
+  MALE = "MALE",
+  FEMALE = "FEMALE",
+  TRANSGENDER_MALE = "TRANSGENDER_MALE",
+  TRANSGENDER_MALE = "TRANSGENDER_FEMALE",
+  INTERSEX = "INTERSEX",
+  NON_BINARY = "NON_BINARY",
 }
 
 interface PlayerData {
@@ -20,9 +20,11 @@ interface PlayerData {
   glicko: Player;
 }
 
+type PlayerGenders = `${GendersEnum}`;
+
 interface PlayerFilters {
   /** The genders that qualify for the tournament. */
-  genders?: GendersEnum[];
+  genders?: PlayerGenders[];
   /** The maximum number of performers that will be pulled from Stash. */
   limit?: number;
 }
