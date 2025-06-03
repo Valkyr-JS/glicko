@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, fn, userEvent, within } from "storybook/test";
 import Settings from "./Settings";
+import { WithMemoryRouter } from "../../../.storybook/decorators";
 
 const defaultFilters = {
   genders: [],
@@ -10,6 +11,7 @@ const defaultFilters = {
 const meta = {
   title: "Pages/Settings",
   component: Settings,
+  decorators: [WithMemoryRouter],
   args: {
     filters: defaultFilters,
     inProgress: false,

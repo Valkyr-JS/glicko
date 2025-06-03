@@ -1,12 +1,10 @@
 import type { Preview } from "@storybook/react-vite";
-import { withRouter } from "storybook-addon-remix-react-router";
 import { INITIAL_VIEWPORTS } from "storybook/viewport";
 import "./autodocs.css";
 import "../src/index-84976af5.css";
 import "../src/scss/global.scss";
 
 const preview: Preview = {
-  decorators: [withRouter],
   parameters: {
     a11y: {
       // 'todo' - show a11y violations in the test UI only

@@ -8,7 +8,6 @@ const config: StorybookConfig = {
     "@storybook/addon-docs",
     "@storybook/addon-onboarding",
     "@storybook/addon-vitest",
-    "storybook-addon-remix-react-router",
   ],
   framework: {
     name: "@storybook/react-vite",

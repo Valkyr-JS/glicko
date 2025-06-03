@@ -1,13 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
+import { faHand } from "@fortawesome/pro-solid-svg-icons/faHand";
 import { default as cx } from "classnames";
 import { useNavigate } from "react-router";
 import CheckboxGroup from "@/components/forms/CheckboxGroup/CheckboxGroup";
 import NumberInput from "@/components/forms/NumberInput/NumberInput";
+import Modal from "@/components/Modal/Modal";
 import { PATH } from "@/constants";
 import type { PlayerFilters } from "@/types/global";
 import styles from "./Settings.module.scss";
-import Modal from "@/components/Modal/Modal";
-import { faHand } from "@fortawesome/pro-solid-svg-icons/faHand";
 
 interface SettingsPageProps {
   /** The current filters. */
@@ -46,8 +46,8 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
   const [showCancelModal, setShowCancelModal] = useState(false);
 
   /** Handler for clicking the cancel button at the bottom of the page. */
-  const handleCancel: React.MouseEventHandler = (e) => {
-    if (!formRef.current) return;
+  const handleCancel: React.MouseEventHandler = () => {
+    if (!formRef.current) return setShouldNavigate(true);
 
     const formData = new FormData(formRef.current);
     const currentFilters = convertFormDataToPlayerFilters(formData);
@@ -56,10 +56,8 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
       currentFilters
     );
 
-    if (filtersHaveChanged) {
-      e.preventDefault();
-      setShowCancelModal(true);
-    }
+    if (filtersHaveChanged) setShowCancelModal(true);
+    else setShouldNavigate(true);
   };
 
   /* ---------------------------------------- Save settings --------------------------------------- */
