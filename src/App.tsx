@@ -9,13 +9,12 @@ const changeSettingsHandler = () => console.log("changeSettingsHandler");
 const continueTournamentHandler = () =>
   console.log("continueTournamentHandler");
 const newTournamentHandler = () => console.log("newTournamentHandler");
-const saveSettingsHandler = () => console.log("saveSettingsHandler");
 
 function App() {
   /* -------------------------------------- State management -------------------------------------- */
 
   const [tourneyInProgress] = useState(false);
-  const [filters] = useState<PlayerFilters>({
+  const [filters, setFilters] = useState<PlayerFilters>({
     genders: ["FEMALE"],
     limit: 20,
   });
@@ -42,7 +41,7 @@ function App() {
             <SettingsPage
               filters={filters}
               inProgress={tourneyInProgress}
-              saveSettingsHandler={saveSettingsHandler}
+              saveSettingsHandler={setFilters}
             />
           }
         />
