@@ -51,8 +51,10 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
 
     const formData = new FormData(formRef.current);
     const currentFilters = convertFormDataToPlayerFilters(formData);
-    const filtersHaveChanged =
-      JSON.stringify(props.filters) !== JSON.stringify(currentFilters);
+    const filtersHaveChanged = !comparePlayerFilters(
+      props.filters,
+      currentFilters
+    );
 
     if (filtersHaveChanged) {
       e.preventDefault();
@@ -229,4 +231,21 @@ const convertFormDataToPlayerFilters = (data: FormData): PlayerFilters => {
   };
 
   return updatedFilters;
+};
+
+/** Compares two sets of player filters for equality. */
+const comparePlayerFilters = (
+  setA: PlayerFilters,
+  setB: PlayerFilters
+): boolean => {
+  // Genders
+  const setAGenders = JSON.stringify(setA.genders.sort());
+  const setBGenders = JSON.stringify(setB.genders.sort());
+
+  if (setAGenders !== setBGenders) return false;
+
+  // Limit
+  if (setA.limit !== setB.limit) return false;
+
+  return true;
 };
