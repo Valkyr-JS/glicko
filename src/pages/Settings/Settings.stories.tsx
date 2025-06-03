@@ -6,7 +6,10 @@ const meta = {
   title: "Pages/Settings",
   component: Settings,
   args: {
-    filters: {},
+    filters: {
+      genders: [],
+      limit: 20,
+    },
     inProgress: false,
     saveSettingsHandler: fn(),
   },
@@ -21,6 +24,7 @@ export const CancelChangedSettings: Story = {
   args: {
     filters: {
       limit: 20,
+      genders: [],
     },
   },
   play: async ({ canvasElement, step }) => {

@@ -32,13 +32,9 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
 
   /* -------------------------------------------- Limit ------------------------------------------- */
 
-  const fallbackLimit = 20;
-
   // Only for getting the current value. Do not use to update the value or in
   // form submission.
-  const [currentLimit, setCurrentLimit] = useState(
-    props.filters.limit ?? fallbackLimit
-  );
+  const [currentLimit, setCurrentLimit] = useState(props.filters.limit);
   const limitSoftMax = 25;
   const limitSoftMin = 15;
 
@@ -89,7 +85,7 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
           <h1>Tournament settings</h1>
           <NumberInput
             id="playerLimit"
-            initialValue={props.filters.limit ?? fallbackLimit}
+            initialValue={props.filters.limit}
             label="Performer limit"
             name="player-limit"
             min={2}

@@ -24,7 +24,7 @@ type PlayerGenders = `${GendersEnum}`;
 
 interface PlayerFilters {
   /** The genders that qualify for the tournament. */
-  genders?: PlayerGenders[];
+  genders: PlayerGenders[];
   /** The maximum number of performers that will be pulled from Stash. */
-  limit?: number;
+  limit: number;
 }
