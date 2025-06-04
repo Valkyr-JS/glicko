@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, userEvent, within } from "storybook/test";
 import Home from "./Home";
 import { WithMemoryRouter } from "../../../.storybook/decorators";
+import { ApolloError } from "@apollo/client";
 
 const meta = {
   title: "Pages/Home",
@@ -121,5 +122,27 @@ export const IsLoadingInProgress: Story = {
     });
 
     expect(continueBtn).toBeDisabled();
+  },
+};
+
+export const PerformersFetchError: Story = {
+  args: {
+    inProgress: true,
+    performersFetch: {
+      error: {
+        ...new ApolloError({}),
+        name: "Apollo Error",
+        message: "Response not successful: Received status code 422",
+      },
+      loading: false,
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    const modal = canvas.getByRole("dialog", {
+      name: "Apollo Error",
+    });
+    expect(modal).toBeInTheDocument();
   },
 };

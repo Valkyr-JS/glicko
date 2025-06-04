@@ -29,7 +29,7 @@ function App() {
 
   useEffect(() => {
     if (performersFetch.error) {
-      console.log(performersFetch.error.message);
+      console.log(performersFetch.error);
     } else if (!performersFetch.loading) {
       StashFindPerformersResultSchema.safeParseAsync(performersFetch.data);
       console.log(performersFetch.data);

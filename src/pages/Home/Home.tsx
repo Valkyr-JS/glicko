@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { faGithub } from "@fortawesome/free-brands-svg-icons/faGithub";
 import { faChessRook } from "@fortawesome/pro-solid-svg-icons/faChessRook";
 import { faHand } from "@fortawesome/pro-solid-svg-icons/faHand";
@@ -24,10 +24,20 @@ interface HomePageProps {
 const HomePage: React.FC<HomePageProps> = (props) => {
   const [showChangeSettingsModal, setShowChangeSettingsModal] = useState(false);
   const [showNewTournamentModal, setShowNewTournamentModal] = useState(false);
+  const [showFetchErrorModal, setShowFetchErrorModal] = useState(false);
 
   const navigate = useNavigate();
 
   const classes = cx("container", styles.Home);
+
+  /* -------------------------------------- Data fetch errors ------------------------------------- */
+
+  // If an error occurs when trying to fetch data, render a modal.
+  useEffect(() => {
+    if (props.performersFetch.error) {
+      setShowFetchErrorModal(true);
+    }
+  }, [props.performersFetch.error]);
 
   /* --------------------------------- Continue tournament button --------------------------------- */
 
@@ -166,6 +176,45 @@ const HomePage: React.FC<HomePageProps> = (props) => {
         </p>
         <p>Would you still like to update the settings?</p>
       </InProgressModal>
+      <Modal
+        buttons={[
+          {
+            element: "anchor",
+            children: "Open issue on GitHub",
+            className: "btn btn-secondary",
+            target: "_blank",
+            href:
+              "https://github.com/Valkyr-JS/glicko/issues/new?title=[ Fetch%20performers%20error ]&labels=bug&body=**Please add any other relevant details before submitting.**%0D%0A%0D%0A%0D%0A%0D%0A```%0D%0A" +
+              encodeURI(
+                JSON.stringify(props.performersFetch.error) ?? "No error"
+              ) +
+              "%0D%0A```",
+          },
+          {
+            element: "button",
+            children: "Close",
+            className: "btn btn-primary",
+            onClick: () => setShowFetchErrorModal(false),
+            type: "button",
+          },
+        ]}
+        icon={faHand}
+        show={showFetchErrorModal}
+        title={props.performersFetch.error?.name ?? "No error name"}
+      >
+        <p>An error occured whilst attempting to fetch data from Stash.</p>
+        <p>
+          <a href="" />
+          <code>
+            {props.performersFetch.error?.message ?? "No error message"}
+          </code>
+        </p>
+        <p>
+          Please check your settings and retry. If you continue to run into this
+          error, please raise an issue on GitHub using the button below.
+        </p>
+        <code>{JSON.stringify(props.performersFetch.error) ?? "No error"}</code>
+      </Modal>
     </>
   );
 };
