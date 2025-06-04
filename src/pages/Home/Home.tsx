@@ -92,6 +92,14 @@ const HomePage: React.FC<HomePageProps> = (props) => {
     }
   };
 
+  /** Handle starting a new tournament when one is in progress. */
+  const handleNewTournamentInProgress: React.MouseEventHandler<
+    HTMLButtonElement
+  > = async () => {
+    const canNavigate = await props.startNewTournamentHandler();
+    if (canNavigate) navigate(PATH.TOURNAMENT);
+  };
+
   const newTournamentLoading =
     props.performersFetch.loading && !props.inProgress;
 
@@ -161,12 +169,12 @@ const HomePage: React.FC<HomePageProps> = (props) => {
       </main>
       <InProgressModal
         closeModalHandler={() => setShowNewTournamentModal(false)}
-        continueHandler={handleNewTournament}
+        continueHandler={handleNewTournamentInProgress}
         show={showNewTournamentModal}
       >
         <p>
           A tournament is already in progress. If you start a new tournament,
-          your previous progress will be deleted. This cannot be undone.
+          your previous progress will be lost. This cannot be undone.
         </p>
         <p>Would you still like to start a new tournament?</p>
       </InProgressModal>
@@ -177,8 +185,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
       >
         <p>
           A tournament is already in progress. If you change your tournament
-          settings, your previous progress will be deleted. This cannot be
-          undone.
+          settings, your previous progress will be lost. This cannot be undone.
         </p>
         <p>Would you still like to update the settings?</p>
       </InProgressModal>
