@@ -1,25 +1,31 @@
 import { useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router";
 import { useLazyQuery } from "@apollo/client";
-import type { PlayerFilters } from "@/types/global";
+import type { Match, PlayerData, PlayerFilters } from "@/types/global";
 import { GET_PERFORMERS } from "./apollo/queries";
 import { type StashFindPerformersResultType } from "./apollo/schema";
-import { PATH } from "./constants";
+import { GLICKO, PATH } from "./constants";
 import HomePage from "./pages/Home/Home";
 import SettingsPage from "./pages/Settings/Settings";
+import { Glicko2 } from "glicko2";
+import { createRoundRobinMatchList } from "./helpers/gameplay";
 
 function App() {
   /* -------------------------------------- State management -------------------------------------- */
 
-  const [tourneyInProgress] = useState(false);
+  const [tournament, setTournament] = useState<Glicko2 | null>(null);
+  const [players, setPlayers] = useState<PlayerData[]>([]);
+  const [matchList, setMatchList] = useState<Match[]>([]);
   const [filters, setFilters] = useState<PlayerFilters>({
     genders: ["FEMALE"],
-    limit: 20,
+    limit: 10,
   });
+
+  console.log("players", players);
+  console.log("matchList", matchList);
 
   /* --------------------------------------- New tournament --------------------------------------- */
 
-  // Create player data
   const [fetchPerformers, fetchPerformersResponse] =
     useLazyQuery<StashFindPerformersResultType>(GET_PERFORMERS, {
       variables: filters,
@@ -27,8 +33,35 @@ function App() {
 
   /** Handler for starting a new tournament. The resolved boolean dictates
    * whether a new tournament is ready to start. */
-  const handleStartNewTournament = async () => {
-    return await fetchPerformers().then((res) => !res.loading && !res.error);
+  const handleStartNewTournament = async (): Promise<boolean> => {
+    return await fetchPerformers().then((res) => {
+      if (res.loading || res.error) return false;
+
+      const newTournament = new Glicko2();
+      setTournament(newTournament);
+
+      const newPlayers: PlayerData[] = (
+        res.data?.findPerformers.performers ?? []
+      ).map((p) => {
+        return {
+          coverImg: p.image_path,
+          id: p.id.toString(),
+          name: p.name,
+          glicko: newTournament.makePlayer(
+            p.custom_fields.glicko_rating ?? GLICKO.RATING_DEFAULT,
+            p.custom_fields.glicko_deviation ?? GLICKO.DEVIATION_DEFAULT,
+            p.custom_fields.glicko_volatility ?? GLICKO.VOLATILITY_DEFAULT
+          ),
+        };
+      });
+
+      setPlayers(newPlayers);
+
+      const newMatchList = createRoundRobinMatchList(newPlayers.length);
+      setMatchList(newMatchList);
+
+      return true;
+    });
   };
 
   /* --------------------------------------------- App -------------------------------------------- */
@@ -40,7 +73,7 @@ function App() {
           path={PATH.HOME}
           element={
             <HomePage
-              inProgress={tourneyInProgress}
+              inProgress={!!tournament}
               performersFetch={fetchPerformersResponse}
               startNewTournamentHandler={handleStartNewTournament}
             />
@@ -51,7 +84,7 @@ function App() {
           element={
             <SettingsPage
               filters={filters}
-              inProgress={tourneyInProgress}
+              inProgress={!!tournament}
               saveSettingsHandler={setFilters}
             />
           }
