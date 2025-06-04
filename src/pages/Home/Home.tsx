@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { faGithub } from "@fortawesome/free-brands-svg-icons/faGithub";
 import { faChessRook } from "@fortawesome/pro-solid-svg-icons/faChessRook";
 import { faHand } from "@fortawesome/pro-solid-svg-icons/faHand";
+import { faSpinnerThird } from "@fortawesome/pro-solid-svg-icons/faSpinnerThird";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { default as cx } from "classnames";
 import { Link, type LinkProps } from "react-router";
@@ -16,6 +17,8 @@ interface HomePageProps {
   continueTournamentHandler: () => void;
   /** Dictates whether a tournament is in progress. */
   inProgress: boolean;
+  /** Dictates whether data is currently being loaded for a tournament. */
+  isLoading: boolean;
   /** Click handler for starting a new tournament. */
   newTournamentHandler: () => void;
 }
@@ -23,6 +26,20 @@ interface HomePageProps {
 const HomePage: React.FC<HomePageProps> = (props) => {
   const [showChangeSettingsModal, setShowChangeSettingsModal] = useState(false);
   const [showNewTournamentModal, setShowNewTournamentModal] = useState(false);
+
+  /** Handle clicking the change settings button */
+  const handleChangeSettings: React.MouseEventHandler<
+    HTMLAnchorElement
+  > = () => {
+    // If there is already a tournament in progress, display the modal. Else
+    // continue.
+    if (props.inProgress) setShowChangeSettingsModal(true);
+    else props.changeSettingsHandler();
+  };
+
+  const classes = cx("container", styles.Home);
+
+  /* --------------------------------- Continue tournament button --------------------------------- */
 
   // Add the "Continue tournament" option if required
   const ContinueItem = () =>
@@ -38,29 +55,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
       </li>
     ) : null;
 
-  /** Handle clicking the new tournament button. */
-  const handleNewTournament: React.MouseEventHandler<HTMLAnchorElement> = (
-    e
-  ) => {
-    // If there is already a tournament in progress, display the modal. Else
-    // continue.
-    if (props.inProgress) {
-      e.preventDefault();
-      setShowNewTournamentModal(true);
-    } else props.newTournamentHandler();
-  };
-
-  /** Handle clicking the change settings button */
-  const handleChangeSettings: React.MouseEventHandler<
-    HTMLAnchorElement
-  > = () => {
-    // If there is already a tournament in progress, display the modal. Else
-    // continue.
-    if (props.inProgress) setShowChangeSettingsModal(true);
-    else props.changeSettingsHandler();
-  };
-
-  const classes = cx("container", styles.Home);
+  /* ------------------------------------ New tournament button ----------------------------------- */
 
   // The "New tournament" button should only be primary if there is not already
   // a tournament in progress.
@@ -68,6 +63,32 @@ const HomePage: React.FC<HomePageProps> = (props) => {
     "btn-primary": !props.inProgress,
     "btn-secondary": props.inProgress,
   });
+
+  /** Handle clicking the new tournament button. */
+  const handleNewTournament: React.MouseEventHandler<
+    HTMLButtonElement
+  > = () => {
+    // If there is already a tournament in progress, display the modal. Else
+    // continue.
+    if (props.inProgress) {
+      setShowNewTournamentModal(true);
+    } else props.newTournamentHandler();
+  };
+
+  const newTournamentButton = (
+    <button
+      className={newTournamentClasses}
+      disabled={props.isLoading}
+      onClick={handleNewTournament}
+    >
+      {props.isLoading && !props.inProgress ? (
+        <FontAwesomeIcon className="mr-2" icon={faSpinnerThird} spin />
+      ) : null}
+      New tournament
+    </button>
+  );
+
+  /* ------------------------------------------ Component ----------------------------------------- */
 
   return (
     <>
@@ -79,15 +100,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
         <nav>
           <ul>
             <ContinueItem />
-            <li>
-              <Link
-                className={newTournamentClasses}
-                onClick={handleNewTournament}
-                to={PATH.TOURNAMENT}
-              >
-                New tournament
-              </Link>
-            </li>
+            <li>{newTournamentButton}</li>
             <li>
               <Link
                 className="btn btn-secondary"

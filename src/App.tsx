@@ -53,6 +53,7 @@ function App() {
               changeSettingsHandler={changeSettingsHandler}
               continueTournamentHandler={continueTournamentHandler}
               inProgress={tourneyInProgress}
+              isLoading={loading}
               newTournamentHandler={newTournamentHandler}
             />
           }

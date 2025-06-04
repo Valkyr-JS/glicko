@@ -11,6 +11,7 @@ const meta = {
     changeSettingsHandler: fn(),
     continueTournamentHandler: fn(),
     inProgress: false,
+    isLoading: false,
     newTournamentHandler: fn(),
   },
 } satisfies Meta<typeof Home>;
@@ -56,7 +57,7 @@ export const InProgress: Story = {
     await step(
       'On clicking "New tournament", a modal should ask if you want to lose your existing progress',
       async () => {
-        const newBtn = canvas.getByRole("link", {
+        const newBtn = canvas.getByRole("button", {
           name: "New tournament",
         });
         await userEvent.click(newBtn);
@@ -87,5 +88,20 @@ export const InProgressChangeSettings: Story = {
       name: "Tournament in progress",
     });
     expect(modal).toBeInTheDocument();
+  },
+};
+
+export const IsLoading: Story = {
+  args: {
+    inProgress: false,
+    isLoading: true,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const newBtn = canvas.getByRole("button", {
+      name: "New tournament",
+    });
+
+    expect(newBtn).toBeDisabled();
   },
 };
