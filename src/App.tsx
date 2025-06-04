@@ -1,14 +1,15 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router";
+import { useQuery } from "@apollo/client";
 import type { PlayerFilters } from "@/types/global";
+import { GET_PERFORMERS } from "./apollo/queries";
 import { PATH } from "./constants";
 import HomePage from "./pages/Home/Home";
 import SettingsPage from "./pages/Settings/Settings";
-
-const changeSettingsHandler = () => console.log("changeSettingsHandler");
-const continueTournamentHandler = () =>
-  console.log("continueTournamentHandler");
-const newTournamentHandler = () => console.log("newTournamentHandler");
+import {
+  StashFindPerformersResultSchema,
+  type StashFindPerformersResultType,
+} from "./apollo/schema";
 
 function App() {
   /* -------------------------------------- State management -------------------------------------- */
@@ -19,6 +20,22 @@ function App() {
     limit: 20,
   });
 
+  const performersFetch = useQuery<StashFindPerformersResultType>(
+    GET_PERFORMERS,
+    {
+      variables: filters,
+    }
+  );
+
+  useEffect(() => {
+    if (performersFetch.error) {
+      console.log(performersFetch.error);
+    } else if (!performersFetch.loading) {
+      StashFindPerformersResultSchema.safeParseAsync(performersFetch.data);
+      console.log(performersFetch.data);
+    }
+  }, [performersFetch.data, performersFetch.error, performersFetch.loading]);
+
   /* --------------------------------------------- App -------------------------------------------- */
 
   return (
@@ -28,10 +45,8 @@ function App() {
           path={PATH.HOME}
           element={
             <HomePage
-              changeSettingsHandler={changeSettingsHandler}
-              continueTournamentHandler={continueTournamentHandler}
               inProgress={tourneyInProgress}
-              newTournamentHandler={newTournamentHandler}
+              performersFetch={performersFetch}
             />
           }
         />

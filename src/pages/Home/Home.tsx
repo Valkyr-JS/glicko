@@ -1,28 +1,53 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { faGithub } from "@fortawesome/free-brands-svg-icons/faGithub";
 import { faChessRook } from "@fortawesome/pro-solid-svg-icons/faChessRook";
 import { faHand } from "@fortawesome/pro-solid-svg-icons/faHand";
+import { faSpinnerThird } from "@fortawesome/pro-solid-svg-icons/faSpinnerThird";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { default as cx } from "classnames";
-import { Link, type LinkProps } from "react-router";
+import { useNavigate } from "react-router";
 import Modal from "@/components/Modal/Modal";
 import { PATH } from "@/constants";
 import styles from "./Home.module.scss";
+import type { ApolloError } from "@apollo/client";
 
 interface HomePageProps {
-  /** Click handler for changing the tournament settings. */
-  changeSettingsHandler: () => void;
-  /** Click handler for continuing a saved tournament. */
-  continueTournamentHandler: () => void;
   /** Dictates whether a tournament is in progress. */
   inProgress: boolean;
-  /** Click handler for starting a new tournament. */
-  newTournamentHandler: () => void;
+  /** The Apollo request to fetch performers data. */
+  performersFetch: {
+    loading: boolean;
+    error?: ApolloError;
+  };
 }
 
 const HomePage: React.FC<HomePageProps> = (props) => {
   const [showChangeSettingsModal, setShowChangeSettingsModal] = useState(false);
   const [showNewTournamentModal, setShowNewTournamentModal] = useState(false);
+  const [showFetchErrorModal, setShowFetchErrorModal] = useState(false);
+
+  const navigate = useNavigate();
+
+  const classes = cx("container", styles.Home);
+
+  /* -------------------------------------- Data fetch errors ------------------------------------- */
+
+  // If an error occurs when trying to fetch data, render a modal.
+  useEffect(() => {
+    if (props.performersFetch.error) {
+      setShowFetchErrorModal(true);
+    }
+  }, [props.performersFetch.error]);
+
+  /* --------------------------------- Continue tournament button --------------------------------- */
+
+  const continueTournamentLoading =
+    props.performersFetch.loading && props.inProgress;
+
+  /** Handle clicking the new tournament button. */
+  const handleContinueTournament: React.MouseEventHandler<
+    HTMLButtonElement
+  > = () => navigate(PATH.TOURNAMENT);
 
   // Add the "Continue tournament" option if required
   const ContinueItem = () =>
@@ -31,36 +56,18 @@ const HomePage: React.FC<HomePageProps> = (props) => {
         <button
           type="button"
           className="btn btn-primary"
-          onClick={props.continueTournamentHandler}
+          disabled={continueTournamentLoading}
+          onClick={handleContinueTournament}
         >
+          {continueTournamentLoading ? (
+            <FontAwesomeIcon className="mr-2" icon={faSpinnerThird} spin />
+          ) : null}
           Continue tournament
         </button>
       </li>
     ) : null;
 
-  /** Handle clicking the new tournament button. */
-  const handleNewTournament: React.MouseEventHandler<HTMLAnchorElement> = (
-    e
-  ) => {
-    // If there is already a tournament in progress, display the modal. Else
-    // continue.
-    if (props.inProgress) {
-      e.preventDefault();
-      setShowNewTournamentModal(true);
-    } else props.newTournamentHandler();
-  };
-
-  /** Handle clicking the change settings button */
-  const handleChangeSettings: React.MouseEventHandler<
-    HTMLAnchorElement
-  > = () => {
-    // If there is already a tournament in progress, display the modal. Else
-    // continue.
-    if (props.inProgress) setShowChangeSettingsModal(true);
-    else props.changeSettingsHandler();
-  };
-
-  const classes = cx("container", styles.Home);
+  /* ------------------------------------ New tournament button ----------------------------------- */
 
   // The "New tournament" button should only be primary if there is not already
   // a tournament in progress.
@@ -68,6 +75,57 @@ const HomePage: React.FC<HomePageProps> = (props) => {
     "btn-primary": !props.inProgress,
     "btn-secondary": props.inProgress,
   });
+
+  /** Handle clicking the new tournament button. */
+  const handleNewTournament: React.MouseEventHandler<
+    HTMLButtonElement
+  > = () => {
+    // If there is already a tournament in progress, display the modal. Else
+    // continue.
+    if (props.inProgress) setShowNewTournamentModal(true);
+    else navigate(PATH.TOURNAMENT);
+  };
+
+  const newTournamentLoading =
+    props.performersFetch.loading && !props.inProgress;
+
+  const newTournamentButton = (
+    <button
+      type="button"
+      className={newTournamentClasses}
+      disabled={newTournamentLoading || !!props.performersFetch.error}
+      onClick={handleNewTournament}
+    >
+      {newTournamentLoading ? (
+        <FontAwesomeIcon className="mr-2" icon={faSpinnerThird} spin />
+      ) : null}
+      New tournament
+    </button>
+  );
+
+  /* --------------------------------- Tournament settings button --------------------------------- */
+
+  /** Handle clicking the change settings button */
+  const handleChangeSettings: React.MouseEventHandler<
+    HTMLButtonElement
+  > = () => {
+    // If there is already a tournament in progress, display the modal. Else
+    // continue.
+    if (props.inProgress) setShowChangeSettingsModal(true);
+    else navigate(PATH.SETTINGS);
+  };
+
+  const tournamentSettingsButton = (
+    <button
+      type="button"
+      className="btn btn-secondary"
+      onClick={handleChangeSettings}
+    >
+      Tournament settings
+    </button>
+  );
+
+  /* ------------------------------------------ Component ----------------------------------------- */
 
   return (
     <>
@@ -79,24 +137,8 @@ const HomePage: React.FC<HomePageProps> = (props) => {
         <nav>
           <ul>
             <ContinueItem />
-            <li>
-              <Link
-                className={newTournamentClasses}
-                onClick={handleNewTournament}
-                to={PATH.TOURNAMENT}
-              >
-                New tournament
-              </Link>
-            </li>
-            <li>
-              <Link
-                className="btn btn-secondary"
-                onClick={handleChangeSettings}
-                to={PATH.SETTINGS}
-              >
-                Tournament settings
-              </Link>
-            </li>
+            <li>{newTournamentButton}</li>
+            <li>{tournamentSettingsButton}</li>
             <li>
               <a className="btn btn-secondary" href="#">
                 About
@@ -113,8 +155,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
       </main>
       <InProgressModal
         closeModalHandler={() => setShowNewTournamentModal(false)}
-        continueHandler={props.newTournamentHandler}
-        path={PATH.TOURNAMENT}
+        continueHandler={() => navigate(PATH.TOURNAMENT)}
         show={showNewTournamentModal}
       >
         <p>
@@ -125,8 +166,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
       </InProgressModal>
       <InProgressModal
         closeModalHandler={() => setShowChangeSettingsModal(false)}
-        continueHandler={props.changeSettingsHandler}
-        path={PATH.SETTINGS}
+        continueHandler={() => navigate(PATH.SETTINGS)}
         show={showChangeSettingsModal}
       >
         <p>
@@ -136,6 +176,45 @@ const HomePage: React.FC<HomePageProps> = (props) => {
         </p>
         <p>Would you still like to update the settings?</p>
       </InProgressModal>
+      <Modal
+        buttons={[
+          {
+            element: "anchor",
+            children: "Open issue on GitHub",
+            className: "btn btn-secondary",
+            target: "_blank",
+            href:
+              "https://github.com/Valkyr-JS/glicko/issues/new?title=[ Fetch%20performers%20error ]&labels=bug&body=**Please add any other relevant details before submitting.**%0D%0A%0D%0A%0D%0A%0D%0A```%0D%0A" +
+              encodeURI(
+                JSON.stringify(props.performersFetch.error) ?? "No error"
+              ) +
+              "%0D%0A```",
+          },
+          {
+            element: "button",
+            children: "Close",
+            className: "btn btn-primary",
+            onClick: () => setShowFetchErrorModal(false),
+            type: "button",
+          },
+        ]}
+        icon={faHand}
+        show={showFetchErrorModal}
+        title={props.performersFetch.error?.name ?? "No error name"}
+      >
+        <p>An error occured whilst attempting to fetch data from Stash.</p>
+        <p>
+          <a href="" />
+          <code>
+            {props.performersFetch.error?.message ?? "No error message"}
+          </code>
+        </p>
+        <p>
+          Please check your settings and retry. If you continue to run into this
+          error, please raise an issue on GitHub using the button below.
+        </p>
+        <code>{JSON.stringify(props.performersFetch.error) ?? "No error"}</code>
+      </Modal>
     </>
   );
 };
@@ -151,8 +230,6 @@ interface InProgressModalProps extends React.PropsWithChildren {
   closeModalHandler: () => void;
   /** Handler for continuing with the action. */
   continueHandler: () => void;
-  /** The path to the page to continue to. */
-  path: LinkProps["to"];
   /** Dictates whether the modal is currently rendered. */
   show: boolean;
 }
@@ -169,11 +246,11 @@ const InProgressModal: React.FC<InProgressModalProps> = (props) => {
           type: "button",
         },
         {
-          element: "link",
+          element: "button",
           className: "btn btn-danger",
           children: "Yes",
           type: "button",
-          to: props.path,
+          onClick: props.continueHandler,
         },
       ]}
       icon={faHand}

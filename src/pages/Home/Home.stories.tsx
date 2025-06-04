@@ -1,17 +1,18 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { expect, fn, userEvent, within } from "storybook/test";
+import { expect, userEvent, within } from "storybook/test";
 import Home from "./Home";
 import { WithMemoryRouter } from "../../../.storybook/decorators";
+import { ApolloError } from "@apollo/client";
 
 const meta = {
   title: "Pages/Home",
   component: Home,
   decorators: [WithMemoryRouter],
   args: {
-    changeSettingsHandler: fn(),
-    continueTournamentHandler: fn(),
     inProgress: false,
-    newTournamentHandler: fn(),
+    performersFetch: {
+      loading: false,
+    },
   },
 } satisfies Meta<typeof Home>;
 
@@ -56,7 +57,7 @@ export const InProgress: Story = {
     await step(
       'On clicking "New tournament", a modal should ask if you want to lose your existing progress',
       async () => {
-        const newBtn = canvas.getByRole("link", {
+        const newBtn = canvas.getByRole("button", {
           name: "New tournament",
         });
         await userEvent.click(newBtn);
@@ -78,7 +79,7 @@ export const InProgressChangeSettings: Story = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const settingsBtn = canvas.getByRole("link", {
+    const settingsBtn = canvas.getByRole("button", {
       name: "Tournament settings",
     });
     await userEvent.click(settingsBtn);
@@ -87,5 +88,65 @@ export const InProgressChangeSettings: Story = {
       name: "Tournament in progress",
     });
     expect(modal).toBeInTheDocument();
+  },
+};
+
+export const IsLoading: Story = {
+  args: {
+    inProgress: false,
+    performersFetch: {
+      loading: true,
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const newBtn = canvas.getByRole("button", {
+      name: "New tournament",
+    });
+
+    expect(newBtn).toBeDisabled();
+  },
+};
+
+export const IsLoadingInProgress: Story = {
+  args: {
+    inProgress: true,
+    performersFetch: {
+      loading: true,
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const continueBtn = canvas.getByRole("button", {
+      name: "Continue tournament",
+    });
+
+    expect(continueBtn).toBeDisabled();
+  },
+};
+
+export const PerformersFetchError: Story = {
+  args: {
+    performersFetch: {
+      error: {
+        ...new ApolloError({}),
+        name: "Apollo Error",
+        message: "Response not successful: Received status code 422",
+      },
+      loading: false,
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    const modal = canvas.getByRole("dialog", {
+      name: "Apollo Error",
+    });
+    const newBtn = canvas.getByRole("button", {
+      name: "New tournament",
+    });
+
+    expect(modal).toBeInTheDocument();
+    expect(newBtn).toBeDisabled();
   },
 };
