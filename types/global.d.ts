@@ -10,10 +10,10 @@ enum GendersEnum {
 }
 
 interface PlayerData {
+  /** The performer profile image in Stash */
+  coverImg: string;
   /** The player's Stash App performer ID. */
   id: string;
-  /** The player image. */
-  imageSrc: string;
   /** The player's name. */
   name: string;
   /** The player's glicko player data. */
@@ -28,3 +28,7 @@ interface PlayerFilters {
   /** The maximum number of performers that will be pulled from Stash. */
   limit: number;
 }
+
+type Match =
+  | [playerAIndex: number, playerBIndex: number]
+  | [playerAIndex: number, playerBIndex: number, result: 1 | 0.5 | 0];

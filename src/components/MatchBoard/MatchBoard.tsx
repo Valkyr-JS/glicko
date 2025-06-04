@@ -93,7 +93,7 @@ const PlayerProfile = (props: PlayerProfileProps) => {
         {props.glicko.getRating()}
       </span>
       <div className={styles["profile-image"]}>
-        <img src={props.imageSrc} alt={props.name} />
+        <img src={props.coverImg} alt={props.name} />
       </div>
       <button
         type="button"

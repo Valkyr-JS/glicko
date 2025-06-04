@@ -20,13 +20,13 @@ const meta = {
     players: [
       {
         id: "12",
-        imageSrc: getStashContent("/image/109138/thumbnail?t=1745972299"),
+        coverImg: getStashContent("/image/109138/thumbnail?t=1745972299"),
         name: "Danielle",
         glicko: tournament.makePlayer(2019),
       },
       {
         id: "3",
-        imageSrc: getStashContent("/image/47763/thumbnail?t=1747431203"),
+        coverImg: getStashContent("/image/47763/thumbnail?t=1747431203"),
         name: "Jess",
         glicko: tournament.makePlayer(1976),
       },

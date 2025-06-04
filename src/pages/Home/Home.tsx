@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import type { ApolloError } from "@apollo/client";
 import { faGithub } from "@fortawesome/free-brands-svg-icons/faGithub";
 import { faChessRook } from "@fortawesome/pro-solid-svg-icons/faChessRook";
 import { faHand } from "@fortawesome/pro-solid-svg-icons/faHand";
@@ -9,7 +10,6 @@ import { useNavigate } from "react-router";
 import Modal from "@/components/Modal/Modal";
 import { PATH } from "@/constants";
 import styles from "./Home.module.scss";
-import type { ApolloError } from "@apollo/client";
 
 interface HomePageProps {
   /** Dictates whether a tournament is in progress. */
@@ -19,6 +19,9 @@ interface HomePageProps {
     loading: boolean;
     error?: ApolloError;
   };
+  /** Handler for starting a new tournament. The resolved boolean dictates
+   * whether a new tournament is ready to start. */
+  startNewTournamentHandler: () => Promise<boolean>;
 }
 
 const HomePage: React.FC<HomePageProps> = (props) => {
@@ -79,11 +82,22 @@ const HomePage: React.FC<HomePageProps> = (props) => {
   /** Handle clicking the new tournament button. */
   const handleNewTournament: React.MouseEventHandler<
     HTMLButtonElement
-  > = () => {
+  > = async () => {
     // If there is already a tournament in progress, display the modal. Else
     // continue.
     if (props.inProgress) setShowNewTournamentModal(true);
-    else navigate(PATH.TOURNAMENT);
+    else {
+      const canNavigate = await props.startNewTournamentHandler();
+      if (canNavigate) navigate(PATH.TOURNAMENT);
+    }
+  };
+
+  /** Handle starting a new tournament when one is in progress. */
+  const handleNewTournamentInProgress: React.MouseEventHandler<
+    HTMLButtonElement
+  > = async () => {
+    const canNavigate = await props.startNewTournamentHandler();
+    if (canNavigate) navigate(PATH.TOURNAMENT);
   };
 
   const newTournamentLoading =
@@ -155,12 +169,12 @@ const HomePage: React.FC<HomePageProps> = (props) => {
       </main>
       <InProgressModal
         closeModalHandler={() => setShowNewTournamentModal(false)}
-        continueHandler={() => navigate(PATH.TOURNAMENT)}
+        continueHandler={handleNewTournamentInProgress}
         show={showNewTournamentModal}
       >
         <p>
           A tournament is already in progress. If you start a new tournament,
-          your previous progress will be deleted. This cannot be undone.
+          your previous progress will be lost. This cannot be undone.
         </p>
         <p>Would you still like to start a new tournament?</p>
       </InProgressModal>
@@ -171,8 +185,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
       >
         <p>
           A tournament is already in progress. If you change your tournament
-          settings, your previous progress will be deleted. This cannot be
-          undone.
+          settings, your previous progress will be lost. This cannot be undone.
         </p>
         <p>Would you still like to update the settings?</p>
       </InProgressModal>
@@ -229,7 +242,7 @@ interface InProgressModalProps extends React.PropsWithChildren {
   /** Handler for closing the modal. */
   closeModalHandler: () => void;
   /** Handler for continuing with the action. */
-  continueHandler: () => void;
+  continueHandler: React.MouseEventHandler;
   /** Dictates whether the modal is currently rendered. */
   show: boolean;
 }
