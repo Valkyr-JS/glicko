@@ -16,6 +16,11 @@ export const createRoundRobinMatchList = (
     }
   }
 
+  // 50:50 chance that the indexes should swap over
+  const mixedMatchups: [number, number][] = matchups.map((m) =>
+    Math.round(Math.random()) === 0 ? m : [m[1], m[0]]
+  );
+
   // Randomise the matchups before returning
-  return shuffle(matchups);
+  return shuffle(mixedMatchups);
 };
