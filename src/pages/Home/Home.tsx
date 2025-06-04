@@ -5,37 +5,25 @@ import { faHand } from "@fortawesome/pro-solid-svg-icons/faHand";
 import { faSpinnerThird } from "@fortawesome/pro-solid-svg-icons/faSpinnerThird";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { default as cx } from "classnames";
-import { Link, type LinkProps } from "react-router";
+import { useNavigate } from "react-router";
 import Modal from "@/components/Modal/Modal";
 import { PATH } from "@/constants";
 import styles from "./Home.module.scss";
 
 interface HomePageProps {
-  /** Click handler for changing the tournament settings. */
-  changeSettingsHandler: () => void;
   /** Click handler for continuing a saved tournament. */
   continueTournamentHandler: () => void;
   /** Dictates whether a tournament is in progress. */
   inProgress: boolean;
   /** Dictates whether data is currently being loaded for a tournament. */
   isLoading: boolean;
-  /** Click handler for starting a new tournament. */
-  newTournamentHandler: () => void;
 }
 
 const HomePage: React.FC<HomePageProps> = (props) => {
   const [showChangeSettingsModal, setShowChangeSettingsModal] = useState(false);
   const [showNewTournamentModal, setShowNewTournamentModal] = useState(false);
 
-  /** Handle clicking the change settings button */
-  const handleChangeSettings: React.MouseEventHandler<
-    HTMLAnchorElement
-  > = () => {
-    // If there is already a tournament in progress, display the modal. Else
-    // continue.
-    if (props.inProgress) setShowChangeSettingsModal(true);
-    else props.changeSettingsHandler();
-  };
+  const navigate = useNavigate();
 
   const classes = cx("container", styles.Home);
 
@@ -70,9 +58,8 @@ const HomePage: React.FC<HomePageProps> = (props) => {
   > = () => {
     // If there is already a tournament in progress, display the modal. Else
     // continue.
-    if (props.inProgress) {
-      setShowNewTournamentModal(true);
-    } else props.newTournamentHandler();
+    if (props.inProgress) setShowNewTournamentModal(true);
+    else navigate(PATH.TOURNAMENT);
   };
 
   const newTournamentButton = (
@@ -85,6 +72,24 @@ const HomePage: React.FC<HomePageProps> = (props) => {
         <FontAwesomeIcon className="mr-2" icon={faSpinnerThird} spin />
       ) : null}
       New tournament
+    </button>
+  );
+
+  /* --------------------------------- Tournament settings button --------------------------------- */
+
+  /** Handle clicking the change settings button */
+  const handleChangeSettings: React.MouseEventHandler<
+    HTMLButtonElement
+  > = () => {
+    // If there is already a tournament in progress, display the modal. Else
+    // continue.
+    if (props.inProgress) setShowChangeSettingsModal(true);
+    else navigate(PATH.SETTINGS);
+  };
+
+  const tournamentSettingsButton = (
+    <button className="btn btn-secondary" onClick={handleChangeSettings}>
+      Tournament settings
     </button>
   );
 
@@ -101,15 +106,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
           <ul>
             <ContinueItem />
             <li>{newTournamentButton}</li>
-            <li>
-              <Link
-                className="btn btn-secondary"
-                onClick={handleChangeSettings}
-                to={PATH.SETTINGS}
-              >
-                Tournament settings
-              </Link>
-            </li>
+            <li>{tournamentSettingsButton}</li>
             <li>
               <a className="btn btn-secondary" href="#">
                 About
@@ -126,8 +123,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
       </main>
       <InProgressModal
         closeModalHandler={() => setShowNewTournamentModal(false)}
-        continueHandler={props.newTournamentHandler}
-        path={PATH.TOURNAMENT}
+        continueHandler={() => navigate(PATH.TOURNAMENT)}
         show={showNewTournamentModal}
       >
         <p>
@@ -138,8 +134,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
       </InProgressModal>
       <InProgressModal
         closeModalHandler={() => setShowChangeSettingsModal(false)}
-        continueHandler={props.changeSettingsHandler}
-        path={PATH.SETTINGS}
+        continueHandler={() => navigate(PATH.SETTINGS)}
         show={showChangeSettingsModal}
       >
         <p>
@@ -164,8 +159,6 @@ interface InProgressModalProps extends React.PropsWithChildren {
   closeModalHandler: () => void;
   /** Handler for continuing with the action. */
   continueHandler: () => void;
-  /** The path to the page to continue to. */
-  path: LinkProps["to"];
   /** Dictates whether the modal is currently rendered. */
   show: boolean;
 }
@@ -182,11 +175,11 @@ const InProgressModal: React.FC<InProgressModalProps> = (props) => {
           type: "button",
         },
         {
-          element: "link",
+          element: "button",
           className: "btn btn-danger",
           children: "Yes",
           type: "button",
-          to: props.path,
+          onClick: props.continueHandler,
         },
       ]}
       icon={faHand}

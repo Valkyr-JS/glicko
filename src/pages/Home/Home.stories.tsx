@@ -8,11 +8,9 @@ const meta = {
   component: Home,
   decorators: [WithMemoryRouter],
   args: {
-    changeSettingsHandler: fn(),
     continueTournamentHandler: fn(),
     inProgress: false,
     isLoading: false,
-    newTournamentHandler: fn(),
   },
 } satisfies Meta<typeof Home>;
 
@@ -79,7 +77,7 @@ export const InProgressChangeSettings: Story = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const settingsBtn = canvas.getByRole("link", {
+    const settingsBtn = canvas.getByRole("button", {
       name: "Tournament settings",
     });
     await userEvent.click(settingsBtn);

@@ -11,10 +11,8 @@ import {
   type StashFindPerformersResultType,
 } from "./apollo/schema";
 
-const changeSettingsHandler = () => console.log("changeSettingsHandler");
 const continueTournamentHandler = () =>
   console.log("continueTournamentHandler");
-const newTournamentHandler = () => console.log("newTournamentHandler");
 
 function App() {
   /* -------------------------------------- State management -------------------------------------- */
@@ -50,11 +48,9 @@ function App() {
           path={PATH.HOME}
           element={
             <HomePage
-              changeSettingsHandler={changeSettingsHandler}
               continueTournamentHandler={continueTournamentHandler}
               inProgress={tourneyInProgress}
               isLoading={loading}
-              newTournamentHandler={newTournamentHandler}
             />
           }
         />
