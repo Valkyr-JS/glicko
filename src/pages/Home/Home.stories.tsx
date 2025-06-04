@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { expect, userEvent, within } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
+import { ApolloError } from "@apollo/client";
 import Home from "./Home";
 import { WithMemoryRouter } from "../../../.storybook/decorators";
-import { ApolloError } from "@apollo/client";
 
 const meta = {
   title: "Pages/Home",
@@ -13,6 +13,7 @@ const meta = {
     performersFetch: {
       loading: false,
     },
+    startNewTournamentHandler: fn(),
   },
 } satisfies Meta<typeof Home>;
 

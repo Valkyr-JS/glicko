@@ -1,15 +1,12 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router";
-import { useQuery } from "@apollo/client";
+import { useLazyQuery } from "@apollo/client";
 import type { PlayerFilters } from "@/types/global";
 import { GET_PERFORMERS } from "./apollo/queries";
+import { type StashFindPerformersResultType } from "./apollo/schema";
 import { PATH } from "./constants";
 import HomePage from "./pages/Home/Home";
 import SettingsPage from "./pages/Settings/Settings";
-import {
-  StashFindPerformersResultSchema,
-  type StashFindPerformersResultType,
-} from "./apollo/schema";
 
 function App() {
   /* -------------------------------------- State management -------------------------------------- */
@@ -20,21 +17,19 @@ function App() {
     limit: 20,
   });
 
-  const performersFetch = useQuery<StashFindPerformersResultType>(
-    GET_PERFORMERS,
-    {
-      variables: filters,
-    }
-  );
+  /* --------------------------------------- New tournament --------------------------------------- */
 
-  useEffect(() => {
-    if (performersFetch.error) {
-      console.log(performersFetch.error);
-    } else if (!performersFetch.loading) {
-      StashFindPerformersResultSchema.safeParseAsync(performersFetch.data);
-      console.log(performersFetch.data);
-    }
-  }, [performersFetch.data, performersFetch.error, performersFetch.loading]);
+  // Create player data
+  const [fetchPerformers, fetchPerformersResponse] =
+    useLazyQuery<StashFindPerformersResultType>(GET_PERFORMERS, {
+      variables: filters,
+    });
+
+  /** Handler for starting a new tournament. The resolved boolean dictates
+   * whether a new tournament is ready to start. */
+  const handleStartNewTournament = async () => {
+    return await fetchPerformers().then((res) => !res.loading && !res.error);
+  };
 
   /* --------------------------------------------- App -------------------------------------------- */
 
@@ -46,7 +41,8 @@ function App() {
           element={
             <HomePage
               inProgress={tourneyInProgress}
-              performersFetch={performersFetch}
+              performersFetch={fetchPerformersResponse}
+              startNewTournamentHandler={handleStartNewTournament}
             />
           }
         />
