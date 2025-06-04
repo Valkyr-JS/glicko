@@ -9,7 +9,9 @@ const meta = {
   decorators: [WithMemoryRouter],
   args: {
     inProgress: false,
-    isLoading: false,
+    performersFetch: {
+      loading: false,
+    },
   },
 } satisfies Meta<typeof Home>;
 
@@ -91,7 +93,9 @@ export const InProgressChangeSettings: Story = {
 export const IsLoading: Story = {
   args: {
     inProgress: false,
-    isLoading: true,
+    performersFetch: {
+      loading: true,
+    },
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -106,7 +110,9 @@ export const IsLoading: Story = {
 export const IsLoadingInProgress: Story = {
   args: {
     inProgress: true,
-    isLoading: true,
+    performersFetch: {
+      loading: true,
+    },
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);

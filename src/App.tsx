@@ -20,7 +20,7 @@ function App() {
     limit: 20,
   });
 
-  const { loading, error, data } = useQuery<StashFindPerformersResultType>(
+  const performersFetch = useQuery<StashFindPerformersResultType>(
     GET_PERFORMERS,
     {
       variables: filters,
@@ -28,13 +28,13 @@ function App() {
   );
 
   useEffect(() => {
-    if (error) {
-      console.log(error.message);
-    } else if (!loading) {
-      StashFindPerformersResultSchema.safeParseAsync(data);
-      console.log(data);
+    if (performersFetch.error) {
+      console.log(performersFetch.error.message);
+    } else if (!performersFetch.loading) {
+      StashFindPerformersResultSchema.safeParseAsync(performersFetch.data);
+      console.log(performersFetch.data);
     }
-  }, [data, error, loading]);
+  }, [performersFetch.data, performersFetch.error, performersFetch.loading]);
 
   /* --------------------------------------------- App -------------------------------------------- */
 
@@ -44,7 +44,10 @@ function App() {
         <Route
           path={PATH.HOME}
           element={
-            <HomePage inProgress={tourneyInProgress} isLoading={loading} />
+            <HomePage
+              inProgress={tourneyInProgress}
+              performersFetch={performersFetch}
+            />
           }
         />
         <Route

@@ -9,12 +9,16 @@ import { useNavigate } from "react-router";
 import Modal from "@/components/Modal/Modal";
 import { PATH } from "@/constants";
 import styles from "./Home.module.scss";
+import type { ApolloError } from "@apollo/client";
 
 interface HomePageProps {
   /** Dictates whether a tournament is in progress. */
   inProgress: boolean;
-  /** Dictates whether data is currently being loaded for a tournament. */
-  isLoading: boolean;
+  /** The Apollo request to fetch performers data. */
+  performersFetch: {
+    loading: boolean;
+    error?: ApolloError;
+  };
 }
 
 const HomePage: React.FC<HomePageProps> = (props) => {
@@ -27,7 +31,8 @@ const HomePage: React.FC<HomePageProps> = (props) => {
 
   /* --------------------------------- Continue tournament button --------------------------------- */
 
-  const continueTournamentLoading = props.isLoading && props.inProgress;
+  const continueTournamentLoading =
+    props.performersFetch.loading && props.inProgress;
 
   /** Handle clicking the new tournament button. */
   const handleContinueTournament: React.MouseEventHandler<
@@ -71,7 +76,8 @@ const HomePage: React.FC<HomePageProps> = (props) => {
     else navigate(PATH.TOURNAMENT);
   };
 
-  const newTournamentLoading = props.isLoading && !props.inProgress;
+  const newTournamentLoading =
+    props.performersFetch.loading && !props.inProgress;
 
   const newTournamentButton = (
     <button
