@@ -93,7 +93,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
     <button
       type="button"
       className={newTournamentClasses}
-      disabled={newTournamentLoading}
+      disabled={newTournamentLoading || !!props.performersFetch.error}
       onClick={handleNewTournament}
     >
       {newTournamentLoading ? (

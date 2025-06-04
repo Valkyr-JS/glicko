@@ -127,7 +127,6 @@ export const IsLoadingInProgress: Story = {
 
 export const PerformersFetchError: Story = {
   args: {
-    inProgress: true,
     performersFetch: {
       error: {
         ...new ApolloError({}),
@@ -143,6 +142,11 @@ export const PerformersFetchError: Story = {
     const modal = canvas.getByRole("dialog", {
       name: "Apollo Error",
     });
+    const newBtn = canvas.getByRole("button", {
+      name: "New tournament",
+    });
+
     expect(modal).toBeInTheDocument();
+    expect(newBtn).toBeDisabled();
   },
 };
