@@ -11,8 +11,6 @@ import { PATH } from "@/constants";
 import styles from "./Home.module.scss";
 
 interface HomePageProps {
-  /** Click handler for continuing a saved tournament. */
-  continueTournamentHandler: () => void;
   /** Dictates whether a tournament is in progress. */
   inProgress: boolean;
   /** Dictates whether data is currently being loaded for a tournament. */
@@ -29,6 +27,13 @@ const HomePage: React.FC<HomePageProps> = (props) => {
 
   /* --------------------------------- Continue tournament button --------------------------------- */
 
+  const continueTournamentLoading = props.isLoading && props.inProgress;
+
+  /** Handle clicking the new tournament button. */
+  const handleContinueTournament: React.MouseEventHandler<
+    HTMLButtonElement
+  > = () => navigate(PATH.TOURNAMENT);
+
   // Add the "Continue tournament" option if required
   const ContinueItem = () =>
     props.inProgress ? (
@@ -36,8 +41,12 @@ const HomePage: React.FC<HomePageProps> = (props) => {
         <button
           type="button"
           className="btn btn-primary"
-          onClick={props.continueTournamentHandler}
+          disabled={continueTournamentLoading}
+          onClick={handleContinueTournament}
         >
+          {continueTournamentLoading ? (
+            <FontAwesomeIcon className="mr-2" icon={faSpinnerThird} spin />
+          ) : null}
           Continue tournament
         </button>
       </li>
@@ -62,13 +71,16 @@ const HomePage: React.FC<HomePageProps> = (props) => {
     else navigate(PATH.TOURNAMENT);
   };
 
+  const newTournamentLoading = props.isLoading && !props.inProgress;
+
   const newTournamentButton = (
     <button
+      type="button"
       className={newTournamentClasses}
-      disabled={props.isLoading}
+      disabled={newTournamentLoading}
       onClick={handleNewTournament}
     >
-      {props.isLoading && !props.inProgress ? (
+      {newTournamentLoading ? (
         <FontAwesomeIcon className="mr-2" icon={faSpinnerThird} spin />
       ) : null}
       New tournament
@@ -88,7 +100,11 @@ const HomePage: React.FC<HomePageProps> = (props) => {
   };
 
   const tournamentSettingsButton = (
-    <button className="btn btn-secondary" onClick={handleChangeSettings}>
+    <button
+      type="button"
+      className="btn btn-secondary"
+      onClick={handleChangeSettings}
+    >
       Tournament settings
     </button>
   );

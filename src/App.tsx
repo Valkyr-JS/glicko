@@ -11,9 +11,6 @@ import {
   type StashFindPerformersResultType,
 } from "./apollo/schema";
 
-const continueTournamentHandler = () =>
-  console.log("continueTournamentHandler");
-
 function App() {
   /* -------------------------------------- State management -------------------------------------- */
 
@@ -47,11 +44,7 @@ function App() {
         <Route
           path={PATH.HOME}
           element={
-            <HomePage
-              continueTournamentHandler={continueTournamentHandler}
-              inProgress={tourneyInProgress}
-              isLoading={loading}
-            />
+            <HomePage inProgress={tourneyInProgress} isLoading={loading} />
           }
         />
         <Route

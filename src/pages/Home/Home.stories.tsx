@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { expect, fn, userEvent, within } from "storybook/test";
+import { expect, userEvent, within } from "storybook/test";
 import Home from "./Home";
 import { WithMemoryRouter } from "../../../.storybook/decorators";
 
@@ -8,7 +8,6 @@ const meta = {
   component: Home,
   decorators: [WithMemoryRouter],
   args: {
-    continueTournamentHandler: fn(),
     inProgress: false,
     isLoading: false,
   },
@@ -101,5 +100,20 @@ export const IsLoading: Story = {
     });
 
     expect(newBtn).toBeDisabled();
+  },
+};
+
+export const IsLoadingInProgress: Story = {
+  args: {
+    inProgress: true,
+    isLoading: true,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const continueBtn = canvas.getByRole("button", {
+      name: "Continue tournament",
+    });
+
+    expect(continueBtn).toBeDisabled();
   },
 };
