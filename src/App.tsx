@@ -52,11 +52,29 @@ function App() {
         };
       });
 
+      // Check there are enough performers before updating
+      if (newPlayers.length < 2) return;
+
       const newMatchList = createRoundRobinMatchList(newPlayers.length);
       setPlayers(newPlayers);
       setMatchList(newMatchList);
       setTournament(newTournament);
     });
+  };
+
+  /* ------------------------------------------ Settings ------------------------------------------ */
+
+  /** Handler for wiping all current tournament progress. */
+  const handleWipeTournament = () => {
+    setPlayers([]);
+    setMatchList([]);
+    setTournament(null);
+  };
+
+  /** Handler for saving tournament settings. */
+  const handleSaveSettings = (updatedFilters: PlayerFilters) => {
+    handleWipeTournament();
+    setFilters(updatedFilters);
   };
 
   /* --------------------------------------------- App -------------------------------------------- */
@@ -82,7 +100,7 @@ function App() {
             <SettingsPage
               filters={filters}
               inProgress={!!tournament}
-              saveSettingsHandler={setFilters}
+              saveSettingsHandler={handleSaveSettings}
             />
           }
         />
