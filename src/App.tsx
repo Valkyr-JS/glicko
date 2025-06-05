@@ -16,6 +16,7 @@ function App() {
 
   const [tournament, setTournament] = useState<Glicko2 | null>(null);
   const [players, setPlayers] = useState<PlayerData[]>([]);
+  const [matchIndex, setMatchIndex] = useState(0);
   const [matchList, setMatchList] = useState<Match[]>([]);
   const [filters, setFilters] = useState<PlayerFilters>({
     genders: ["FEMALE"],
@@ -78,6 +79,21 @@ function App() {
     setFilters(updatedFilters);
   };
 
+  /* ----------------------------------------- Tournament ----------------------------------------- */
+
+  /** Handle selecting the winner of a match */
+  const handleSelectWinner = (winner: 0 | 1) => {
+    // Update the current match in the match list
+    const updatedMatchList: Match[] = matchList.map((m, i) =>
+      i === matchIndex ? [m[0], m[1], winner] : m
+    );
+
+    setMatchList(updatedMatchList);
+
+    // Load the next match
+    setMatchIndex(matchIndex + 1);
+  };
+
   /* --------------------------------------------- App -------------------------------------------- */
 
   return (
@@ -107,7 +123,14 @@ function App() {
         />
         <Route
           path={PATH.TOURNAMENT}
-          element={<TournamentPage matchList={matchList} players={players} />}
+          element={
+            <TournamentPage
+              matchIndex={matchIndex}
+              matchList={matchList}
+              players={players}
+              selectWinnerHandler={handleSelectWinner}
+            />
+          }
         />
       </Routes>
     </BrowserRouter>
