@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { expect, fn, userEvent, within } from "storybook/test";
+import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 import { ApolloError } from "@apollo/client";
 import Home from "./Home";
 import { WithMemoryRouter } from "../../../.storybook/decorators";
@@ -129,19 +129,46 @@ export const PerformersFetchError: Story = {
       name: "Apollo Error",
       message: "Response not successful: Received status code 422",
     },
-    fetchLoading: true,
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-
-    const modal = canvas.getByRole("dialog", {
-      name: "Apollo Error",
-    });
     const newBtn = canvas.getByRole("button", {
       name: "New tournament",
     });
 
-    expect(modal).toBeInTheDocument();
-    expect(newBtn).toBeDisabled();
+    await userEvent.click(newBtn);
+
+    await waitFor(() => {
+      const modal = canvas.getByRole("dialog", {
+        name: "Apollo Error",
+      });
+      expect(modal).toBeInTheDocument();
+    });
+  },
+};
+
+export const NotEnoughPerformers: Story = {
+  args: {
+    fetchData: {
+      findPerformers: {
+        count: 1,
+        performers: [],
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const newBtn = canvas.getByRole("button", {
+      name: "New tournament",
+    });
+
+    await userEvent.click(newBtn);
+
+    await waitFor(() => {
+      const modal = canvas.getByRole("dialog", {
+        name: "Not enough performers",
+      });
+      expect(modal).toBeInTheDocument();
+    });
   },
 };

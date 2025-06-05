@@ -36,7 +36,6 @@ function App() {
   const handleStartNewTournament = async (): Promise<void> => {
     return await fetchPerformers().then((res) => {
       const newTournament = new Glicko2();
-      setTournament(newTournament);
 
       const newPlayers: PlayerData[] = (
         res.data?.findPerformers.performers ?? []
@@ -53,10 +52,10 @@ function App() {
         };
       });
 
-      setPlayers(newPlayers);
-
       const newMatchList = createRoundRobinMatchList(newPlayers.length);
+      setPlayers(newPlayers);
       setMatchList(newMatchList);
+      setTournament(newTournament);
     });
   };
 

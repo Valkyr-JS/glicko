@@ -35,28 +35,44 @@ const HomePage: React.FC<HomePageProps> = (props) => {
   const [showChangeSettingsModal, setShowChangeSettingsModal] = useState(false);
   const [showNewTournamentModal, setShowNewTournamentModal] = useState(false);
   const [showFetchErrorModal, setShowFetchErrorModal] = useState(false);
+  const [showMinPerformersModal, setShowMinPerformersModal] = useState(false);
   const [attemptNavigate, setAttemptNavigate] = useState(false);
   const navigate = useNavigate();
 
   const classes = cx("container", styles.Home);
 
-  /* ------------------------------------- Data fetch handling ------------------------------------ */
+  /* ---------------------------- New tournament button click handling ---------------------------- */
 
+  // Handle what happens on clicking the new tournament button based on current
+  // state. This is done this way as `props.startNewTournamentHandler` doesn't
+  // return data, and while it could be made to, there were serious difficulties
+  // in getting this to work with testing. Would be good to address this at a
+  // later date.
   useEffect(() => {
-    // If an error occurs when trying to fetch data, render a modal.
-    if (props.fetchError) {
-      setShowFetchErrorModal(true);
-    }
+    // Only run these checks when attempting to navigate to the tournament page
+    if (attemptNavigate) {
+      // If an error occurs when trying to fetch data, render a modal.
+      if (props.fetchError) {
+        setShowFetchErrorModal(true);
+      }
 
-    // If ready to move to the tournament, do so
-    else if (!props.fetchLoading && attemptNavigate) {
-      navigate(PATH.TOURNAMENT);
+      // If there are not enough performers found using the current settings,
+      // render a modal.
+      else if (props.fetchData && props.fetchData.findPerformers.count < 2) {
+        setShowMinPerformersModal(true);
+      }
+
+      // If ready to move to the tournament, do so
+      else if (!props.fetchLoading) {
+        navigate(PATH.TOURNAMENT);
+      }
       setAttemptNavigate(false);
     }
   }, [
-    props.inProgress,
+    props.fetchData,
     props.fetchError,
     props.fetchLoading,
+    props.inProgress,
     attemptNavigate,
     navigate,
   ]);
@@ -124,7 +140,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
     <button
       type="button"
       className={newTournamentClasses}
-      disabled={newTournamentLoading || !!props.fetchError}
+      disabled={newTournamentLoading}
       onClick={handleNewTournament}
     >
       {newTournamentLoading ? (
@@ -241,6 +257,22 @@ const HomePage: React.FC<HomePageProps> = (props) => {
         </p>
         <code>{JSON.stringify(props.fetchError) ?? "No error"}</code>
       </Modal>
+      <NotEnoughPerformersModal
+        show={showMinPerformersModal}
+        closeModalHandler={() => setShowMinPerformersModal(false)}
+      >
+        <p>
+          {props.fetchData?.findPerformers.count}{" "}
+          {props.fetchData?.findPerformers.count === 1
+            ? "performer was"
+            : "performers were"}{" "}
+          found in your library using your current tournament settings. The
+          minimum number of performers is 2.
+        </p>
+        <p>
+          Please update your tournament settings to include more performers.
+        </p>
+      </NotEnoughPerformersModal>
     </>
   );
 };
@@ -282,6 +314,40 @@ const InProgressModal: React.FC<InProgressModalProps> = (props) => {
       icon={faHand}
       show={props.show}
       title="Tournament in progress"
+    >
+      {props.children}
+    </Modal>
+  );
+};
+
+/* ---------------------------------------------------------------------------------------------- */
+/*                                  "Not enough performers" modal                                 */
+/* ---------------------------------------------------------------------------------------------- */
+
+interface NotEnoughPerformersModalProps extends React.PropsWithChildren {
+  /** Handler for closing the modal. */
+  closeModalHandler: () => void;
+  /** Dictates whether the modal is currently rendered. */
+  show: boolean;
+}
+
+const NotEnoughPerformersModal: React.FC<NotEnoughPerformersModalProps> = (
+  props
+) => {
+  return (
+    <Modal
+      buttons={[
+        {
+          element: "button",
+          children: "Close",
+          className: "btn btn-primary",
+          onClick: props.closeModalHandler,
+          type: "button",
+        },
+      ]}
+      icon={faHand}
+      show={props.show}
+      title="Not enough performers"
     >
       {props.children}
     </Modal>
