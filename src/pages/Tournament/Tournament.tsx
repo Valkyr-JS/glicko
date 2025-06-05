@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import type { Match, PlayerData } from "@/types/global";
 import MatchBoard from "@/components/MatchBoard/MatchBoard";
+import ProgressBoard from "@/components/ProgressBoard";
 
 interface TournamentPageProps {
   /** The list of matches, including scores if they have been played */
@@ -40,6 +41,7 @@ const TournamentPage: React.FC<TournamentPageProps> = (props) => {
         matchIndex={matchIndex}
         players={[playerA, playerB]}
       />
+      <ProgressBoard columnTitles={["A", "B"]} tableData={[]} />
     </main>
   );
 };
