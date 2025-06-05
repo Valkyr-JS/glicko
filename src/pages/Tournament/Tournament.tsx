@@ -1,10 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import type { Match, PlayerData } from "@/types/global";
 import MatchBoard from "@/components/MatchBoard/MatchBoard";
 
 interface TournamentPageProps {
-  /** The zero-based index of the current match in the match list. */
-  matchIndex: number;
   /** The list of matches, including scores if they have been played */
   matchList: Match[];
   /** The data for all players involved in the tournament. */
@@ -12,7 +10,8 @@ interface TournamentPageProps {
 }
 
 const TournamentPage: React.FC<TournamentPageProps> = (props) => {
-  const currentMatch = props.matchList[props.matchIndex];
+  const [matchIndex] = useState(0);
+  const currentMatch = props.matchList[matchIndex];
   const playerA = props.players[currentMatch[0]];
   const playerB = props.players[currentMatch[1]];
 
@@ -38,7 +37,7 @@ const TournamentPage: React.FC<TournamentPageProps> = (props) => {
         clickSkipHandler={clickSkipHandler}
         clickStopHandler={clickStopHandler}
         clickUndoHandler={clickUndoHandler}
-        matchIndex={props.matchIndex}
+        matchIndex={matchIndex}
         players={[playerA, playerB]}
       />
     </main>

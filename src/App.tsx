@@ -9,6 +9,7 @@ import HomePage from "./pages/Home/Home";
 import SettingsPage from "./pages/Settings/Settings";
 import { Glicko2 } from "glicko2";
 import { createRoundRobinMatchList } from "./helpers/gameplay";
+import TournamentPage from "./pages/Tournament/Tournament";
 
 function App() {
   /* -------------------------------------- State management -------------------------------------- */
@@ -103,6 +104,10 @@ function App() {
               saveSettingsHandler={handleSaveSettings}
             />
           }
+        />
+        <Route
+          path={PATH.TOURNAMENT}
+          element={<TournamentPage matchList={matchList} players={players} />}
         />
       </Routes>
     </BrowserRouter>
