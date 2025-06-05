@@ -94,6 +94,20 @@ function App() {
     setMatchIndex(matchIndex + 1);
   };
 
+  /** Handle reloading the previous match. */
+  const handleUndoMatch = () => {
+    // Remove the result from the previous match before loading it
+    const updatedMatchList: Match[] = matchList.map((m, i) =>
+      i === matchIndex - 1 ? [m[0], m[1]] : m
+    );
+
+    // Load the previous match
+    setMatchList(updatedMatchList);
+
+    // Load the next match
+    setMatchIndex(matchIndex - 1);
+  };
+
   /* --------------------------------------------- App -------------------------------------------- */
 
   return (
@@ -129,6 +143,7 @@ function App() {
               matchList={matchList}
               players={players}
               selectWinnerHandler={handleSelectWinner}
+              undoMatchHandler={handleUndoMatch}
             />
           }
         />

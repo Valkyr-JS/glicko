@@ -6,12 +6,14 @@ import ProgressBoard from "@/components/ProgressBoard";
 interface TournamentPageProps {
   /** The zero-based index of the current match in the match list. */
   matchIndex: number;
-  /** The list of matches, including scores if they have been played */
+  /** The list of matches, including scores if they have been played. */
   matchList: Match[];
   /** The data for all players involved in the tournament. */
   players: PlayerData[];
-  /** Handle selecting the winner of a match */
+  /** Handle selecting the winner of a match. */
   selectWinnerHandler: (winner: 0 | 1) => void;
+  /** Handle reloading the previous match. */
+  undoMatchHandler: () => void;
 }
 
 const TournamentPage: React.FC<TournamentPageProps> = (props) => {
@@ -27,8 +29,6 @@ const TournamentPage: React.FC<TournamentPageProps> = (props) => {
   const clickSkipHandler = () => console.log("clickSkipHandler");
   /** Handler for clicking the stop button. */
   const clickStopHandler = () => console.log("clickStopHandler");
-  /** Handler for clicking the undo button. */
-  const clickUndoHandler = () => console.log("clickUndoHandler");
 
   return (
     <main>
@@ -38,7 +38,7 @@ const TournamentPage: React.FC<TournamentPageProps> = (props) => {
         clickSelectHandler={props.selectWinnerHandler}
         clickSkipHandler={clickSkipHandler}
         clickStopHandler={clickStopHandler}
-        clickUndoHandler={clickUndoHandler}
+        clickUndoHandler={props.undoMatchHandler}
         matchIndex={props.matchIndex}
         players={[playerA, playerB]}
       />
