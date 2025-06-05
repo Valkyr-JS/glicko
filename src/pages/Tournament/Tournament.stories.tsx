@@ -4,14 +4,18 @@ import { WithMemoryRouter } from "../../../.storybook/decorators";
 import mockPerformers from "../../mocks/Performers.json";
 import { Glicko2 } from "glicko2";
 import { getStashContent } from "../../../.storybook/tools";
+import { createRoundRobinMatchList } from "@/helpers/gameplay";
 
 const tournament = new Glicko2();
+const matchList = createRoundRobinMatchList(mockPerformers.length);
 
 const meta = {
   title: "Pages/Tournament",
   component: TournamentPage,
   decorators: [WithMemoryRouter],
   args: {
+    matchIndex: 0,
+    matchList,
     players: mockPerformers.map((p) => {
       return {
         ...p,
@@ -19,7 +23,6 @@ const meta = {
         glicko: tournament.makePlayer(1500),
       };
     }),
-    matchIndex: 0,
   },
 } satisfies Meta<typeof TournamentPage>;
 

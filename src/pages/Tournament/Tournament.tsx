@@ -1,16 +1,20 @@
 import React from "react";
-import type { PlayerData } from "@/types/global";
+import type { Match, PlayerData } from "@/types/global";
 import MatchBoard from "@/components/MatchBoard/MatchBoard";
 
 interface TournamentPageProps {
   /** The zero-based index of the current match in the match list. */
   matchIndex: number;
+  /** The list of matches, including scores if they have been played */
+  matchList: Match[];
   /** The data for all players involved in the tournament. */
   players: PlayerData[];
 }
 
 const TournamentPage: React.FC<TournamentPageProps> = (props) => {
-  console.log(props);
+  const currentMatch = props.matchList[props.matchIndex];
+  const playerA = props.players[currentMatch[0]];
+  const playerB = props.players[currentMatch[1]];
 
   /** Handler for clicking the change player image button. */
   const changeImageHandler = () => console.log("changeImageHandler");
@@ -35,7 +39,7 @@ const TournamentPage: React.FC<TournamentPageProps> = (props) => {
         clickStopHandler={clickStopHandler}
         clickUndoHandler={clickUndoHandler}
         matchIndex={props.matchIndex}
-        players={[props.players[0], props.players[1]]}
+        players={[playerA, playerB]}
       />
     </main>
   );
