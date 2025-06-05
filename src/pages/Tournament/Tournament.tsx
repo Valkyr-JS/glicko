@@ -41,7 +41,16 @@ const TournamentPage: React.FC<TournamentPageProps> = (props) => {
         matchIndex={matchIndex}
         players={[playerA, playerB]}
       />
-      <ProgressBoard columnTitles={["A", "B"]} tableData={[]} />
+      <ProgressBoard
+        columnTitles={["A", "B"]}
+        tableData={props.matchList
+          .filter((m) => m.length === 3)
+          .map((m) => [
+            props.players[m[0]].name,
+            props.players[m[1]].name,
+            m[2],
+          ])}
+      />
     </main>
   );
 };
