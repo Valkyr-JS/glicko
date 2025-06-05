@@ -9,10 +9,10 @@ const meta = {
   component: Home,
   decorators: [WithMemoryRouter],
   args: {
+    fetchData: null,
+    fetchError: null,
+    fetchLoading: false,
     inProgress: false,
-    performersFetch: {
-      loading: false,
-    },
     startNewTournamentHandler: fn(),
   },
 } satisfies Meta<typeof Home>;
@@ -94,10 +94,8 @@ export const InProgressChangeSettings: Story = {
 
 export const IsLoading: Story = {
   args: {
+    fetchLoading: true,
     inProgress: false,
-    performersFetch: {
-      loading: true,
-    },
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -111,10 +109,8 @@ export const IsLoading: Story = {
 
 export const IsLoadingInProgress: Story = {
   args: {
+    fetchLoading: true,
     inProgress: true,
-    performersFetch: {
-      loading: true,
-    },
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -128,14 +124,12 @@ export const IsLoadingInProgress: Story = {
 
 export const PerformersFetchError: Story = {
   args: {
-    performersFetch: {
-      error: {
-        ...new ApolloError({}),
-        name: "Apollo Error",
-        message: "Response not successful: Received status code 422",
-      },
-      loading: false,
+    fetchError: {
+      ...new ApolloError({}),
+      name: "Apollo Error",
+      message: "Response not successful: Received status code 422",
     },
+    fetchLoading: true,
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);

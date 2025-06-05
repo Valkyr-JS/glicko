@@ -33,10 +33,8 @@ function App() {
 
   /** Handler for starting a new tournament. The resolved boolean dictates
    * whether a new tournament is ready to start. */
-  const handleStartNewTournament = async (): Promise<boolean> => {
+  const handleStartNewTournament = async (): Promise<void> => {
     return await fetchPerformers().then((res) => {
-      if (res.loading || res.error) return false;
-
       const newTournament = new Glicko2();
       setTournament(newTournament);
 
@@ -59,8 +57,6 @@ function App() {
 
       const newMatchList = createRoundRobinMatchList(newPlayers.length);
       setMatchList(newMatchList);
-
-      return true;
     });
   };
 
@@ -74,7 +70,9 @@ function App() {
           element={
             <HomePage
               inProgress={!!tournament}
-              performersFetch={fetchPerformersResponse}
+              fetchData={fetchPerformersResponse.data ?? null}
+              fetchError={fetchPerformersResponse.error}
+              fetchLoading={fetchPerformersResponse.loading}
               startNewTournamentHandler={handleStartNewTournament}
             />
           }
