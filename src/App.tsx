@@ -163,10 +163,10 @@ function App() {
       i === matchIndex - 1 ? [m[0], m[1]] : m
     );
 
-    // Load the previous match
+    // Update the match results
     setMatchList(updatedMatchList);
 
-    // Load the next match
+    // Load the previous match
     setMatchIndex(matchIndex - 1);
   };
 
