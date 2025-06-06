@@ -51,6 +51,8 @@ const HomePage: React.FC<HomePageProps> = (props) => {
   useEffect(() => {
     // Only run these checks when attempting to navigate to the tournament page
     if (attemptNavigate) {
+      setAttemptNavigate(false);
+
       // If an error occurs when trying to fetch data, render a modal.
       if (props.fetchError) {
         setShowFetchErrorModal(true);
@@ -66,7 +68,6 @@ const HomePage: React.FC<HomePageProps> = (props) => {
       else if (!props.fetchLoading) {
         navigate(PATH.TOURNAMENT);
       }
-      setAttemptNavigate(false);
     }
   }, [
     props.fetchData,

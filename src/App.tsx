@@ -68,8 +68,9 @@ function App() {
 
   /** Handler for wiping all current tournament progress. */
   const handleWipeTournament = () => {
-    setPlayers([]);
+    setMatchIndex(0);
     setMatchList([]);
+    setPlayers([]);
     setTournament(null);
   };
 
@@ -144,6 +145,7 @@ function App() {
               players={players}
               selectWinnerHandler={handleSelectWinner}
               undoMatchHandler={handleUndoMatch}
+              wipeTournamentHandler={handleWipeTournament}
             />
           }
         />

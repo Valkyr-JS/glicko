@@ -2,6 +2,8 @@ import React from "react";
 import type { Match, PlayerData } from "@/types/global";
 import MatchBoard from "@/components/MatchBoard/MatchBoard";
 import ProgressBoard from "@/components/ProgressBoard";
+import { useNavigate } from "react-router";
+import { PATH } from "@/constants";
 
 interface TournamentPageProps {
   /** The zero-based index of the current match in the match list. */
@@ -14,9 +16,15 @@ interface TournamentPageProps {
   selectWinnerHandler: (winner: 0 | 1) => void;
   /** Handle reloading the previous match. */
   undoMatchHandler: () => void;
+  /** Handle clearing all tournament data. */
+  wipeTournamentHandler: () => void;
 }
 
 const TournamentPage: React.FC<TournamentPageProps> = (props) => {
+  const navigate = useNavigate();
+
+  if (!props.matchList.length) return null;
+
   const currentMatch = props.matchList[props.matchIndex];
   const playerA = props.players[currentMatch[0]];
   const playerB = props.players[currentMatch[1]];
@@ -27,8 +35,15 @@ const TournamentPage: React.FC<TournamentPageProps> = (props) => {
   const clickPauseHandler = () => console.log("clickPauseHandler");
   /** Handler for clicking the skip button. */
   const clickSkipHandler = () => console.log("clickSkipHandler");
+
   /** Handler for clicking the stop button. */
-  const clickStopHandler = () => console.log("clickStopHandler");
+  const handleAbandonTournament = () => {
+    // Navigate home
+    navigate(PATH.HOME);
+
+    // Clear all tournament data
+    props.wipeTournamentHandler();
+  };
 
   return (
     <main>
@@ -37,7 +52,7 @@ const TournamentPage: React.FC<TournamentPageProps> = (props) => {
         clickPauseHandler={clickPauseHandler}
         clickSelectHandler={props.selectWinnerHandler}
         clickSkipHandler={clickSkipHandler}
-        clickStopHandler={clickStopHandler}
+        clickStopHandler={handleAbandonTournament}
         clickUndoHandler={props.undoMatchHandler}
         matchIndex={props.matchIndex}
         players={[playerA, playerB]}
