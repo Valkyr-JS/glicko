@@ -27,6 +27,12 @@
       select-button-top] auto [select-button-bottom
       image-button-top] auto [image-button-bottom profile-bottom];
     column-gap: spacing.$default;
+
+    // Center and limit size to ensure buttons are visible on screen
+    width: 100%;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .tools {

@@ -76,7 +76,7 @@ const TournamentPage: React.FC<TournamentPageProps> = (props) => {
 
   return (
     <>
-      <main>
+      <main className="container">
         <MatchBoard
           changeImageHandler={changeImageHandler}
           clickPauseHandler={clickPauseHandler}
