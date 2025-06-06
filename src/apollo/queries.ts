@@ -1,13 +1,13 @@
 import { gql } from "@apollo/client";
 
 export const GET_PERFORMER_IMAGE = gql`
-  query GetPerformerImage($performerID: ID!, $prevID: Int!) {
+  query GetPerformerImage($performerID: ID!, $currentImageID: Int!) {
     findImages(
       filter: { per_page: 1, sort: "random" }
       image_filter: {
         performers: { value: [$performerID], modifier: INCLUDES }
         orientation: { value: PORTRAIT }
-        id: { value: $prevID, modifier: NOT_EQUALS }
+        id: { value: $currentImageID, modifier: NOT_EQUALS }
       }
     ) {
       count

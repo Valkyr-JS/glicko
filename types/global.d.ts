@@ -14,6 +14,9 @@ interface PlayerData {
   coverImg: string;
   /** The player's Stash App performer ID. */
   id: string;
+  /** The Stash ID of the image currently displayed for the performer. If
+   * undefined, the cover image should be displayed instead. */
+  imageID?: string;
   /** The player's name. */
   name: string;
   /** The player's glicko player data. */

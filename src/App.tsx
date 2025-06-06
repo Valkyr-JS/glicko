@@ -2,8 +2,13 @@ import { useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router";
 import { useLazyQuery } from "@apollo/client";
 import type { Match, PlayerData, PlayerFilters } from "@/types/global";
-import { GET_PERFORMERS } from "./apollo/queries";
-import { type StashFindPerformersResultType } from "./apollo/schema";
+import { GET_PERFORMER_IMAGE, GET_PERFORMERS } from "./apollo/queries";
+import {
+  type StashFindImages,
+  type StashFindPerformersResultType,
+  type StashImage,
+  type StashPerformer,
+} from "./apollo/schema";
 import { GLICKO, PATH } from "./constants";
 import HomePage from "./pages/Home/Home";
 import SettingsPage from "./pages/Settings/Settings";
@@ -23,12 +28,14 @@ function App() {
     limit: 10,
   });
 
-  /* --------------------------------------- New tournament --------------------------------------- */
-
   const [fetchPerformers, fetchPerformersResponse] =
     useLazyQuery<StashFindPerformersResultType>(GET_PERFORMERS, {
       variables: filters,
     });
+  const [getPerformerImage] =
+    useLazyQuery<StashFindImages>(GET_PERFORMER_IMAGE);
+
+  /* --------------------------------------- New tournament --------------------------------------- */
 
   /** Handler for starting a new tournament. The resolved boolean dictates
    * whether a new tournament is ready to start. */
@@ -82,6 +89,32 @@ function App() {
   };
 
   /* ----------------------------------------- Tournament ----------------------------------------- */
+
+  const handleChangeImage = async (
+    performerID: StashPerformer["id"],
+    currentImageID: StashImage["id"]
+  ) => {
+    getPerformerImage({ variables: { performerID, currentImageID } }).then(
+      (res) => {
+        if (res.data) {
+          const findImages = res.data.findImages;
+          const updatedPlayers: PlayerData[] = players.map((p) => {
+            const { id } = findImages.images[0];
+            return p.id === performerID.toString()
+              ? {
+                  ...p,
+                  imageID: id.toString(),
+                }
+              : p;
+          });
+          setPlayers(updatedPlayers);
+        }
+
+        // Referch to clear the cache
+        res.refetch();
+      }
+    );
+  };
 
   /** Handler selecting the winner of a match */
   const handleSelectWinner = (winner: 0 | 1) => {
@@ -154,6 +187,7 @@ function App() {
           path={PATH.TOURNAMENT}
           element={
             <TournamentPage
+              changeImageHandler={handleChangeImage}
               declareDrawHandler={handleSkipMatch}
               matchIndex={matchIndex}
               matchList={matchList}

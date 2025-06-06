@@ -6,6 +6,16 @@ export const StashGlickoCustomFields = z.object({
   glicko_volatility: z.number().positive().optional(),
 });
 
+export const StashImageSchema = z.object({
+  id: z.coerce.number(),
+  paths: z.object({
+    image: z.string(),
+    thumbnail: z.string(),
+  }),
+});
+
+export type StashImage = z.infer<typeof StashImageSchema>;
+
 export const StashPerformerSchema = z.object({
   custom_fields: z.object({
     ...StashGlickoCustomFields.shape,
@@ -16,6 +26,15 @@ export const StashPerformerSchema = z.object({
 });
 
 export type StashPerformer = z.infer<typeof StashPerformerSchema>;
+
+export const StashFindImagesSchema = z.object({
+  findImages: z.object({
+    count: z.number().positive(),
+    images: z.array(z.object({ ...StashImageSchema.shape })),
+  }),
+});
+
+export type StashFindImages = z.infer<typeof StashFindImagesSchema>;
 
 export const StashFindPerformersResultSchema = z.object({
   findPerformers: z.object({
