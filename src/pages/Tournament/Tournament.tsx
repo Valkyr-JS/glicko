@@ -6,14 +6,19 @@ import { PATH } from "@/constants";
 import type { Match, PlayerData } from "@/types/global";
 import Modal from "@/components/Modal/Modal";
 import { faHand } from "@fortawesome/pro-solid-svg-icons";
-import type { StashImage, StashPerformer } from "@/apollo/schema";
+import type {
+  StashFindImages,
+  StashImage,
+  StashPerformer,
+} from "@/apollo/schema";
+import type { OperationVariables, QueryResult } from "@apollo/client";
 
 interface TournamentPageProps {
   /** Handler for setting a new performer image */
   changeImageHandler: (
     performerID: StashPerformer["id"],
     currentImageID: StashImage["id"]
-  ) => void;
+  ) => Promise<QueryResult<StashFindImages, OperationVariables>>;
   /** Handler for declaring a match a draw. */
   declareDrawHandler: () => void;
   /** The zero-based index of the current match in the match list. */
@@ -44,7 +49,7 @@ const TournamentPage: React.FC<TournamentPageProps> = (props) => {
   const changeImageHandler = (performerID: StashPerformer["id"]) => {
     const player = playerA.id === performerID.toString() ? playerA : playerB;
     const currentImageID = player.imageID;
-    props.changeImageHandler(+player.id, +(currentImageID ?? 0));
+    return props.changeImageHandler(+player.id, +(currentImageID ?? 0));
   };
 
   /** Handler for clicking the pause button. */

@@ -94,26 +94,27 @@ function App() {
     performerID: StashPerformer["id"],
     currentImageID: StashImage["id"]
   ) => {
-    getPerformerImage({ variables: { performerID, currentImageID } }).then(
-      (res) => {
-        if (res.data) {
-          const findImages = res.data.findImages;
-          const updatedPlayers: PlayerData[] = players.map((p) => {
-            const { id } = findImages.images[0];
-            return p.id === performerID.toString()
-              ? {
-                  ...p,
-                  imageID: id.toString(),
-                }
-              : p;
-          });
-          setPlayers(updatedPlayers);
-        }
-
-        // Referch to clear the cache
-        res.refetch();
+    return getPerformerImage({
+      variables: { performerID, currentImageID },
+    }).then((res) => {
+      if (res.data) {
+        const findImages = res.data.findImages;
+        const updatedPlayers: PlayerData[] = players.map((p) => {
+          const { id } = findImages.images[0];
+          return p.id === performerID.toString()
+            ? {
+                ...p,
+                imageID: id.toString(),
+              }
+            : p;
+        });
+        setPlayers(updatedPlayers);
       }
-    );
+
+      // Referch to clear the cache
+      res.refetch();
+      return res;
+    });
   };
 
   /** Handler selecting the winner of a match */
