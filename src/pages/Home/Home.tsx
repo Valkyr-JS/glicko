@@ -249,7 +249,6 @@ const HomePage: React.FC<HomePageProps> = (props) => {
       >
         <p>An error occured whilst attempting to fetch data from Stash.</p>
         <p>
-          <a href="" />
           <code>{props.fetchError?.message ?? "No error message"}</code>
         </p>
         <p>
