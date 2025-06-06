@@ -1,22 +1,24 @@
 import React from "react";
-import type { Match, PlayerData } from "@/types/global";
+import { useNavigate } from "react-router";
 import MatchBoard from "@/components/MatchBoard/MatchBoard";
 import ProgressBoard from "@/components/ProgressBoard";
-import { useNavigate } from "react-router";
 import { PATH } from "@/constants";
+import type { Match, PlayerData } from "@/types/global";
 
 interface TournamentPageProps {
+  /** Handler for declaring a match a draw. */
+  declareDrawHandler: () => void;
   /** The zero-based index of the current match in the match list. */
   matchIndex: number;
   /** The list of matches, including scores if they have been played. */
   matchList: Match[];
   /** The data for all players involved in the tournament. */
   players: PlayerData[];
-  /** Handle selecting the winner of a match. */
+  /** Handler selecting the winner of a match. */
   selectWinnerHandler: (winner: 0 | 1) => void;
-  /** Handle reloading the previous match. */
+  /** Handler reloading the previous match. */
   undoMatchHandler: () => void;
-  /** Handle clearing all tournament data. */
+  /** Handler clearing all tournament data. */
   wipeTournamentHandler: () => void;
 }
 
@@ -33,8 +35,6 @@ const TournamentPage: React.FC<TournamentPageProps> = (props) => {
   const changeImageHandler = () => console.log("changeImageHandler");
   /** Handler for clicking the pause button. */
   const clickPauseHandler = () => console.log("clickPauseHandler");
-  /** Handler for clicking the skip button. */
-  const clickSkipHandler = () => console.log("clickSkipHandler");
 
   /** Handler for clicking the stop button. */
   const handleAbandonTournament = () => {
@@ -51,14 +51,14 @@ const TournamentPage: React.FC<TournamentPageProps> = (props) => {
         changeImageHandler={changeImageHandler}
         clickPauseHandler={clickPauseHandler}
         clickSelectHandler={props.selectWinnerHandler}
-        clickSkipHandler={clickSkipHandler}
+        clickSkipHandler={props.declareDrawHandler}
         clickStopHandler={handleAbandonTournament}
         clickUndoHandler={props.undoMatchHandler}
         matchIndex={props.matchIndex}
         players={[playerA, playerB]}
       />
       <ProgressBoard
-        columnTitles={["A", "B"]}
+        columnTitles={["Performer A", "Performer B"]}
         reverse
         tableData={props.matchList
           .filter((m) => m.length === 3)

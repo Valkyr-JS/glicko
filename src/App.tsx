@@ -23,9 +23,6 @@ function App() {
     limit: 10,
   });
 
-  console.log("players", players);
-  console.log("matchList", matchList);
-
   /* --------------------------------------- New tournament --------------------------------------- */
 
   const [fetchPerformers, fetchPerformersResponse] =
@@ -82,7 +79,7 @@ function App() {
 
   /* ----------------------------------------- Tournament ----------------------------------------- */
 
-  /** Handle selecting the winner of a match */
+  /** Handler selecting the winner of a match */
   const handleSelectWinner = (winner: 0 | 1) => {
     // Update the current match in the match list
     const updatedMatchList: Match[] = matchList.map((m, i) =>
@@ -95,7 +92,20 @@ function App() {
     setMatchIndex(matchIndex + 1);
   };
 
-  /** Handle reloading the previous match. */
+  /** Handler for declaring a match a draw  */
+  const handleSkipMatch = () => {
+    // Update the current match in the match list. 0.5 indicates a draw.
+    const updatedMatchList: Match[] = matchList.map((m, i) =>
+      i === matchIndex ? [m[0], m[1], 0.5] : m
+    );
+
+    setMatchList(updatedMatchList);
+
+    // Load the next match
+    setMatchIndex(matchIndex + 1);
+  };
+
+  /** Handler reloading the previous match. */
   const handleUndoMatch = () => {
     // Remove the result from the previous match before loading it
     const updatedMatchList: Match[] = matchList.map((m, i) =>
@@ -140,6 +150,7 @@ function App() {
           path={PATH.TOURNAMENT}
           element={
             <TournamentPage
+              declareDrawHandler={handleSkipMatch}
               matchIndex={matchIndex}
               matchList={matchList}
               players={players}

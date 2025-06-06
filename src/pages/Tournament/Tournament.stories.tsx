@@ -15,6 +15,7 @@ const meta = {
   component: TournamentPage,
   decorators: [WithMemoryRouter],
   args: {
+    declareDrawHandler: fn(),
     matchIndex: 0,
     matchList,
     players: mockPerformers.map((p) => {
