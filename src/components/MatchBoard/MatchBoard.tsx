@@ -104,6 +104,8 @@ const PlayerProfile = (props: PlayerProfileProps) => {
     ? baseUrl + "/image/" + props.imageID + "/thumbnail"
     : props.coverImg;
 
+  const imageButtonDisabled = imageLoading || !props.imagesAvailable;
+
   return (
     <div className={styles["profile"]}>
       <span className={styles["rating"]}>
@@ -127,11 +129,15 @@ const PlayerProfile = (props: PlayerProfileProps) => {
       </button>
       <button
         className="btn btn-secondary"
-        disabled={imageLoading || !props.imagesAvailable}
+        disabled={imageButtonDisabled}
         onClick={handleImageChange}
         type="button"
       >
-        <span className="sr-only">Change image for {props.name}</span>
+        <span className="sr-only">
+          {imageButtonDisabled
+            ? `No alternative images available for ${props.name}`
+            : `Change image for ${props.name}`}
+        </span>
         {imageLoading ? (
           <FontAwesomeIcon icon={faSpinnerThird} spin />
         ) : (
