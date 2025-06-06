@@ -58,6 +58,10 @@ function App() {
       setPlayers(newPlayers);
       setMatchList(newMatchList);
       setTournament(newTournament);
+
+      // Refetch data ready for the next tournament, assuming the settings
+      // aren't changed. If they are, this will be done anyway.
+      fetchPerformersResponse.refetch();
     });
   };
 
