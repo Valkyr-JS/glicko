@@ -28,6 +28,7 @@ const meta = {
     matchIndex: 0,
     matchList,
     players,
+    processResultsHandler: fn(),
     selectWinnerHandler: fn(),
     undoMatchHandler: fn(),
     wipeTournamentHandler: fn(),

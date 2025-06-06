@@ -30,6 +30,8 @@ interface TournamentPageProps {
   matchList: Match[];
   /** The data for all players involved in the tournament. */
   players: PlayerData[];
+  /** Handle updating the tournament with the match results */
+  processResultsHandler: () => void;
   /** Handler selecting the winner of a match. */
   selectWinnerHandler: (winner: 0 | 1) => void;
   /** Handler reloading the previous match. */
@@ -79,8 +81,8 @@ const TournamentPage: React.FC<TournamentPageProps> = (props) => {
   };
 
   /** Handler for selecting a winner in a match */
-  const handleSelectWinner = () => {
-    props.declareDrawHandler();
+  const handleSelectWinner = (winner: 0 | 1) => {
+    props.selectWinnerHandler(winner);
 
     // Check if this is the final match, and activate the conclude tournament
     // modal if it is.
@@ -99,6 +101,8 @@ const TournamentPage: React.FC<TournamentPageProps> = (props) => {
   };
 
   const classes = cx("container", styles.Tournament);
+
+  console.log(props.matchList);
 
   return (
     <>
@@ -135,7 +139,7 @@ const TournamentPage: React.FC<TournamentPageProps> = (props) => {
       />
       <ConcludeTournamentModal
         closeHandler={() => setShowConcludeModal(false)}
-        continueHandler={() => setShowConcludeModal(false)}
+        continueHandler={props.processResultsHandler}
         show={showConcludeModal}
       />
     </>

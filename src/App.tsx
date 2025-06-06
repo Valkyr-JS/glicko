@@ -170,6 +170,21 @@ function App() {
     setMatchIndex(matchIndex - 1);
   };
 
+  const processResults = () => {
+    const tournamentMatchList: [GlickoPlayer, GlickoPlayer, 0 | 0.5 | 1][] =
+      matchList.map((m) => {
+        return [
+          players[m[0]].glicko,
+          players[m[1]].glicko,
+          m[2] as 0 | 0.5 | 1,
+        ];
+      });
+
+    tournament?.updateRatings(tournamentMatchList);
+    console.log(players);
+    console.log(tournament);
+  };
+
   /* --------------------------------------------- App -------------------------------------------- */
 
   return (
@@ -206,6 +221,7 @@ function App() {
               matchIndex={matchIndex}
               matchList={matchList}
               players={players}
+              processResultsHandler={processResults}
               selectWinnerHandler={handleSelectWinner}
               undoMatchHandler={handleUndoMatch}
               wipeTournamentHandler={handleWipeTournament}
