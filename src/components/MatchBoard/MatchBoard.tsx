@@ -127,7 +127,7 @@ const PlayerProfile = (props: PlayerProfileProps) => {
       </button>
       <button
         className="btn btn-secondary"
-        disabled={imageLoading}
+        disabled={imageLoading || !props.imagesAvailable}
         onClick={handleImageChange}
         type="button"
       >

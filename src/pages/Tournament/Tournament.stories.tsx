@@ -15,6 +15,7 @@ const meta = {
   component: TournamentPage,
   decorators: [WithMemoryRouter],
   args: {
+    changeImageHandler: fn(),
     declareDrawHandler: fn(),
     matchIndex: 0,
     matchList,
@@ -23,6 +24,7 @@ const meta = {
         ...p,
         coverImg: getStashContent(p.coverImg),
         glicko: tournament.makePlayer(1500),
+        imagesAvailable: true,
       };
     }),
     selectWinnerHandler: fn(),

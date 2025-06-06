@@ -40,15 +40,21 @@ function App() {
   /** Handler for starting a new tournament. The resolved boolean dictates
    * whether a new tournament is ready to start. */
   const handleStartNewTournament = async (): Promise<void> => {
-    return await fetchPerformers().then((res) => {
+    return await fetchPerformers().then(async (res) => {
       const newTournament = new Glicko2();
 
-      const newPlayers: PlayerData[] = (
+      const newPlayers: Promise<PlayerData>[] = (
         res.data?.findPerformers.performers ?? []
-      ).map((p) => {
+      ).map(async (p) => {
+        const imagesAvailable =
+          (await getPerformerImage({
+            variables: { performerID: p.id, currentImageID: 0 },
+          }).then((res) => res.data && res.data.findImages.count > 1)) ?? false;
+
         return {
           coverImg: p.image_path,
           id: p.id.toString(),
+          imagesAvailable,
           name: p.name,
           glicko: newTournament.makePlayer(
             p.custom_fields.glicko_rating ?? GLICKO.RATING_DEFAULT,
@@ -59,10 +65,11 @@ function App() {
       });
 
       // Check there are enough performers before updating
-      if (newPlayers.length < 2) return;
+      const resolvedPlayers = await Promise.all(newPlayers);
+      if (resolvedPlayers.length < 2) return;
 
-      const newMatchList = createRoundRobinMatchList(newPlayers.length);
-      setPlayers(newPlayers);
+      const newMatchList = createRoundRobinMatchList(resolvedPlayers.length);
+      setPlayers(resolvedPlayers);
       setMatchList(newMatchList);
       setTournament(newTournament);
 
