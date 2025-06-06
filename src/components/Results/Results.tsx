@@ -25,8 +25,8 @@ const Results: React.FC<ResultsProps> = (props) => {
           <tr>
             <th scope="col">#</th>
             <th scope="col">Performer</th>
-            <th scope="col">Previous rating</th>
             <th scope="col">New rating</th>
+            <th scope="col">Previous rating</th>
             <th scope="col">Rating change</th>
             <th scope="col">W : L : D</th>
           </tr>
@@ -42,8 +42,8 @@ const Results: React.FC<ResultsProps> = (props) => {
               <tr key={i}>
                 <th scope="row">{i + 1}</th>
                 <td>{p.name}</td>
-                <td>{p.initialRating}</td>
                 <td>{newRating}</td>
+                <td>{p.initialRating}</td>
                 <td>{newRating - p.initialRating}</td>
                 <td>
                   {wins} : {loses} : {draws}

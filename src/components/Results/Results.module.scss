@@ -1,7 +1,7 @@
 $col-position: 1;
 $col-name: 2;
-$col-prev-rating: 3;
-$col-new-rating: 4;
+$col-new-rating: 3;
+$col-prev-rating: 4;
 $col-rating-change: 5;
 $col-wld: 6;
 
@@ -9,6 +9,13 @@ $col-wld: 6;
   th:nth-child(#{$col}),
   td:nth-child(#{$col}) {
     display: none;
+  }
+}
+
+@mixin unhide-column($col) {
+  th:nth-child(#{$col}),
+  td:nth-child(#{$col}) {
+    display: table-cell;
   }
 }
 
@@ -22,7 +29,6 @@ $col-wld: 6;
 .Results {
   // Hide less important table cells at lower breakpoints
   @include hide-column($col-prev-rating);
-  @include hide-column($col-new-rating);
   @include hide-column($col-rating-change);
 
   // Center numeric columns
@@ -30,4 +36,13 @@ $col-wld: 6;
   @include center-column($col-new-rating);
   @include center-column($col-rating-change);
   @include center-column($col-wld);
+
+  // Unhide additional columns at larger breakpoints
+  @media (min-width: 550px) {
+    @include unhide-column($col-rating-change);
+  }
+
+  @media (min-width: 680px) {
+    @include unhide-column($col-prev-rating);
+  }
 }
