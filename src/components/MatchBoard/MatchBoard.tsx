@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import type { OperationVariables, QueryResult } from "@apollo/client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faForwardStep } from "@fortawesome/pro-solid-svg-icons/faForwardStep";
 import { faImage } from "@fortawesome/pro-solid-svg-icons/faImage";
@@ -6,12 +7,16 @@ import { faPause } from "@fortawesome/pro-solid-svg-icons/faPause";
 import { faRotateLeft } from "@fortawesome/pro-solid-svg-icons/faRotateLeft";
 import { faStop } from "@fortawesome/pro-solid-svg-icons/faStop";
 import { faTrophy } from "@fortawesome/pro-solid-svg-icons/faTrophy";
-import styles from "./MatchBoard.module.scss";
+import type { StashFindImages, StashPerformer } from "@/apollo/schema";
 import type { PlayerData } from "@/types/global";
+import styles from "./MatchBoard.module.scss";
+import { faSpinnerThird } from "@fortawesome/pro-solid-svg-icons";
 
 interface OneVsOneBoardProps {
   /** Handler for clicking the change player image button. */
-  changeImageHandler: (playerID: string) => void;
+  changeImageHandler: (
+    performerID: StashPerformer["id"]
+  ) => Promise<QueryResult<StashFindImages, OperationVariables>>;
   /** Handler for clicking the pause button. */
   clickPauseHandler: React.MouseEventHandler<HTMLButtonElement>;
   /** Executes when the user selects the winning player. */
@@ -75,7 +80,9 @@ export default OneVsOneBoard;
 
 interface PlayerProfileProps extends PlayerData {
   /** Executes when the user clicks to change the current player's image. */
-  changeImageHandler: (playerID: string) => void;
+  changeImageHandler: (
+    performerID: StashPerformer["id"]
+  ) => Promise<QueryResult<StashFindImages, OperationVariables>>;
   /** Executes when the user selects the winning player. */
   clickSelectHandler: (winner: 0 | 1) => void;
   /** Whether the profile is on the left, i.e. `0`, or right, i.e. `1` */
@@ -83,7 +90,21 @@ interface PlayerProfileProps extends PlayerData {
 }
 
 const PlayerProfile = (props: PlayerProfileProps) => {
-  const handleImageChange = () => props.changeImageHandler(props.id);
+  const [imageLoading, setImageLoading] = useState(false);
+  const handleImageChange = async () => {
+    setImageLoading(true);
+    await props.changeImageHandler(+props.id);
+  };
+
+  const baseUrl =
+    import.meta.env.MODE === "development"
+      ? import.meta.env.VITE_STASH_SERVER
+      : "";
+  const imageSource = props.imageID
+    ? baseUrl + "/image/" + props.imageID + "/thumbnail"
+    : props.coverImg;
+
+  const imageButtonDisabled = imageLoading || !props.imagesAvailable;
 
   return (
     <div className={styles["profile"]}>
@@ -93,7 +114,11 @@ const PlayerProfile = (props: PlayerProfileProps) => {
         {props.glicko.getRating()}
       </span>
       <div className={styles["profile-image"]}>
-        <img src={props.coverImg} alt={props.name} />
+        <img
+          src={imageSource}
+          alt={props.name}
+          onLoad={() => setImageLoading(false)}
+        />
       </div>
       <button
         type="button"
@@ -104,11 +129,20 @@ const PlayerProfile = (props: PlayerProfileProps) => {
       </button>
       <button
         className="btn btn-secondary"
+        disabled={imageButtonDisabled}
         onClick={handleImageChange}
         type="button"
       >
-        <span className="sr-only">Change image for {props.name}</span>
-        <FontAwesomeIcon icon={faImage} />
+        <span className="sr-only">
+          {imageButtonDisabled
+            ? `No alternative images available for ${props.name}`
+            : `Change image for ${props.name}`}
+        </span>
+        {imageLoading ? (
+          <FontAwesomeIcon icon={faSpinnerThird} spin />
+        ) : (
+          <FontAwesomeIcon icon={faImage} />
+        )}
       </button>
     </div>
   );

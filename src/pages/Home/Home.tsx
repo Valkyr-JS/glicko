@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import type { ApolloError } from "@apollo/client";
+import type { OperationVariables, QueryResult } from "@apollo/client";
 import { faGithub } from "@fortawesome/free-brands-svg-icons/faGithub";
 import { faChessRook } from "@fortawesome/pro-solid-svg-icons/faChessRook";
 import { faHand } from "@fortawesome/pro-solid-svg-icons/faHand";
@@ -10,42 +10,77 @@ import { useNavigate } from "react-router";
 import Modal from "@/components/Modal/Modal";
 import { PATH } from "@/constants";
 import styles from "./Home.module.scss";
+import type { StashFindPerformersResultType } from "@/apollo/schema";
+
+type performerFetchRequest = QueryResult<
+  StashFindPerformersResultType,
+  OperationVariables
+>;
 
 interface HomePageProps {
+  /** The data returned by a successful performers fetch request. */
+  fetchData: StashFindPerformersResultType | null;
+  /** The Apollo error returned by the performers fetch request. */
+  fetchError: performerFetchRequest["error"] | null;
+  /** The Apollo error returned by the performers fetch request. */
+  fetchLoading: boolean;
   /** Dictates whether a tournament is in progress. */
   inProgress: boolean;
-  /** The Apollo request to fetch performers data. */
-  performersFetch: {
-    loading: boolean;
-    error?: ApolloError;
-  };
   /** Handler for starting a new tournament. The resolved boolean dictates
    * whether a new tournament is ready to start. */
-  startNewTournamentHandler: () => Promise<boolean>;
+  startNewTournamentHandler: () => Promise<void>;
 }
 
 const HomePage: React.FC<HomePageProps> = (props) => {
   const [showChangeSettingsModal, setShowChangeSettingsModal] = useState(false);
   const [showNewTournamentModal, setShowNewTournamentModal] = useState(false);
   const [showFetchErrorModal, setShowFetchErrorModal] = useState(false);
-
+  const [showMinPerformersModal, setShowMinPerformersModal] = useState(false);
+  const [attemptNavigate, setAttemptNavigate] = useState(false);
   const navigate = useNavigate();
 
   const classes = cx("container", styles.Home);
 
-  /* -------------------------------------- Data fetch errors ------------------------------------- */
+  /* ---------------------------- New tournament button click handling ---------------------------- */
 
-  // If an error occurs when trying to fetch data, render a modal.
+  // Handle what happens on clicking the new tournament button based on current
+  // state. This is done this way as `props.startNewTournamentHandler` doesn't
+  // return data, and while it could be made to, there were serious difficulties
+  // in getting this to work with testing. Would be good to address this at a
+  // later date.
   useEffect(() => {
-    if (props.performersFetch.error) {
-      setShowFetchErrorModal(true);
+    // Only run these checks when attempting to navigate to the tournament page
+    if (attemptNavigate) {
+      setAttemptNavigate(false);
+
+      // If an error occurs when trying to fetch data, render a modal.
+      if (props.fetchError) {
+        setShowFetchErrorModal(true);
+      }
+
+      // If there are not enough performers found using the current settings,
+      // render a modal.
+      else if (props.fetchData && props.fetchData.findPerformers.count < 2) {
+        setShowMinPerformersModal(true);
+      }
+
+      // If ready to move to the tournament, do so
+      else if (!props.fetchLoading) {
+        navigate(PATH.TOURNAMENT);
+      }
     }
-  }, [props.performersFetch.error]);
+  }, [
+    props.fetchData,
+    props.fetchError,
+    props.fetchLoading,
+    props.inProgress,
+    attemptNavigate,
+    navigate,
+  ]);
 
   /* --------------------------------- Continue tournament button --------------------------------- */
 
-  const continueTournamentLoading =
-    props.performersFetch.loading && props.inProgress;
+  const continueTournamentLoading = props.fetchLoading && props.inProgress;
 
   /** Handle clicking the new tournament button. */
   const handleContinueTournament: React.MouseEventHandler<
@@ -87,8 +122,8 @@ const HomePage: React.FC<HomePageProps> = (props) => {
     // continue.
     if (props.inProgress) setShowNewTournamentModal(true);
     else {
-      const canNavigate = await props.startNewTournamentHandler();
-      if (canNavigate) navigate(PATH.TOURNAMENT);
+      await props.startNewTournamentHandler();
+      setAttemptNavigate(true);
     }
   };
 
@@ -96,18 +131,17 @@ const HomePage: React.FC<HomePageProps> = (props) => {
   const handleNewTournamentInProgress: React.MouseEventHandler<
     HTMLButtonElement
   > = async () => {
-    const canNavigate = await props.startNewTournamentHandler();
-    if (canNavigate) navigate(PATH.TOURNAMENT);
+    await props.startNewTournamentHandler();
+    setAttemptNavigate(true);
   };
 
-  const newTournamentLoading =
-    props.performersFetch.loading && !props.inProgress;
+  const newTournamentLoading = props.fetchLoading && !props.inProgress;
 
   const newTournamentButton = (
     <button
       type="button"
       className={newTournamentClasses}
-      disabled={newTournamentLoading || !!props.performersFetch.error}
+      disabled={newTournamentLoading}
       onClick={handleNewTournament}
     >
       {newTournamentLoading ? (
@@ -198,9 +232,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
             target: "_blank",
             href:
               "https://github.com/Valkyr-JS/glicko/issues/new?title=[ Fetch%20performers%20error ]&labels=bug&body=**Please add any other relevant details before submitting.**%0D%0A%0D%0A%0D%0A%0D%0A```%0D%0A" +
-              encodeURI(
-                JSON.stringify(props.performersFetch.error) ?? "No error"
-              ) +
+              encodeURI(JSON.stringify(props.fetchError) ?? "No error") +
               "%0D%0A```",
           },
           {
@@ -213,21 +245,34 @@ const HomePage: React.FC<HomePageProps> = (props) => {
         ]}
         icon={faHand}
         show={showFetchErrorModal}
-        title={props.performersFetch.error?.name ?? "No error name"}
+        title={props.fetchError?.name ?? "No error name"}
       >
         <p>An error occured whilst attempting to fetch data from Stash.</p>
         <p>
-          <a href="" />
-          <code>
-            {props.performersFetch.error?.message ?? "No error message"}
-          </code>
+          <code>{props.fetchError?.message ?? "No error message"}</code>
         </p>
         <p>
           Please check your settings and retry. If you continue to run into this
           error, please raise an issue on GitHub using the button below.
         </p>
-        <code>{JSON.stringify(props.performersFetch.error) ?? "No error"}</code>
+        <code>{JSON.stringify(props.fetchError) ?? "No error"}</code>
       </Modal>
+      <NotEnoughPerformersModal
+        show={showMinPerformersModal}
+        closeModalHandler={() => setShowMinPerformersModal(false)}
+      >
+        <p>
+          {props.fetchData?.findPerformers.count}{" "}
+          {props.fetchData?.findPerformers.count === 1
+            ? "performer was"
+            : "performers were"}{" "}
+          found in your library using your current tournament settings. The
+          minimum number of performers is 2.
+        </p>
+        <p>
+          Please update your tournament settings to include more performers.
+        </p>
+      </NotEnoughPerformersModal>
     </>
   );
 };
@@ -269,6 +314,40 @@ const InProgressModal: React.FC<InProgressModalProps> = (props) => {
       icon={faHand}
       show={props.show}
       title="Tournament in progress"
+    >
+      {props.children}
+    </Modal>
+  );
+};
+
+/* ---------------------------------------------------------------------------------------------- */
+/*                                  "Not enough performers" modal                                 */
+/* ---------------------------------------------------------------------------------------------- */
+
+interface NotEnoughPerformersModalProps extends React.PropsWithChildren {
+  /** Handler for closing the modal. */
+  closeModalHandler: () => void;
+  /** Dictates whether the modal is currently rendered. */
+  show: boolean;
+}
+
+const NotEnoughPerformersModal: React.FC<NotEnoughPerformersModalProps> = (
+  props
+) => {
+  return (
+    <Modal
+      buttons={[
+        {
+          element: "button",
+          children: "Close",
+          className: "btn btn-primary",
+          onClick: props.closeModalHandler,
+          type: "button",
+        },
+      ]}
+      icon={faHand}
+      show={props.show}
+      title="Not enough performers"
     >
       {props.children}
     </Modal>

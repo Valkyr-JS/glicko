@@ -15,7 +15,10 @@ body {
   margin-top: spacing.$large;
 }
 
-// WCAG AA-compliancy for invalid feedback against Stash background color.
+// WCAG AA-compliancy for various font colors against Stash background color.
+code {
+  color: #8bf7ee;
+}
 .invalid-feedback {
   color: #e66969;
 }
