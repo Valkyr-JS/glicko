@@ -1,0 +1,33 @@
+$col-position: 1;
+$col-name: 2;
+$col-prev-rating: 3;
+$col-new-rating: 4;
+$col-rating-change: 5;
+$col-wld: 6;
+
+@mixin hide-column($col) {
+  th:nth-child(#{$col}),
+  td:nth-child(#{$col}) {
+    display: none;
+  }
+}
+
+@mixin center-column($col) {
+  th:nth-child(#{$col}),
+  td:nth-child(#{$col}) {
+    text-align: center;
+  }
+}
+
+.Results {
+  // Hide less important table cells at lower breakpoints
+  @include hide-column($col-prev-rating);
+  @include hide-column($col-new-rating);
+  @include hide-column($col-rating-change);
+
+  // Center numeric columns
+  @include center-column($col-prev-rating);
+  @include center-column($col-new-rating);
+  @include center-column($col-rating-change);
+  @include center-column($col-wld);
+}

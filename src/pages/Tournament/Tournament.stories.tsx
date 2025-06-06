@@ -6,14 +6,16 @@ import { Glicko2 } from "glicko2";
 import { getStashContent } from "../../../.storybook/tools";
 import { createRoundRobinMatchList } from "@/helpers/gameplay";
 import { expect, fn, within } from "storybook/test";
+import type { GlickoPlayer } from "@/types/global";
 
 const tournament = new Glicko2();
 const matchList = createRoundRobinMatchList(mockPerformers.length);
 const players = mockPerformers.map((p) => ({
   ...p,
   coverImg: getStashContent(p.coverImg),
-  glicko: tournament.makePlayer(1500),
+  glicko: tournament.makePlayer(1500) as GlickoPlayer,
   imagesAvailable: true,
+  initialRating: p.custom_fields.glicko_rating,
 }));
 
 const meta = {

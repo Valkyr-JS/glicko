@@ -9,15 +9,6 @@
     font-size: 1.25rem;
   }
 
-  table {
-    th,
-    td {
-      vertical-align: middle;
-      &:first-child {
-        text-align: center;
-      }
-    }
-  }
   .winner {
     position: relative;
     font-weight: 700;

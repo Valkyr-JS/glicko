@@ -2,51 +2,81 @@
   {
     "coverImg": "/performer/26/image?t=1741474415",
     "id": "26",
-    "name": "Kym"
+    "name": "Kym",
+    "custom_fields": {
+      "glicko_rating": 1500
+    }
   },
   {
     "coverImg": "/performer/2/image?t=1740480778",
     "id": "2",
-    "name": "Holly"
+    "name": "Holly",
+    "custom_fields": {
+      "glicko_rating": 1500
+    }
   },
   {
     "coverImg": "/performer/22/image?t=1741119619",
     "id": "22",
-    "name": "Serenity"
+    "name": "Serenity",
+    "custom_fields": {
+      "glicko_rating": 1500
+    }
   },
   {
     "coverImg": "/performer/65/image?t=1744287648",
     "id": "65",
-    "name": "Scarlett"
+    "name": "Scarlett",
+    "custom_fields": {
+      "glicko_rating": 1500
+    }
   },
   {
     "coverImg": "/performer/106/image?t=1746791477",
     "id": "106",
-    "name": "Lana"
+    "name": "Lana",
+    "custom_fields": {
+      "glicko_rating": 1500
+    }
   },
   {
     "coverImg": "/performer/6/image?t=1740326102",
     "id": "6",
-    "name": "Sabine"
+    "name": "Sabine",
+    "custom_fields": {
+      "glicko_rating": 1500
+    }
   },
   {
     "coverImg": "/performer/91/image?t=1746386970",
     "id": "91",
-    "name": "Dani"
+    "name": "Dani",
+    "custom_fields": {
+      "glicko_rating": 1500
+    }
   },
   {
     "coverImg": "/performer/79/image?t=1746036301",
     "id": "79",
-    "name": "Bella"
+    "name": "Bella",
+    "custom_fields": {
+      "glicko_rating": 1500
+    }
   },
   {
     "coverImg": "/performer/31/image?t=1741475776",
     "id": "31",
-    "name": "Lottii"
+    "name": "Lottii",
+    "custom_fields": {
+      "glicko_rating": 1500
+    }
   },
   {
     "coverImg": "/performer/66/image?t=1744931859",
     "id": "66",
-    "name": "Savannah"
+    "name": "Savannah",
+    "custom_fields": {
+      "glicko_rating": 1500
+    }
   }
 ]

@@ -9,6 +9,11 @@ enum GendersEnum {
   NON_BINARY = "NON_BINARY",
 }
 
+// Add missing types
+interface GlickoPlayer extends Player {
+  outcomes: (0 | 0.5 | 1)[];
+}
+
 interface PlayerData {
   /** The performer profile image in Stash */
   coverImg: string;
@@ -23,7 +28,9 @@ interface PlayerData {
   /** The player's name. */
   name: string;
   /** The player's glicko player data. */
-  glicko: Player;
+  glicko: GlickoPlayer;
+  /** The players' rating before the start of the tournament. */
+  initialRating: number;
 }
 
 type PlayerGenders = `${GendersEnum}`;
