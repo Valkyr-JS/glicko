@@ -36,8 +36,13 @@ const TournamentPage: React.FC<TournamentPageProps> = (props) => {
 
   /** Handler for clicking the change player image button. */
   const changeImageHandler = () => console.log("changeImageHandler");
+
   /** Handler for clicking the pause button. */
-  const clickPauseHandler = () => console.log("clickPauseHandler");
+  const clickPauseHandler = () => {
+    // TODO - For now, just navigate home. This will trigger saving data to the
+    // Stash config when continuing tournaments is properly supported.
+    navigate(PATH.HOME);
+  };
 
   /** Handler for confirming abandonment of the current tournament. */
   const handleAbandonTournament = () => setShowAbandonModal(true);
