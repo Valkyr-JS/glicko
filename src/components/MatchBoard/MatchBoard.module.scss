@@ -11,7 +11,6 @@
   gap: spacing.$default;
 
   width: 100%;
-  padding: spacing.$default;
 
   .profiles {
     grid-row: profiles-top/profiles-bottom;
@@ -30,7 +29,7 @@
 
     // Center and limit size to ensure buttons are visible on screen
     width: 100%;
-    max-width: 900px;
+    max-width: 930px;
     margin-left: auto;
     margin-right: auto;
   }

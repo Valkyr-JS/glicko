@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { default as cx } from "classnames";
 import { useNavigate } from "react-router";
 import MatchBoard from "@/components/MatchBoard/MatchBoard";
 import ProgressBoard from "@/components/ProgressBoard";
@@ -12,6 +13,7 @@ import type {
   StashPerformer,
 } from "@/apollo/schema";
 import type { OperationVariables, QueryResult } from "@apollo/client";
+import styles from "./Tournament.module.scss";
 
 interface TournamentPageProps {
   /** Handler for setting a new performer image */
@@ -74,9 +76,14 @@ const TournamentPage: React.FC<TournamentPageProps> = (props) => {
     props.wipeTournamentHandler();
   };
 
+  const classes = cx("container", styles.Tournament);
+
   return (
     <>
-      <main className="container">
+      <main className={classes}>
+        <h2>
+          Round {props.matchIndex + 1} / {props.matchList.length}
+        </h2>
         <MatchBoard
           changeImageHandler={changeImageHandler}
           clickPauseHandler={clickPauseHandler}
