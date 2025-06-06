@@ -1,7 +1,12 @@
 import { useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router";
 import { useLazyQuery } from "@apollo/client";
-import type { Match, PlayerData, PlayerFilters } from "@/types/global";
+import type {
+  GlickoPlayer,
+  Match,
+  PlayerData,
+  PlayerFilters,
+} from "@/types/global";
 import { GET_PERFORMER_IMAGE, GET_PERFORMERS } from "./apollo/queries";
 import {
   type StashFindImages,
@@ -55,12 +60,13 @@ function App() {
           coverImg: p.image_path,
           id: p.id.toString(),
           imagesAvailable,
+          initialRating: p.custom_fields.glicko_rating ?? GLICKO.RATING_DEFAULT,
           name: p.name,
           glicko: newTournament.makePlayer(
             p.custom_fields.glicko_rating ?? GLICKO.RATING_DEFAULT,
             p.custom_fields.glicko_deviation ?? GLICKO.DEVIATION_DEFAULT,
             p.custom_fields.glicko_volatility ?? GLICKO.VOLATILITY_DEFAULT
-          ),
+          ) as GlickoPlayer,
         };
       });
 
@@ -133,8 +139,8 @@ function App() {
 
     setMatchList(updatedMatchList);
 
-    // Load the next match
-    setMatchIndex(matchIndex + 1);
+    // Load the next match if one is available
+    if (matchIndex + 1 < matchList.length) setMatchIndex(matchIndex + 1);
   };
 
   /** Handler for declaring a match a draw  */
@@ -146,8 +152,8 @@ function App() {
 
     setMatchList(updatedMatchList);
 
-    // Load the next match
-    setMatchIndex(matchIndex + 1);
+    // Load the next match if one is available
+    if (matchIndex + 1 < matchList.length) setMatchIndex(matchIndex + 1);
   };
 
   /** Handler reloading the previous match. */

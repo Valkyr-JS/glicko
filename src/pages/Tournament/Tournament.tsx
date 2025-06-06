@@ -6,7 +6,8 @@ import ProgressBoard from "@/components/ProgressBoard";
 import { PATH } from "@/constants";
 import type { Match, PlayerData } from "@/types/global";
 import Modal from "@/components/Modal/Modal";
-import { faHand } from "@fortawesome/pro-solid-svg-icons";
+import { faHand } from "@fortawesome/pro-solid-svg-icons/faHand";
+import { faPartyHorn } from "@fortawesome/pro-solid-svg-icons/faPartyHorn";
 import type {
   StashFindImages,
   StashImage,
@@ -39,6 +40,7 @@ interface TournamentPageProps {
 
 const TournamentPage: React.FC<TournamentPageProps> = (props) => {
   const [showAbandonModal, setShowAbandonModal] = useState(false);
+  const [showConcludeModal, setShowConcludeModal] = useState(false);
   const navigate = useNavigate();
 
   if (!props.matchList.length) return null;
@@ -76,6 +78,26 @@ const TournamentPage: React.FC<TournamentPageProps> = (props) => {
     props.wipeTournamentHandler();
   };
 
+  /** Handler for selecting a winner in a match */
+  const handleSelectWinner = () => {
+    props.declareDrawHandler();
+
+    // Check if this is the final match, and activate the conclude tournament
+    // modal if it is.
+    if (props.matchIndex + 1 === props.matchList.length)
+      setShowConcludeModal(true);
+  };
+
+  /** Handler for declaring a match a draw. */
+  const handleSkipMatch = () => {
+    props.declareDrawHandler();
+
+    // Check if this is the final match, and activate the conclude tournament
+    // modal if it is.
+    if (props.matchIndex + 1 === props.matchList.length)
+      setShowConcludeModal(true);
+  };
+
   const classes = cx("container", styles.Tournament);
 
   return (
@@ -87,8 +109,8 @@ const TournamentPage: React.FC<TournamentPageProps> = (props) => {
         <MatchBoard
           changeImageHandler={changeImageHandler}
           clickPauseHandler={clickPauseHandler}
-          clickSelectHandler={props.selectWinnerHandler}
-          clickSkipHandler={props.declareDrawHandler}
+          clickSelectHandler={handleSelectWinner}
+          clickSkipHandler={handleSkipMatch}
           clickStopHandler={handleAbandonTournament}
           clickUndoHandler={props.undoMatchHandler}
           matchIndex={props.matchIndex}
@@ -110,6 +132,11 @@ const TournamentPage: React.FC<TournamentPageProps> = (props) => {
         closeHandler={handleCancelAbandonTournament}
         continueHandler={handleConfirmAbandonTournament}
         show={showAbandonModal}
+      />
+      <ConcludeTournamentModal
+        closeHandler={() => setShowConcludeModal(false)}
+        continueHandler={() => setShowConcludeModal(false)}
+        show={showConcludeModal}
       />
     </>
   );
@@ -158,6 +185,55 @@ const AbandonMatchModal: React.FC<AbandonMatchModalProps> = (props) => {
         undone.
       </p>
       <p>Are you sure you want to abandon the tournament?</p>
+    </Modal>
+  );
+};
+
+/* ---------------------------------------------------------------------------------------------- */
+/*                                    Conclude tournament modal                                   */
+/* ---------------------------------------------------------------------------------------------- */
+
+interface ConcludeTournamentModalProps {
+  /** Handler for cancelling concluding the current tournament. */
+  closeHandler: () => void;
+  /** Handler for confirming concluding the current tournament. */
+  continueHandler: () => void;
+  /** Dictates whether the modal is active. */
+  show: boolean;
+}
+
+const ConcludeTournamentModal: React.FC<ConcludeTournamentModalProps> = (
+  props
+) => {
+  return (
+    <Modal
+      buttons={[
+        {
+          element: "button",
+          children: "No",
+          className: "btn btn-secondary",
+          onClick: props.closeHandler,
+          type: "button",
+        },
+        {
+          element: "button",
+          className: "btn btn-primary",
+          children: "Yes",
+          type: "button",
+          onClick: props.continueHandler,
+        },
+      ]}
+      icon={faPartyHorn}
+      show={props.show}
+      title="Tournament concluded"
+    >
+      <p>You have reached the end of the tournament!</p>
+
+      <p>
+        The results need to be processed before they can be viewed - this may
+        take some time depending on how many performers are in your database.
+      </p>
+      <p>Would you like to continue to process the results?</p>
     </Modal>
   );
 };
