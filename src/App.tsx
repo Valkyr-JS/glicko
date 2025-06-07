@@ -1,7 +1,12 @@
 import { useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router";
 import { useLazyQuery } from "@apollo/client";
-import type { Match, PlayerData, PlayerFilters } from "@/types/global";
+import type {
+  GlickoPlayer,
+  Match,
+  PlayerData,
+  PlayerFilters,
+} from "@/types/global";
 import { GET_PERFORMER_IMAGE, GET_PERFORMERS } from "./apollo/queries";
 import {
   type StashFindImages,
@@ -55,12 +60,13 @@ function App() {
           coverImg: p.image_path,
           id: p.id.toString(),
           imagesAvailable,
+          initialRating: p.custom_fields.glicko_rating ?? GLICKO.RATING_DEFAULT,
           name: p.name,
           glicko: newTournament.makePlayer(
             p.custom_fields.glicko_rating ?? GLICKO.RATING_DEFAULT,
             p.custom_fields.glicko_deviation ?? GLICKO.DEVIATION_DEFAULT,
             p.custom_fields.glicko_volatility ?? GLICKO.VOLATILITY_DEFAULT
-          ),
+          ) as GlickoPlayer,
         };
       });
 
@@ -126,15 +132,19 @@ function App() {
 
   /** Handler selecting the winner of a match */
   const handleSelectWinner = (winner: 0 | 1) => {
-    // Update the current match in the match list
+    /** Update the current match in the match list. The winner value is
+     * inverted, as the score is based on whether player 1 won or lost: 1 ===
+     * player 1 won, 0 === player 1 lost. Essentially the value the index of the
+     * loser. See the "Usage" section of the npm page for info
+     * https://www.npmjs.com/package/glicko2 */
     const updatedMatchList: Match[] = matchList.map((m, i) =>
-      i === matchIndex ? [m[0], m[1], winner] : m
+      i === matchIndex ? [m[0], m[1], winner === 0 ? 1 : 0] : m
     );
 
     setMatchList(updatedMatchList);
 
-    // Load the next match
-    setMatchIndex(matchIndex + 1);
+    // Load the next match if one is available
+    if (matchIndex + 1 < matchList.length) setMatchIndex(matchIndex + 1);
   };
 
   /** Handler for declaring a match a draw  */
@@ -146,8 +156,8 @@ function App() {
 
     setMatchList(updatedMatchList);
 
-    // Load the next match
-    setMatchIndex(matchIndex + 1);
+    // Load the next match if one is available
+    if (matchIndex + 1 < matchList.length) setMatchIndex(matchIndex + 1);
   };
 
   /** Handler reloading the previous match. */
@@ -157,11 +167,24 @@ function App() {
       i === matchIndex - 1 ? [m[0], m[1]] : m
     );
 
-    // Load the previous match
+    // Update the match results
     setMatchList(updatedMatchList);
 
-    // Load the next match
+    // Load the previous match
     setMatchIndex(matchIndex - 1);
+  };
+
+  const processResults = () => {
+    const tournamentMatchList: [GlickoPlayer, GlickoPlayer, 0 | 0.5 | 1][] =
+      matchList.map((m) => {
+        return [
+          players[m[0]].glicko,
+          players[m[1]].glicko,
+          m[2] as 0 | 0.5 | 1,
+        ];
+      });
+
+    tournament?.updateRatings(tournamentMatchList);
   };
 
   /* --------------------------------------------- App -------------------------------------------- */
@@ -200,6 +223,7 @@ function App() {
               matchIndex={matchIndex}
               matchList={matchList}
               players={players}
+              processResultsHandler={processResults}
               selectWinnerHandler={handleSelectWinner}
               undoMatchHandler={handleUndoMatch}
               wipeTournamentHandler={handleWipeTournament}

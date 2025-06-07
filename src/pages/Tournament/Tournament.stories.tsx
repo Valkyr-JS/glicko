@@ -5,15 +5,17 @@ import mockPerformers from "../../mocks/Performers.json";
 import { Glicko2 } from "glicko2";
 import { getStashContent } from "../../../.storybook/tools";
 import { createRoundRobinMatchList } from "@/helpers/gameplay";
-import { expect, fn, within } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
+import type { GlickoPlayer } from "@/types/global";
 
 const tournament = new Glicko2();
 const matchList = createRoundRobinMatchList(mockPerformers.length);
 const players = mockPerformers.map((p) => ({
   ...p,
   coverImg: getStashContent(p.coverImg),
-  glicko: tournament.makePlayer(1500),
+  glicko: tournament.makePlayer(1500) as GlickoPlayer,
   imagesAvailable: true,
+  initialRating: p.custom_fields.glicko_rating,
 }));
 
 const meta = {
@@ -26,6 +28,7 @@ const meta = {
     matchIndex: 0,
     matchList,
     players,
+    processResultsHandler: fn(),
     selectWinnerHandler: fn(),
     undoMatchHandler: fn(),
     wipeTournamentHandler: fn(),
@@ -82,5 +85,34 @@ export const AltImagesUnavailable: Story = {
     });
 
     expect(imgButton).toBeDisabled();
+  },
+};
+
+export const ConcludeTournament: Story = {
+  args: {
+    matchList: createRoundRobinMatchList(2),
+    players: [
+      {
+        ...players[0],
+        imagesAvailable: false,
+      },
+      {
+        ...players[1],
+        imagesAvailable: false,
+      },
+    ],
+  },
+  play: async ({ args, canvasElement }) => {
+    const canvas = within(canvasElement);
+    const playerButton = canvas.getByRole<HTMLButtonElement>("button", {
+      name: args.players[0].name,
+    });
+
+    await userEvent.click(playerButton);
+
+    const modal = canvas.getByRole("dialog", {
+      name: "Tournament concluded",
+    });
+    expect(modal).toBeInTheDocument();
   },
 };

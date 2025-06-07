@@ -45,10 +45,10 @@ const ProgressBoard: React.FC<ProgressBoardProps> = (props) => {
             : tableData.map((rowData, i) => {
                 const round = props.reverse ? tableData.length - i : i + 1;
                 const cell1Classes = cx({
-                  [styles["winner"]]: rowData[2] === 0,
+                  [styles["winner"]]: rowData[2] === 1,
                 });
                 const cell2Classes = cx({
-                  [styles["winner"]]: rowData[2] === 1,
+                  [styles["winner"]]: rowData[2] === 0,
                 });
                 return (
                   <tr key={round}>

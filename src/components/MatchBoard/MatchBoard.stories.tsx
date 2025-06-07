@@ -3,6 +3,7 @@ import { Glicko2 } from "glicko2";
 import { expect, fn, within } from "storybook/test";
 import MatchBoard from "./MatchBoard";
 import { getStashContent } from "../../../.storybook/tools";
+import type { GlickoPlayer } from "@/types/global";
 
 const tournament = new Glicko2();
 
@@ -23,14 +24,16 @@ const meta = {
         coverImg: getStashContent("/image/109138/thumbnail?t=1745972299"),
         imagesAvailable: true,
         name: "Danielle",
-        glicko: tournament.makePlayer(2019),
+        glicko: tournament.makePlayer(2019) as GlickoPlayer,
+        initialRating: 1500,
       },
       {
         id: "3",
         coverImg: getStashContent("/image/47763/thumbnail?t=1747431203"),
         imagesAvailable: true,
         name: "Jess",
-        glicko: tournament.makePlayer(1976),
+        glicko: tournament.makePlayer(1976) as GlickoPlayer,
+        initialRating: 1500,
       },
     ],
   },

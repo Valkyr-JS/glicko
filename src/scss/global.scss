@@ -22,3 +22,13 @@ code {
 .invalid-feedback {
   color: #e66969;
 }
+
+table {
+  th,
+  td {
+    vertical-align: middle !important;
+    &:first-child {
+      text-align: center;
+    }
+  }
+}
