@@ -13,9 +13,11 @@ const meta = {
   component: Settings,
   decorators: [WithMemoryRouter],
   args: {
+    activePage: "SETTINGS",
     filters: defaultFilters,
     inProgress: false,
     saveSettingsHandler: fn(),
+    setActivePage: fn(),
   },
 } satisfies Meta<typeof Settings>;
 

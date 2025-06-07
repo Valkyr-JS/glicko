@@ -18,7 +18,7 @@ import {
 import { GLICKO } from "./constants";
 import { createRoundRobinMatchList } from "./helpers/gameplay";
 import HomePage from "./pages/Home/Home";
-// import SettingsPage from "./pages/Settings/Settings";
+import SettingsPage from "./pages/Settings/Settings";
 // import TournamentPage from "./pages/Tournament/Tournament";
 
 function App() {
@@ -203,6 +203,17 @@ function App() {
           startNewTournamentHandler={handleStartNewTournament}
         />
       );
+
+    case "SETTINGS":
+      return (
+        <SettingsPage
+          activePage={activePage}
+          filters={filters}
+          inProgress={!!tournament}
+          saveSettingsHandler={handleSaveSettings}
+          setActivePage={setActivePage}
+        />
+      );
   }
 
   /* --------------------------------------------- App -------------------------------------------- */
@@ -210,28 +221,6 @@ function App() {
   // return (
   //   <BrowserRouter>
   //     <Routes>
-  //       <Route
-  //         path={PATH.HOME}
-  //         element={
-  //           <HomePage
-  //             inProgress={!!tournament}
-  //             fetchData={fetchPerformersResponse.data ?? null}
-  //             fetchError={fetchPerformersResponse.error}
-  //             fetchLoading={fetchPerformersResponse.loading}
-  //             startNewTournamentHandler={handleStartNewTournament}
-  //           />
-  //         }
-  //       />
-  //       <Route
-  //         path={PATH.SETTINGS}
-  //         element={
-  //           <SettingsPage
-  //             filters={filters}
-  //             inProgress={!!tournament}
-  //             saveSettingsHandler={handleSaveSettings}
-  //           />
-  //         }
-  //       />
   //       <Route
   //         path={PATH.TOURNAMENT}
   //         element={
