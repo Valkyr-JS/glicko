@@ -19,7 +19,7 @@ import { GLICKO } from "./constants";
 import { createRoundRobinMatchList } from "./helpers/gameplay";
 import HomePage from "./pages/Home/Home";
 import SettingsPage from "./pages/Settings/Settings";
-// import TournamentPage from "./pages/Tournament/Tournament";
+import TournamentPage from "./pages/Tournament/Tournament";
 
 function App() {
   /* -------------------------------------- State management -------------------------------------- */
@@ -214,32 +214,24 @@ function App() {
           setActivePage={setActivePage}
         />
       );
+
+    case "TOURNAMENT":
+      return (
+        <TournamentPage
+          activePage={activePage}
+          changeImageHandler={handleChangeImage}
+          declareDrawHandler={handleSkipMatch}
+          matchIndex={matchIndex}
+          matchList={matchList}
+          players={players}
+          processResultsHandler={processResults}
+          selectWinnerHandler={handleSelectWinner}
+          setActivePage={setActivePage}
+          undoMatchHandler={handleUndoMatch}
+          wipeTournamentHandler={handleWipeTournament}
+        />
+      );
   }
-
-  /* --------------------------------------------- App -------------------------------------------- */
-
-  // return (
-  //   <BrowserRouter>
-  //     <Routes>
-  //       <Route
-  //         path={PATH.TOURNAMENT}
-  //         element={
-  //           <TournamentPage
-  //             changeImageHandler={handleChangeImage}
-  //             declareDrawHandler={handleSkipMatch}
-  //             matchIndex={matchIndex}
-  //             matchList={matchList}
-  //             players={players}
-  //             processResultsHandler={processResults}
-  //             selectWinnerHandler={handleSelectWinner}
-  //             undoMatchHandler={handleUndoMatch}
-  //             wipeTournamentHandler={handleWipeTournament}
-  //           />
-  //         }
-  //       />
-  //     </Routes>
-  //   </BrowserRouter>
-  // );
 }
 
 export default App;

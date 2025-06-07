@@ -23,6 +23,7 @@ const meta = {
   component: TournamentPage,
   decorators: [WithMemoryRouter],
   args: {
+    activePage: "TOURNAMENT",
     changeImageHandler: fn(),
     declareDrawHandler: fn(),
     matchIndex: 0,
@@ -30,6 +31,7 @@ const meta = {
     players,
     processResultsHandler: fn(),
     selectWinnerHandler: fn(),
+    setActivePage: fn(),
     undoMatchHandler: fn(),
     wipeTournamentHandler: fn(),
   },

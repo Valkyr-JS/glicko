@@ -1,23 +1,21 @@
 import React, { useState } from "react";
 import { default as cx } from "classnames";
-import { useNavigate } from "react-router";
-import MatchBoard from "@/components/MatchBoard/MatchBoard";
-import ProgressBoard from "@/components/ProgressBoard";
-import { PATH } from "@/constants";
-import type { Match, PlayerData } from "@/types/global";
-import Modal from "@/components/Modal/Modal";
+import type { OperationVariables, QueryResult } from "@apollo/client";
 import { faHand } from "@fortawesome/pro-solid-svg-icons/faHand";
 import { faPartyHorn } from "@fortawesome/pro-solid-svg-icons/faPartyHorn";
+import MatchBoard from "@/components/MatchBoard/MatchBoard";
+import Modal from "@/components/Modal/Modal";
+import ProgressBoard from "@/components/ProgressBoard";
+import Results from "@/components/Results/Results";
 import type {
   StashFindImages,
   StashImage,
   StashPerformer,
 } from "@/apollo/schema";
-import type { OperationVariables, QueryResult } from "@apollo/client";
+import type { Match, PageProps, PlayerData } from "@/types/global";
 import styles from "./Tournament.module.scss";
-import Results from "@/components/Results/Results";
 
-interface TournamentPageProps {
+interface TournamentPageProps extends PageProps {
   /** Handler for setting a new performer image */
   changeImageHandler: (
     performerID: StashPerformer["id"],
@@ -45,7 +43,6 @@ const TournamentPage: React.FC<TournamentPageProps> = (props) => {
   const [showAbandonModal, setShowAbandonModal] = useState(false);
   const [showConcludeModal, setShowConcludeModal] = useState(false);
   const [mode, setMode] = useState<"tournament" | "results">("tournament");
-  const navigate = useNavigate();
 
   if (!props.matchList.length) return null;
 
@@ -64,7 +61,7 @@ const TournamentPage: React.FC<TournamentPageProps> = (props) => {
   const clickPauseHandler = () => {
     // TODO - For now, just navigate home. This will trigger saving data to the
     // Stash config when continuing tournaments is properly supported.
-    navigate(PATH.HOME);
+    props.setActivePage("HOME");
   };
 
   /** Handler for confirming abandonment of the current tournament. */
@@ -76,7 +73,7 @@ const TournamentPage: React.FC<TournamentPageProps> = (props) => {
   /** Handler for clicking the stop button. */
   const handleConfirmAbandonTournament = () => {
     // Navigate home
-    navigate(PATH.HOME);
+    props.setActivePage("HOME");
 
     // Clear all tournament data
     props.wipeTournamentHandler();
