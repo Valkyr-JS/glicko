@@ -1,9 +1,6 @@
-@use "@/scss/spacing";
-
 .progress-board {
   display: grid;
   width: 100%;
-  padding: spacing.$default;
 
   h2 {
     font-size: 1.25rem;
