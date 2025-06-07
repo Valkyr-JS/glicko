@@ -3,14 +3,12 @@ import type { IconDefinition } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { default as cx } from "classnames";
 import styles from "./Modal.module.scss";
-import { Link, type LinkProps } from "react-router";
 
 type ButtonOrLinkProps =
   | ({ element: "button" } & React.DetailedHTMLProps<
       React.ButtonHTMLAttributes<HTMLButtonElement>,
       HTMLButtonElement
     >)
-  | ({ element: "link" } & LinkProps)
   | ({ element: "anchor" } & React.DetailedHTMLProps<
       React.AnchorHTMLAttributes<HTMLAnchorElement>,
       HTMLAnchorElement
@@ -59,12 +57,9 @@ const Modal: React.FC<ModalProps> = (props) => {
                   if (el.element === "button") {
                     const { element, ...btnProps } = el;
                     return <button key={element + i} {...btnProps} />;
-                  } else if (el.element === "anchor") {
-                    const { element, ...anchorProps } = el;
-                    return <a key={element + i} {...anchorProps} />;
                   }
-                  const { element, ...linkProps } = el;
-                  return <Link key={element + i} {...linkProps} />;
+                  const { element, ...anchorProps } = el;
+                  return <a key={element + i} {...anchorProps} />;
                 })}
               </div>
             ) : null}
