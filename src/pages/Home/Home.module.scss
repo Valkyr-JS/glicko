@@ -34,9 +34,16 @@
 
   ul {
     @include lists.unstyled;
+    display: flex;
+    flex-direction: column;
   }
 
   li {
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    max-width: 510px;
+
     &:not(:last-child) {
       margin-bottom: spacing.$default;
     }
