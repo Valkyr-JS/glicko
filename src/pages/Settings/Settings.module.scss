@@ -1,12 +1,8 @@
+@use "@/scss/pages";
 @use "@/scss/spacing";
-@use "@/scss/typography";
 
 .Settings {
-  padding-top: spacing.$default;
-
-  h1 {
-    @include typography.title;
-  }
+  @include pages.layout;
 
   .button-container {
     display: flex;

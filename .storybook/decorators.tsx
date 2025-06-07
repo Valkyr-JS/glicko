@@ -1,6 +1,5 @@
 import type { ReactRenderer } from "@storybook/react-vite";
 import { useState } from "react";
-import { MemoryRouter } from "react-router";
 import type { DecoratorFunction } from "storybook/internal/csf";
 
 type Decorator =
@@ -49,10 +48,3 @@ export const FormSubmissionDecorator: Decorator = (Story) => {
     </div>
   );
 };
-
-/** Provides React Router support without updating the page. */
-export const WithMemoryRouter: Decorator = (Story) => (
-  <MemoryRouter initialEntries={["/"]}>
-    <Story />
-  </MemoryRouter>
-);

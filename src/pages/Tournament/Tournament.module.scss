@@ -1,5 +1,5 @@
-@use "@/scss/spacing";
+@use "@/scss/pages";
 
 .Tournament {
-  padding-top: spacing.$default;
+  @include pages.layout;
 }

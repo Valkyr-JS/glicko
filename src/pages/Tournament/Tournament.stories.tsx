@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import TournamentPage from "./Tournament";
-import { WithMemoryRouter } from "../../../.storybook/decorators";
 import mockPerformers from "../../mocks/Performers.json";
 import { Glicko2 } from "glicko2";
 import { getStashContent } from "../../../.storybook/tools";
@@ -21,8 +20,8 @@ const players = mockPerformers.map((p) => ({
 const meta = {
   title: "Pages/Tournament",
   component: TournamentPage,
-  decorators: [WithMemoryRouter],
   args: {
+    activePage: "TOURNAMENT",
     changeImageHandler: fn(),
     declareDrawHandler: fn(),
     matchIndex: 0,
@@ -30,6 +29,7 @@ const meta = {
     players,
     processResultsHandler: fn(),
     selectWinnerHandler: fn(),
+    setActivePage: fn(),
     undoMatchHandler: fn(),
     wipeTournamentHandler: fn(),
   },

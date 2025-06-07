@@ -14,6 +14,20 @@ interface GlickoPlayer extends Player {
   outcomes: (0 | 0.5 | 1)[];
 }
 
+enum PagesEnum {
+  HOME = "HOME",
+  RESULTS = "RESULTS",
+  SETTINGS = "SETTINGS",
+  TOURNAMENT = "TOURNAMENT",
+}
+
+type Pages = `${PagesEnum}`;
+
+interface PageProps {
+  activePage: Pages;
+  setActivePage: (page: Pages) => void;
+}
+
 interface PlayerData {
   /** The performer profile image in Stash */
   coverImg: string;

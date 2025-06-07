@@ -2,17 +2,17 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 import { ApolloError } from "@apollo/client";
 import Home from "./Home";
-import { WithMemoryRouter } from "../../../.storybook/decorators";
 
 const meta = {
   title: "Pages/Home",
   component: Home,
-  decorators: [WithMemoryRouter],
   args: {
+    activePage: "HOME",
     fetchData: null,
     fetchError: null,
     fetchLoading: false,
     inProgress: false,
+    setActivePage: fn(),
     startNewTournamentHandler: fn(),
   },
 } satisfies Meta<typeof Home>;

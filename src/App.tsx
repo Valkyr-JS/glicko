@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { BrowserRouter, Routes, Route } from "react-router";
 import { useLazyQuery } from "@apollo/client";
+import { Glicko2 } from "glicko2";
 import type {
   GlickoPlayer,
   Match,
+  Pages,
   PlayerData,
   PlayerFilters,
 } from "@/types/global";
@@ -14,16 +15,17 @@ import {
   type StashImage,
   type StashPerformer,
 } from "./apollo/schema";
-import { GLICKO, PATH } from "./constants";
+import { GLICKO } from "./constants";
+import { createRoundRobinMatchList } from "./helpers/gameplay";
 import HomePage from "./pages/Home/Home";
 import SettingsPage from "./pages/Settings/Settings";
-import { Glicko2 } from "glicko2";
-import { createRoundRobinMatchList } from "./helpers/gameplay";
 import TournamentPage from "./pages/Tournament/Tournament";
+import ResultsPage from "./pages/Results/ResultsPage";
 
 function App() {
   /* -------------------------------------- State management -------------------------------------- */
 
+  const [activePage, setActivePage] = useState<Pages>("HOME");
   const [tournament, setTournament] = useState<Glicko2 | null>(null);
   const [players, setPlayers] = useState<PlayerData[]>([]);
   const [matchIndex, setMatchIndex] = useState(0);
@@ -187,52 +189,60 @@ function App() {
     tournament?.updateRatings(tournamentMatchList);
   };
 
-  /* --------------------------------------------- App -------------------------------------------- */
+  /* ------------------------------------------- Router ------------------------------------------- */
 
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route
-          path={PATH.HOME}
-          element={
-            <HomePage
-              inProgress={!!tournament}
-              fetchData={fetchPerformersResponse.data ?? null}
-              fetchError={fetchPerformersResponse.error}
-              fetchLoading={fetchPerformersResponse.loading}
-              startNewTournamentHandler={handleStartNewTournament}
-            />
-          }
+  switch (activePage) {
+    case "HOME":
+      return (
+        <HomePage
+          activePage={activePage}
+          inProgress={!!tournament}
+          fetchData={fetchPerformersResponse.data ?? null}
+          fetchError={fetchPerformersResponse.error}
+          fetchLoading={fetchPerformersResponse.loading}
+          setActivePage={setActivePage}
+          startNewTournamentHandler={handleStartNewTournament}
         />
-        <Route
-          path={PATH.SETTINGS}
-          element={
-            <SettingsPage
-              filters={filters}
-              inProgress={!!tournament}
-              saveSettingsHandler={handleSaveSettings}
-            />
-          }
+      );
+
+    case "RESULTS":
+      return (
+        <ResultsPage
+          activePage={activePage}
+          matchList={matchList.map((m) => [m[0], m[1], m[2] ?? 0.5])}
+          players={players}
+          setActivePage={setActivePage}
         />
-        <Route
-          path={PATH.TOURNAMENT}
-          element={
-            <TournamentPage
-              changeImageHandler={handleChangeImage}
-              declareDrawHandler={handleSkipMatch}
-              matchIndex={matchIndex}
-              matchList={matchList}
-              players={players}
-              processResultsHandler={processResults}
-              selectWinnerHandler={handleSelectWinner}
-              undoMatchHandler={handleUndoMatch}
-              wipeTournamentHandler={handleWipeTournament}
-            />
-          }
+      );
+
+    case "SETTINGS":
+      return (
+        <SettingsPage
+          activePage={activePage}
+          filters={filters}
+          inProgress={!!tournament}
+          saveSettingsHandler={handleSaveSettings}
+          setActivePage={setActivePage}
         />
-      </Routes>
-    </BrowserRouter>
-  );
+      );
+
+    case "TOURNAMENT":
+      return (
+        <TournamentPage
+          activePage={activePage}
+          changeImageHandler={handleChangeImage}
+          declareDrawHandler={handleSkipMatch}
+          matchIndex={matchIndex}
+          matchList={matchList}
+          players={players}
+          processResultsHandler={processResults}
+          selectWinnerHandler={handleSelectWinner}
+          setActivePage={setActivePage}
+          undoMatchHandler={handleUndoMatch}
+          wipeTournamentHandler={handleWipeTournament}
+        />
+      );
+  }
 }
 
 export default App;

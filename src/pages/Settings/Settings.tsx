@@ -1,15 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import { faHand } from "@fortawesome/pro-solid-svg-icons/faHand";
 import { default as cx } from "classnames";
-import { useNavigate } from "react-router";
 import CheckboxGroup from "@/components/forms/CheckboxGroup/CheckboxGroup";
 import NumberInput from "@/components/forms/NumberInput/NumberInput";
 import Modal from "@/components/Modal/Modal";
-import { PATH } from "@/constants";
-import type { PlayerFilters } from "@/types/global";
+import type { PageProps, PlayerFilters } from "@/types/global";
 import styles from "./Settings.module.scss";
 
-interface SettingsPageProps {
+interface SettingsPageProps extends PageProps {
   /** The current filters. */
   filters: PlayerFilters;
   /** Dictates whether a tournament is in progress. */
@@ -18,16 +16,18 @@ interface SettingsPageProps {
   saveSettingsHandler: (updatedFilters: PlayerFilters) => void;
 }
 
-const SettingsPage: React.FC<SettingsPageProps> = (props) => {
+const SettingsPage: React.FC<SettingsPageProps> = ({
+  setActivePage,
+  ...props
+}) => {
   const [settingsChanged, setSettingsChanged] = useState(false);
   const [shouldNavigate, setShouldNavigate] = useState(false);
-  const navigate = useNavigate();
 
   const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
-    if (shouldNavigate) navigate(PATH.HOME);
-  }, [shouldNavigate, navigate]);
+    if (shouldNavigate) setActivePage("HOME");
+  }, [setActivePage, shouldNavigate]);
 
   const classes = cx("container", styles.Settings);
 
@@ -258,11 +258,11 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
             type: "button",
           },
           {
-            element: "link",
+            element: "button",
             className: "btn btn-danger",
             children: "Yes",
+            onClick: () => setActivePage("HOME"),
             type: "button",
-            to: PATH.HOME,
           },
         ]}
         icon={faHand}
