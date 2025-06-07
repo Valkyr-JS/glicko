@@ -183,9 +183,9 @@ const HomePage: React.FC<HomePageProps> = ({
             <li>{newTournamentButton}</li>
             <li>{tournamentSettingsButton}</li>
             <li>
-              <a className="btn btn-secondary" href="#">
-                About
-              </a>
+              <button type="button" className="btn btn-secondary" disabled>
+                Leaderboard
+              </button>
             </li>
           </ul>
         </nav>
