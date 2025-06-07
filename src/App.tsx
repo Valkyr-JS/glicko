@@ -132,9 +132,13 @@ function App() {
 
   /** Handler selecting the winner of a match */
   const handleSelectWinner = (winner: 0 | 1) => {
-    // Update the current match in the match list
+    /** Update the current match in the match list. The winner value is
+     * inverted, as the score is based on whether player 1 won or lost: 1 ===
+     * player 1 won, 0 === player 1 lost. Essentially the value the index of the
+     * loser. See the "Usage" section of the npm page for info
+     * https://www.npmjs.com/package/glicko2 */
     const updatedMatchList: Match[] = matchList.map((m, i) =>
-      i === matchIndex ? [m[0], m[1], winner] : m
+      i === matchIndex ? [m[0], m[1], winner === 0 ? 1 : 0] : m
     );
 
     setMatchList(updatedMatchList);
@@ -181,8 +185,6 @@ function App() {
       });
 
     tournament?.updateRatings(tournamentMatchList);
-    console.log(players);
-    console.log(tournament);
   };
 
   /* --------------------------------------------- App -------------------------------------------- */

@@ -15,6 +15,7 @@ import type {
 } from "@/apollo/schema";
 import type { OperationVariables, QueryResult } from "@apollo/client";
 import styles from "./Tournament.module.scss";
+import Results from "@/components/Results/Results";
 
 interface TournamentPageProps {
   /** Handler for setting a new performer image */
@@ -43,6 +44,7 @@ interface TournamentPageProps {
 const TournamentPage: React.FC<TournamentPageProps> = (props) => {
   const [showAbandonModal, setShowAbandonModal] = useState(false);
   const [showConcludeModal, setShowConcludeModal] = useState(false);
+  const [mode, setMode] = useState<"tournament" | "results">("tournament");
   const navigate = useNavigate();
 
   if (!props.matchList.length) return null;
@@ -100,9 +102,26 @@ const TournamentPage: React.FC<TournamentPageProps> = (props) => {
       setShowConcludeModal(true);
   };
 
+  const handleConcludeTournament = () => {
+    // Process the results of the tournament
+    props.processResultsHandler();
+
+    // Load the results page
+    setMode("results");
+  };
+
   const classes = cx("container", styles.Tournament);
 
-  console.log(props.matchList);
+  if (mode === "results") {
+    return (
+      <main className="container">
+        <Results
+          matchList={props.matchList.map((m) => [m[0], m[1], m[2] ?? 0.5])}
+          players={props.players}
+        />
+      </main>
+    );
+  }
 
   return (
     <>
@@ -139,7 +158,7 @@ const TournamentPage: React.FC<TournamentPageProps> = (props) => {
       />
       <ConcludeTournamentModal
         closeHandler={() => setShowConcludeModal(false)}
-        continueHandler={props.processResultsHandler}
+        continueHandler={handleConcludeTournament}
         show={showConcludeModal}
       />
     </>
