@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { default as cx } from "classnames";
 import type { StashFindPerformersResultType } from "@/apollo/schema";
 import Modal from "@/components/Modal/Modal";
-import type { PageProps } from "@/types/global";
+import type { PageProps } from "../../../types/global";
 import styles from "./Home.module.scss";
 
 type performerFetchRequest = QueryResult<
@@ -194,6 +194,7 @@ const HomePage: React.FC<HomePageProps> = ({
             <FontAwesomeIcon icon={faGithub} />
             <span className="sr-only">Visit the Github repository</span>
           </a>
+          <span>Version {__APP_VERSION__}</span>
         </footer>
       </main>
       <InProgressModal

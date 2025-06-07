@@ -48,11 +48,16 @@
   }
 
   footer {
-    text-align: center;
     padding-bottom: spacing.$default;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: spacing.$small;
 
     a {
       font-size: helpers.pxToRem(18);
+      width: auto;
     }
   }
 }
