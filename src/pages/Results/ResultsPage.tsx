@@ -25,17 +25,30 @@ const ResultsPage: React.FC<ResultsPageProps> = (props) => {
   const tableWrapperClasses = cx({ "table-responsive": isExpanded });
   const expandButtonClasses = cx("btn", "btn-primary", styles["expand-button"]);
 
+  const buttons = (
+    <div className={styles["button-container"]}>
+      <button
+        type="button"
+        className={expandButtonClasses}
+        onClick={handleToggleExpand}
+      >
+        {isExpanded ? "Collapse columns" : "Expand columns"}
+      </button>
+      <button
+        type="button"
+        className="btn btn-secondary"
+        onClick={() => props.setActivePage("HOME")}
+      >
+        Return to homepage
+      </button>
+    </div>
+  );
+
   return (
     <main className={classes}>
       <h1>Tournament results</h1>
       <section className={styles.Results}>
-        <button
-          type="button"
-          className={expandButtonClasses}
-          onClick={handleToggleExpand}
-        >
-          {isExpanded ? "Collapse columns" : "Expand columns"}
-        </button>
+        {buttons}
         <div className={tableWrapperClasses}>
           <table className="table table-striped">
             <thead>
@@ -71,6 +84,7 @@ const ResultsPage: React.FC<ResultsPageProps> = (props) => {
             </tbody>
           </table>
         </div>
+        {buttons}
       </section>
     </main>
   );
