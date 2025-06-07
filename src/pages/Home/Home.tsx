@@ -227,7 +227,9 @@ const HomePage: React.FC<HomePageProps> = ({
             className: "btn btn-secondary",
             target: "_blank",
             href:
-              "https://github.com/Valkyr-JS/glicko/issues/new?title=[ Fetch%20performers%20error ]&labels=bug&body=**Please add any other relevant details before submitting.**%0D%0A%0D%0A%0D%0A%0D%0A```%0D%0A" +
+              "https://github.com/Valkyr-JS/glicko/issues/new?title=[ Fetch%20error ]&labels=bug&body=**Please add any other relevant details before submitting.**%0D%0A%0D%0A%0D%0A%0D%0A---%0D%0A%0D%0AVersion " +
+              __APP_VERSION__ +
+              "%0D%0A%0D%0A```%0D%0A" +
               encodeURI(JSON.stringify(fetchError) ?? "No error") +
               "%0D%0A```",
           },
