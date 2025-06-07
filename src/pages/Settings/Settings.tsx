@@ -4,7 +4,6 @@ import { default as cx } from "classnames";
 import CheckboxGroup from "@/components/forms/CheckboxGroup/CheckboxGroup";
 import NumberInput from "@/components/forms/NumberInput/NumberInput";
 import Modal from "@/components/Modal/Modal";
-import { PATH } from "@/constants";
 import type { PageProps, PlayerFilters } from "@/types/global";
 import styles from "./Settings.module.scss";
 
@@ -259,11 +258,11 @@ const SettingsPage: React.FC<SettingsPageProps> = ({
             type: "button",
           },
           {
-            element: "link",
+            element: "button",
             className: "btn btn-danger",
             children: "Yes",
+            onClick: () => setActivePage("HOME"),
             type: "button",
-            to: PATH.HOME,
           },
         ]}
         icon={faHand}
