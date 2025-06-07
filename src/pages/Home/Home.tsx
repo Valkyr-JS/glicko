@@ -6,18 +6,17 @@ import { faHand } from "@fortawesome/pro-solid-svg-icons/faHand";
 import { faSpinnerThird } from "@fortawesome/pro-solid-svg-icons/faSpinnerThird";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { default as cx } from "classnames";
-import { useNavigate } from "react-router";
-import Modal from "@/components/Modal/Modal";
-import { PATH } from "@/constants";
-import styles from "./Home.module.scss";
 import type { StashFindPerformersResultType } from "@/apollo/schema";
+import Modal from "@/components/Modal/Modal";
+import type { PageProps } from "@/types/global";
+import styles from "./Home.module.scss";
 
 type performerFetchRequest = QueryResult<
   StashFindPerformersResultType,
   OperationVariables
 >;
 
-interface HomePageProps {
+interface HomePageProps extends PageProps {
   /** The data returned by a successful performers fetch request. */
   fetchData: StashFindPerformersResultType | null;
   /** The Apollo error returned by the performers fetch request. */
@@ -31,13 +30,18 @@ interface HomePageProps {
   startNewTournamentHandler: () => Promise<void>;
 }
 
-const HomePage: React.FC<HomePageProps> = (props) => {
+const HomePage: React.FC<HomePageProps> = ({
+  fetchData,
+  fetchError,
+  fetchLoading,
+  setActivePage,
+  ...props
+}) => {
   const [showChangeSettingsModal, setShowChangeSettingsModal] = useState(false);
   const [showNewTournamentModal, setShowNewTournamentModal] = useState(false);
   const [showFetchErrorModal, setShowFetchErrorModal] = useState(false);
   const [showMinPerformersModal, setShowMinPerformersModal] = useState(false);
   const [attemptNavigate, setAttemptNavigate] = useState(false);
-  const navigate = useNavigate();
 
   const classes = cx("container", styles.Home);
 
@@ -51,41 +55,32 @@ const HomePage: React.FC<HomePageProps> = (props) => {
   useEffect(() => {
     // Only run these checks when attempting to navigate to the tournament page
     if (attemptNavigate) {
-      setAttemptNavigate(false);
-
       // If an error occurs when trying to fetch data, render a modal.
-      if (props.fetchError) {
+      if (fetchError) {
         setShowFetchErrorModal(true);
       }
 
       // If there are not enough performers found using the current settings,
       // render a modal.
-      else if (props.fetchData && props.fetchData.findPerformers.count < 2) {
+      else if (fetchData && fetchData.findPerformers.count < 2) {
         setShowMinPerformersModal(true);
       }
 
       // If ready to move to the tournament, do so
-      else if (!props.fetchLoading) {
-        navigate(PATH.TOURNAMENT);
+      else if (!fetchLoading) {
+        setActivePage("TOURNAMENT");
       }
     }
-  }, [
-    props.fetchData,
-    props.fetchError,
-    props.fetchLoading,
-    props.inProgress,
-    attemptNavigate,
-    navigate,
-  ]);
+  }, [attemptNavigate, fetchError, fetchLoading, fetchData, setActivePage]);
 
   /* --------------------------------- Continue tournament button --------------------------------- */
 
-  const continueTournamentLoading = props.fetchLoading && props.inProgress;
+  const continueTournamentLoading = fetchLoading && props.inProgress;
 
   /** Handle clicking the new tournament button. */
   const handleContinueTournament: React.MouseEventHandler<
     HTMLButtonElement
-  > = () => navigate(PATH.TOURNAMENT);
+  > = () => setActivePage("TOURNAMENT");
 
   // Add the "Continue tournament" option if required
   const ContinueItem = () =>
@@ -135,7 +130,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
     setAttemptNavigate(true);
   };
 
-  const newTournamentLoading = props.fetchLoading && !props.inProgress;
+  const newTournamentLoading = fetchLoading && !props.inProgress;
 
   const newTournamentButton = (
     <button
@@ -160,7 +155,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
     // If there is already a tournament in progress, display the modal. Else
     // continue.
     if (props.inProgress) setShowChangeSettingsModal(true);
-    else navigate(PATH.SETTINGS);
+    else setActivePage("SETTINGS");
   };
 
   const tournamentSettingsButton = (
@@ -214,7 +209,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
       </InProgressModal>
       <InProgressModal
         closeModalHandler={() => setShowChangeSettingsModal(false)}
-        continueHandler={() => navigate(PATH.SETTINGS)}
+        continueHandler={() => setActivePage("SETTINGS")}
         show={showChangeSettingsModal}
       >
         <p>
@@ -232,7 +227,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
             target: "_blank",
             href:
               "https://github.com/Valkyr-JS/glicko/issues/new?title=[ Fetch%20performers%20error ]&labels=bug&body=**Please add any other relevant details before submitting.**%0D%0A%0D%0A%0D%0A%0D%0A```%0D%0A" +
-              encodeURI(JSON.stringify(props.fetchError) ?? "No error") +
+              encodeURI(JSON.stringify(fetchError) ?? "No error") +
               "%0D%0A```",
           },
           {
@@ -245,25 +240,25 @@ const HomePage: React.FC<HomePageProps> = (props) => {
         ]}
         icon={faHand}
         show={showFetchErrorModal}
-        title={props.fetchError?.name ?? "No error name"}
+        title={fetchError?.name ?? "No error name"}
       >
         <p>An error occured whilst attempting to fetch data from Stash.</p>
         <p>
-          <code>{props.fetchError?.message ?? "No error message"}</code>
+          <code>{fetchError?.message ?? "No error message"}</code>
         </p>
         <p>
           Please check your settings and retry. If you continue to run into this
           error, please raise an issue on GitHub using the button below.
         </p>
-        <code>{JSON.stringify(props.fetchError) ?? "No error"}</code>
+        <code>{JSON.stringify(fetchError) ?? "No error"}</code>
       </Modal>
       <NotEnoughPerformersModal
         show={showMinPerformersModal}
         closeModalHandler={() => setShowMinPerformersModal(false)}
       >
         <p>
-          {props.fetchData?.findPerformers.count}{" "}
-          {props.fetchData?.findPerformers.count === 1
+          {fetchData?.findPerformers.count}{" "}
+          {fetchData?.findPerformers.count === 1
             ? "performer was"
             : "performers were"}{" "}
           found in your library using your current tournament settings. The

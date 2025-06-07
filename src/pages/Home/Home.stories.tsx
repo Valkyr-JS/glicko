@@ -9,10 +9,12 @@ const meta = {
   component: Home,
   decorators: [WithMemoryRouter],
   args: {
+    activePage: "HOME",
     fetchData: null,
     fetchError: null,
     fetchLoading: false,
     inProgress: false,
+    setActivePage: fn(),
     startNewTournamentHandler: fn(),
   },
 } satisfies Meta<typeof Home>;
