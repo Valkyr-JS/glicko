@@ -110,9 +110,9 @@ const TournamentPage: React.FC<TournamentPageProps> = (props) => {
   return (
     <>
       <main className={classes}>
-        <h2>
+        <h1>
           Round {props.matchIndex + 1} / {props.matchList.length}
-        </h2>
+        </h1>
         <MatchBoard
           changeImageHandler={changeImageHandler}
           clickPauseHandler={clickPauseHandler}

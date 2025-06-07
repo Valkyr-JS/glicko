@@ -1,0 +1,10 @@
+@use "@/scss/spacing";
+@use "@/scss/typography";
+
+@mixin layout {
+  padding-top: spacing.$default;
+
+  h1 {
+    @include typography.title;
+  }
+}

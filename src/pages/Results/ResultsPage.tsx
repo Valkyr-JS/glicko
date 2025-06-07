@@ -27,6 +27,7 @@ const ResultsPage: React.FC<ResultsPageProps> = (props) => {
 
   return (
     <main className={classes}>
+      <h1>Tournament results</h1>
       <section className={styles.Results}>
         <button
           type="button"
