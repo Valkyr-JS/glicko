@@ -42,6 +42,7 @@ const meta = {
     matchList,
     players,
     setActivePage: fn(),
+    wipeTournamentHandler: fn(),
   },
 } satisfies Meta<typeof ResultsPage>;
 

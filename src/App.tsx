@@ -212,6 +212,7 @@ function App() {
           matchList={matchList.map((m) => [m[0], m[1], m[2] ?? 0.5])}
           players={players}
           setActivePage={setActivePage}
+          wipeTournamentHandler={handleWipeTournament}
         />
       );
 

@@ -28,13 +28,13 @@ interface TournamentPageProps extends PageProps {
   matchList: Match[];
   /** The data for all players involved in the tournament. */
   players: PlayerData[];
-  /** Handle updating the tournament with the match results */
+  /** Handle for updating the tournament with the match results */
   processResultsHandler: () => void;
-  /** Handler selecting the winner of a match. */
+  /** Handler for selecting the winner of a match. */
   selectWinnerHandler: (winner: 0 | 1) => void;
-  /** Handler reloading the previous match. */
+  /** Handler for reloading the previous match. */
   undoMatchHandler: () => void;
-  /** Handler clearing all tournament data. */
+  /** Handler for clearing all tournament data. */
   wipeTournamentHandler: () => void;
 }
 

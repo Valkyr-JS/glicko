@@ -8,6 +8,8 @@ interface ResultsPageProps extends PageProps {
   matchList: [playerA: number, playerB: number, result: 0 | 1 | 0.5][];
   /** The data for all players involved in the tournament. */
   players: PlayerData[];
+  /** Handler for clearing all tournament data. */
+  wipeTournamentHandler: () => void;
 }
 
 const ResultsPage: React.FC<ResultsPageProps> = (props) => {
@@ -20,6 +22,15 @@ const ResultsPage: React.FC<ResultsPageProps> = (props) => {
   /** Handler for toggling the table to display all columns and allow scrolling
    * if needed. */
   const handleToggleExpand = () => setIsExpanded(!isExpanded);
+
+  /** Handler for clickign the "Return to homepage" button. */
+  const handleClickReturnHome = () => {
+    // Clear the tournament ready for the next one
+    props.wipeTournamentHandler();
+
+    // Load the homepage
+    props.setActivePage("HOME");
+  };
 
   const classes = cx("container", styles.Results);
   const tableWrapperClasses = cx({ "table-responsive": isExpanded });
@@ -37,7 +48,7 @@ const ResultsPage: React.FC<ResultsPageProps> = (props) => {
       <button
         type="button"
         className="btn btn-secondary"
-        onClick={() => props.setActivePage("HOME")}
+        onClick={handleClickReturnHome}
       >
         Return to homepage
       </button>
