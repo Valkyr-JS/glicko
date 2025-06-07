@@ -16,6 +16,7 @@ interface GlickoPlayer extends Player {
 
 enum PagesEnum {
   HOME = "HOME",
+  RESULTS = "RESULTS",
   SETTINGS = "SETTINGS",
   TOURNAMENT = "TOURNAMENT",
 }

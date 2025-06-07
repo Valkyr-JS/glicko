@@ -1,10 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Glicko2 } from "glicko2";
-import Results from "./Results";
+import ResultsPage from "./ResultsPage";
 import { getStashContent } from "../../../.storybook/tools";
 import { createRoundRobinMatchList } from "@/helpers/gameplay";
 import mockPerformers from "../../mocks/Performers.json";
 import type { GlickoPlayer } from "@/types/global";
+import { fn } from "storybook/internal/test";
 
 const tournament = new Glicko2();
 const matchList: [
@@ -32,17 +33,17 @@ const fullMatchList: [GlickoPlayer, GlickoPlayer, 0 | 0.5 | 1][] =
 
 tournament.updateRatings(fullMatchList);
 
-console.log(players);
-
 const meta = {
-  title: "Components/Results Board",
-  component: Results,
+  title: "Pages/Results Page",
+  component: ResultsPage,
   parameters: { layout: "padded" },
   args: {
+    activePage: "RESULTS",
     matchList,
     players,
+    setActivePage: fn(),
   },
-} satisfies Meta<typeof Results>;
+} satisfies Meta<typeof ResultsPage>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

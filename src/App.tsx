@@ -20,6 +20,7 @@ import { createRoundRobinMatchList } from "./helpers/gameplay";
 import HomePage from "./pages/Home/Home";
 import SettingsPage from "./pages/Settings/Settings";
 import TournamentPage from "./pages/Tournament/Tournament";
+import ResultsPage from "./pages/Results/ResultsPage";
 
 function App() {
   /* -------------------------------------- State management -------------------------------------- */
@@ -201,6 +202,16 @@ function App() {
           fetchLoading={fetchPerformersResponse.loading}
           setActivePage={setActivePage}
           startNewTournamentHandler={handleStartNewTournament}
+        />
+      );
+
+    case "RESULTS":
+      return (
+        <ResultsPage
+          activePage={activePage}
+          matchList={matchList.map((m) => [m[0], m[1], m[2] ?? 0.5])}
+          players={players}
+          setActivePage={setActivePage}
         />
       );
 

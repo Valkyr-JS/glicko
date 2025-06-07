@@ -6,7 +6,6 @@ import { faPartyHorn } from "@fortawesome/pro-solid-svg-icons/faPartyHorn";
 import MatchBoard from "@/components/MatchBoard/MatchBoard";
 import Modal from "@/components/Modal/Modal";
 import ProgressBoard from "@/components/ProgressBoard";
-import Results from "@/components/Results/Results";
 import type {
   StashFindImages,
   StashImage,
@@ -42,7 +41,6 @@ interface TournamentPageProps extends PageProps {
 const TournamentPage: React.FC<TournamentPageProps> = (props) => {
   const [showAbandonModal, setShowAbandonModal] = useState(false);
   const [showConcludeModal, setShowConcludeModal] = useState(false);
-  const [mode, setMode] = useState<"tournament" | "results">("tournament");
 
   if (!props.matchList.length) return null;
 
@@ -104,21 +102,10 @@ const TournamentPage: React.FC<TournamentPageProps> = (props) => {
     props.processResultsHandler();
 
     // Load the results page
-    setMode("results");
+    props.setActivePage("RESULTS");
   };
 
   const classes = cx("container", styles.Tournament);
-
-  if (mode === "results") {
-    return (
-      <main className="container">
-        <Results
-          matchList={props.matchList.map((m) => [m[0], m[1], m[2] ?? 0.5])}
-          players={props.players}
-        />
-      </main>
-    );
-  }
 
   return (
     <>
