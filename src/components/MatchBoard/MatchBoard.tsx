@@ -5,12 +5,12 @@ import { faForwardStep } from "@fortawesome/pro-solid-svg-icons/faForwardStep";
 import { faImage } from "@fortawesome/pro-solid-svg-icons/faImage";
 import { faPause } from "@fortawesome/pro-solid-svg-icons/faPause";
 import { faRotateLeft } from "@fortawesome/pro-solid-svg-icons/faRotateLeft";
+import { faSpinnerThird } from "@fortawesome/pro-solid-svg-icons/faSpinnerThird";
 import { faStop } from "@fortawesome/pro-solid-svg-icons/faStop";
 import { faTrophy } from "@fortawesome/pro-solid-svg-icons/faTrophy";
 import type { StashFindImages, StashPerformer } from "@/apollo/schema";
 import type { PlayerData } from "@/types/global";
 import styles from "./MatchBoard.module.scss";
-import { faSpinnerThird } from "@fortawesome/pro-solid-svg-icons";
 
 interface OneVsOneBoardProps {
   /** Handler for clicking the change player image button. */
