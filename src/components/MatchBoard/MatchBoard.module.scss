@@ -2,15 +2,28 @@
 @use "@/scss/helpers";
 @use "@/scss/spacing";
 @use "@/scss/buttons";
+@use "@/scss/typography";
 
 .one-vs-one-board {
   display: grid;
   grid-template-rows:
-    [board-top profiles-top] 1fr [profiles-bottom
+    [board-top round-count-top] auto [round-count-bottom
+    profiles-top] 1fr [profiles-bottom
     tools-top] auto [tools-bottom board-bottom];
   gap: spacing.$default;
 
   width: 100%;
+
+  h2 {
+    grid-row: round-count-top/round-count-bottom;
+    @include typography.heading;
+    text-align: center;
+    margin-bottom: 0;
+
+    @media (min-width: 768px) {
+      @include typography.title;
+    }
+  }
 
   .profiles {
     grid-row: profiles-top/profiles-bottom;
@@ -71,7 +84,6 @@
   // Keep images at a 2:3 aspect ratio
   .profile-image {
     grid-row: image-top/image-bottom;
-    height: 0;
     width: 100%;
     overflow: hidden;
     padding-top: 150%;

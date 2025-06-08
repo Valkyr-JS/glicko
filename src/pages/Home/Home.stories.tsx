@@ -14,6 +14,15 @@ const meta = {
     inProgress: false,
     setActivePage: fn(),
     startNewTournamentHandler: fn(),
+    versionData: {
+      version: {
+        version: "v0.28.1",
+        hash: "cc6917f2",
+        build_time: "2025-03-19 23:01:38",
+      },
+    },
+    versionError: undefined,
+    versionLoading: false,
   },
 } satisfies Meta<typeof Home>;
 
@@ -170,5 +179,47 @@ export const NotEnoughPerformers: Story = {
       });
       expect(modal).toBeInTheDocument();
     });
+  },
+};
+
+export const IsConnecting: Story = {
+  args: {
+    versionLoading: true,
+    inProgress: false,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const newBtn = canvas.getByRole("button", {
+      name: "New tournament",
+    });
+    const settingsBtn = canvas.getByRole("button", {
+      name: "Tournament settings",
+    });
+
+    expect(newBtn).toBeDisabled();
+    expect(settingsBtn).toBeDisabled();
+  },
+};
+
+export const UnableToConnect: Story = {
+  args: {
+    versionError: {
+      ...new ApolloError({}),
+      name: "Apollo Error",
+      message: "Response not successful: Received status code 422",
+    },
+    inProgress: false,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const newBtn = canvas.getByRole("button", {
+      name: "New tournament",
+    });
+    const settingsBtn = canvas.getByRole("button", {
+      name: "Tournament settings",
+    });
+
+    expect(newBtn).toBeDisabled();
+    expect(settingsBtn).toBeDisabled();
   },
 };

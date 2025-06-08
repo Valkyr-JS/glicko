@@ -27,6 +27,16 @@ export const StashPerformerSchema = z.object({
 
 export type StashPerformer = z.infer<typeof StashPerformerSchema>;
 
+export const StashVersionSchema = z.object({
+  version: z.object({
+    build_time: z.string(),
+    hash: z.string(),
+    version: z.string(),
+  }),
+});
+
+export type StashVersion = z.infer<typeof StashVersionSchema>;
+
 export const StashFindImagesSchema = z.object({
   findImages: z.object({
     count: z.number().positive(),

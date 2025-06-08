@@ -6,15 +6,21 @@ import { faHand } from "@fortawesome/pro-solid-svg-icons/faHand";
 import { faSpinnerThird } from "@fortawesome/pro-solid-svg-icons/faSpinnerThird";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { default as cx } from "classnames";
-import type { StashFindPerformersResultType } from "@/apollo/schema";
+import type {
+  StashFindPerformersResultType,
+  StashVersion,
+} from "@/apollo/schema";
 import Modal from "@/components/Modal/Modal";
-import type { PageProps } from "@/types/global";
+import type { PageProps } from "../../../types/global";
 import styles from "./Home.module.scss";
+import StashVersionReport from "@/components/StashVersionReport/StashVersionReport";
 
 type performerFetchRequest = QueryResult<
   StashFindPerformersResultType,
   OperationVariables
 >;
+
+type versionFetchRequest = QueryResult<StashVersion, OperationVariables>;
 
 interface HomePageProps extends PageProps {
   /** The data returned by a successful performers fetch request. */
@@ -28,6 +34,12 @@ interface HomePageProps extends PageProps {
   /** Handler for starting a new tournament. The resolved boolean dictates
    * whether a new tournament is ready to start. */
   startNewTournamentHandler: () => Promise<void>;
+  /** The data returned by a successful version fetch request. */
+  versionData: StashVersion;
+  /** The Apollo error returned by the version fetch request. */
+  versionError: versionFetchRequest["error"];
+  /** The Apollo error returned by the version fetch request. */
+  versionLoading: boolean;
 }
 
 const HomePage: React.FC<HomePageProps> = ({
@@ -130,13 +142,16 @@ const HomePage: React.FC<HomePageProps> = ({
     setAttemptNavigate(true);
   };
 
-  const newTournamentLoading = fetchLoading && !props.inProgress;
+  const newTournamentLoading =
+    props.versionLoading || (fetchLoading && !props.inProgress);
+
+  const newTournamentDisabled = !!props.versionError || newTournamentLoading;
 
   const newTournamentButton = (
     <button
       type="button"
       className={newTournamentClasses}
-      disabled={newTournamentLoading}
+      disabled={newTournamentDisabled}
       onClick={handleNewTournament}
     >
       {newTournamentLoading ? (
@@ -162,6 +177,7 @@ const HomePage: React.FC<HomePageProps> = ({
     <button
       type="button"
       className="btn btn-secondary"
+      disabled={props.versionLoading || !!props.versionError}
       onClick={handleChangeSettings}
     >
       Tournament settings
@@ -189,11 +205,21 @@ const HomePage: React.FC<HomePageProps> = ({
             </li>
           </ul>
         </nav>
+        <div className={styles.report}>
+          <StashVersionReport
+            request={{
+              data: props.versionData,
+              error: props.versionError,
+              loading: props.versionLoading,
+            }}
+          />
+        </div>
         <footer>
           <a href="https://github.com/Valkyr-JS/glicko">
             <FontAwesomeIcon icon={faGithub} />
             <span className="sr-only">Visit the Github repository</span>
           </a>
+          <span>Version {__APP_VERSION__}</span>
         </footer>
       </main>
       <InProgressModal
@@ -226,7 +252,9 @@ const HomePage: React.FC<HomePageProps> = ({
             className: "btn btn-secondary",
             target: "_blank",
             href:
-              "https://github.com/Valkyr-JS/glicko/issues/new?title=[ Fetch%20performers%20error ]&labels=bug&body=**Please add any other relevant details before submitting.**%0D%0A%0D%0A%0D%0A%0D%0A```%0D%0A" +
+              "https://github.com/Valkyr-JS/glicko/issues/new?title=[ Fetch%20error ]&labels=bug&body=**Please add any other relevant details before submitting.**%0D%0A%0D%0A%0D%0A%0D%0A---%0D%0A%0D%0AVersion " +
+              __APP_VERSION__ +
+              "%0D%0A%0D%0A```%0D%0A" +
               encodeURI(JSON.stringify(fetchError) ?? "No error") +
               "%0D%0A```",
           },

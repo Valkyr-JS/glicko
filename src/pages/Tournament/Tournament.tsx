@@ -28,13 +28,13 @@ interface TournamentPageProps extends PageProps {
   matchList: Match[];
   /** The data for all players involved in the tournament. */
   players: PlayerData[];
-  /** Handle updating the tournament with the match results */
+  /** Handle for updating the tournament with the match results */
   processResultsHandler: () => void;
-  /** Handler selecting the winner of a match. */
+  /** Handler for selecting the winner of a match. */
   selectWinnerHandler: (winner: 0 | 1) => void;
-  /** Handler reloading the previous match. */
+  /** Handler for reloading the previous match. */
   undoMatchHandler: () => void;
-  /** Handler clearing all tournament data. */
+  /** Handler for clearing all tournament data. */
   wipeTournamentHandler: () => void;
 }
 
@@ -110,9 +110,6 @@ const TournamentPage: React.FC<TournamentPageProps> = (props) => {
   return (
     <>
       <main className={classes}>
-        <h1>
-          Round {props.matchIndex + 1} / {props.matchList.length}
-        </h1>
         <MatchBoard
           changeImageHandler={changeImageHandler}
           clickPauseHandler={clickPauseHandler}
@@ -120,6 +117,7 @@ const TournamentPage: React.FC<TournamentPageProps> = (props) => {
           clickSkipHandler={handleSkipMatch}
           clickStopHandler={handleAbandonTournament}
           clickUndoHandler={props.undoMatchHandler}
+          matchCount={props.matchList.length}
           matchIndex={props.matchIndex}
           players={[playerA, playerB]}
         />

@@ -8,6 +8,8 @@ interface ResultsPageProps extends PageProps {
   matchList: [playerA: number, playerB: number, result: 0 | 1 | 0.5][];
   /** The data for all players involved in the tournament. */
   players: PlayerData[];
+  /** Handler for clearing all tournament data. */
+  wipeTournamentHandler: () => void;
 }
 
 const ResultsPage: React.FC<ResultsPageProps> = (props) => {
@@ -21,21 +23,43 @@ const ResultsPage: React.FC<ResultsPageProps> = (props) => {
    * if needed. */
   const handleToggleExpand = () => setIsExpanded(!isExpanded);
 
+  /** Handler for clickign the "Return to homepage" button. */
+  const handleClickReturnHome = () => {
+    // Clear the tournament ready for the next one
+    props.wipeTournamentHandler();
+
+    // Load the homepage
+    props.setActivePage("HOME");
+  };
+
   const classes = cx("container", styles.Results);
   const tableWrapperClasses = cx({ "table-responsive": isExpanded });
   const expandButtonClasses = cx("btn", "btn-primary", styles["expand-button"]);
+
+  const buttons = (
+    <div className={styles["button-container"]}>
+      <button
+        type="button"
+        className={expandButtonClasses}
+        onClick={handleToggleExpand}
+      >
+        {isExpanded ? "Collapse columns" : "Expand columns"}
+      </button>
+      <button
+        type="button"
+        className="btn btn-secondary"
+        onClick={handleClickReturnHome}
+      >
+        Return to homepage
+      </button>
+    </div>
+  );
 
   return (
     <main className={classes}>
       <h1>Tournament results</h1>
       <section className={styles.Results}>
-        <button
-          type="button"
-          className={expandButtonClasses}
-          onClick={handleToggleExpand}
-        >
-          {isExpanded ? "Collapse columns" : "Expand columns"}
-        </button>
+        {buttons}
         <div className={tableWrapperClasses}>
           <table className="table table-striped">
             <thead>
@@ -71,6 +95,7 @@ const ResultsPage: React.FC<ResultsPageProps> = (props) => {
             </tbody>
           </table>
         </div>
+        {buttons}
       </section>
     </main>
   );

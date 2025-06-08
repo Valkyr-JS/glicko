@@ -38,3 +38,11 @@ export const GET_PERFORMERS = gql`
     }
   }
 `;
+
+export const GET_STASH_VERSION = gql`
+  query GetStashVersion {
+    version {
+      version
+    }
+  }
+`;

@@ -5,12 +5,12 @@ import { faForwardStep } from "@fortawesome/pro-solid-svg-icons/faForwardStep";
 import { faImage } from "@fortawesome/pro-solid-svg-icons/faImage";
 import { faPause } from "@fortawesome/pro-solid-svg-icons/faPause";
 import { faRotateLeft } from "@fortawesome/pro-solid-svg-icons/faRotateLeft";
+import { faSpinnerThird } from "@fortawesome/pro-solid-svg-icons/faSpinnerThird";
 import { faStop } from "@fortawesome/pro-solid-svg-icons/faStop";
 import { faTrophy } from "@fortawesome/pro-solid-svg-icons/faTrophy";
 import type { StashFindImages, StashPerformer } from "@/apollo/schema";
 import type { PlayerData } from "@/types/global";
 import styles from "./MatchBoard.module.scss";
-import { faSpinnerThird } from "@fortawesome/pro-solid-svg-icons";
 
 interface OneVsOneBoardProps {
   /** Handler for clicking the change player image button. */
@@ -27,6 +27,8 @@ interface OneVsOneBoardProps {
   clickStopHandler: React.MouseEventHandler<HTMLButtonElement>;
   /** Handler for clicking the undo button. */
   clickUndoHandler: React.MouseEventHandler<HTMLButtonElement>;
+  /** The total number of matches in the tournament. */
+  matchCount: number;
   /** The zero-based index of the current match in the match list. */
   matchIndex: number;
   /** The players in the current match. */
@@ -36,6 +38,9 @@ interface OneVsOneBoardProps {
 const OneVsOneBoard: React.FC<OneVsOneBoardProps> = (props) => {
   return (
     <section className={styles["one-vs-one-board"]}>
+      <h2>
+        Round {props.matchIndex + 1} / {props.matchCount}
+      </h2>
       <div className={styles["profiles"]}>
         <PlayerProfile
           {...props.players[0]}
@@ -108,11 +113,6 @@ const PlayerProfile = (props: PlayerProfileProps) => {
 
   return (
     <div className={styles["profile"]}>
-      <span className={styles["rating"]}>
-        <FontAwesomeIcon icon={faTrophy} />{" "}
-        <span className="sr-only">{props.name}'s rating: </span>
-        {props.glicko.getRating()}
-      </span>
       <div className={styles["profile-image"]}>
         <img
           src={imageSource}
@@ -120,6 +120,11 @@ const PlayerProfile = (props: PlayerProfileProps) => {
           onLoad={() => setImageLoading(false)}
         />
       </div>
+      <span className={styles["rating"]}>
+        <FontAwesomeIcon icon={faTrophy} />{" "}
+        <span className="sr-only">{props.name}'s rating: </span>
+        {props.glicko.getRating()}
+      </span>
       <button
         type="button"
         className="btn btn-primary"

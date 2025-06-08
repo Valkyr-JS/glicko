@@ -139,8 +139,8 @@ const SettingsPage: React.FC<SettingsPageProps> = ({
                 This is the maximum number of performers that will be pulled
                 from your Stash library. Less than {limitSoftMin} performers may
                 return inaccurate results. More than {limitSoftMax} performers
-                may cause the tournament to take too long and potentially cause
-                slowdown.
+                may cause the tournament to take a long time, or cause your
+                device to hang or crash at higher values.
               </p>
               <p>
                 {currentLimit} performers will generate a tournament of{" "}

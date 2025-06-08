@@ -9,6 +9,7 @@
   grid-template-rows:
     [home-top header-top] auto[header-bottom
     nav-top] auto [nav-bottom
+    report-top] max-content [report-bottom
     footer-top] max-content [footer-bottom home-bottom];
   flex-direction: column;
   align-items: center;
@@ -34,11 +35,18 @@
 
   ul {
     @include lists.unstyled;
+    display: flex;
+    flex-direction: column;
   }
 
   li {
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    max-width: 510px;
+
     &:not(:last-child) {
-      margin-bottom: spacing.$default;
+      margin-bottom: spacing.$small;
     }
   }
 
@@ -48,11 +56,20 @@
   }
 
   footer {
-    text-align: center;
     padding-bottom: spacing.$default;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: spacing.$small;
 
     a {
       font-size: helpers.pxToRem(18);
+      width: auto;
     }
+  }
+
+  .report {
+    margin-bottom: spacing.$default;
   }
 }

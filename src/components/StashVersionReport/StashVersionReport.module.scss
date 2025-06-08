@@ -1,0 +1,11 @@
+@use "@/scss/lists";
+@use "@/scss/spacing";
+
+.VersionReport {
+  .breakdown {
+    ul {
+      @include lists.unstyled;
+      padding-left: spacing.$default;
+    }
+  }
+}
