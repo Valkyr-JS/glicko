@@ -113,11 +113,6 @@ const PlayerProfile = (props: PlayerProfileProps) => {
 
   return (
     <div className={styles["profile"]}>
-      <span className={styles["rating"]}>
-        <FontAwesomeIcon icon={faTrophy} />{" "}
-        <span className="sr-only">{props.name}'s rating: </span>
-        {props.glicko.getRating()}
-      </span>
       <div className={styles["profile-image"]}>
         <img
           src={imageSource}
@@ -125,6 +120,11 @@ const PlayerProfile = (props: PlayerProfileProps) => {
           onLoad={() => setImageLoading(false)}
         />
       </div>
+      <span className={styles["rating"]}>
+        <FontAwesomeIcon icon={faTrophy} />{" "}
+        <span className="sr-only">{props.name}'s rating: </span>
+        {props.glicko.getRating()}
+      </span>
       <button
         type="button"
         className="btn btn-primary"
