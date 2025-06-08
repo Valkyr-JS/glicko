@@ -27,6 +27,8 @@ interface OneVsOneBoardProps {
   clickStopHandler: React.MouseEventHandler<HTMLButtonElement>;
   /** Handler for clicking the undo button. */
   clickUndoHandler: React.MouseEventHandler<HTMLButtonElement>;
+  /** The total number of matches in the tournament. */
+  matchCount: number;
   /** The zero-based index of the current match in the match list. */
   matchIndex: number;
   /** The players in the current match. */
@@ -36,6 +38,9 @@ interface OneVsOneBoardProps {
 const OneVsOneBoard: React.FC<OneVsOneBoardProps> = (props) => {
   return (
     <section className={styles["one-vs-one-board"]}>
+      <h2>
+        Round {props.matchIndex + 1} / {props.matchCount}
+      </h2>
       <div className={styles["profiles"]}>
         <PlayerProfile
           {...props.players[0]}
