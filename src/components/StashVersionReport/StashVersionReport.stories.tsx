@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import StashVersionReport from "./StashVersionReport";
 import { expect, within } from "storybook/test";
+import { ApolloError } from "@apollo/client";
 
 const meta = {
   title: "Components/Stash Version Report",
@@ -32,6 +33,44 @@ export const Connected: Story = {
     const canvas = within(canvasElement);
     const connectStatusText =
       canvas.getByText<HTMLElement>(/Connected to Stash/i);
+    expect(connectStatusText).toBeInTheDocument();
+  },
+};
+
+export const Error: Story = {
+  args: {
+    request: {
+      loading: false,
+      data: undefined,
+      error: {
+        ...new ApolloError({}),
+        name: "Apollo Error",
+        message: "Response not successful: Received status code 422",
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const connectStatusText = canvas.getByText<HTMLElement>(
+      /Unable to connect to Stash. Please check your connection./i
+    );
+    expect(connectStatusText).toBeInTheDocument();
+  },
+};
+
+export const Loading: Story = {
+  args: {
+    request: {
+      loading: true,
+      data: undefined,
+      error: undefined,
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const connectStatusText = canvas.getByText<HTMLElement>(
+      /Attempting to connect to Stash.../i
+    );
     expect(connectStatusText).toBeInTheDocument();
   },
 };

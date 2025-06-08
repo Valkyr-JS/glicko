@@ -2,6 +2,8 @@ import React from "react";
 import type { OperationVariables, QueryResult } from "@apollo/client";
 import type { StashVersion } from "@/apollo/schema";
 import styles from "./StashVersionReport.module.scss";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCircle, faSpinnerThird } from "@fortawesome/pro-solid-svg-icons";
 
 interface StashVersionReportProps {
   request: {
@@ -14,15 +16,36 @@ interface StashVersionReportProps {
 const StashVersionReport: React.FC<StashVersionReportProps> = (props) => {
   console.log(props);
 
-  const connectionSuccessful = !props.request.loading && !props.request.error;
+  if (props.request.loading) {
+    return (
+      <div className={styles.VersionReport}>
+        <FontAwesomeIcon className="mr-2" icon={faSpinnerThird} spin />
+        <span>Attempting to connect to Stash...</span>
+      </div>
+    );
+  } else if (props.request.error) {
+    return (
+      <div className={styles.VersionReport}>
+        <FontAwesomeIcon
+          className="mr-2"
+          icon={faCircle}
+          color="var(--danger)"
+        />
+        <span>Unable to connect to Stash. Please check your connection.</span>
+      </div>
+    );
+  }
 
-  const connectionMessage = connectionSuccessful ? (
-    <div>Connected to Stash</div>
-  ) : (
-    <div>Unable to connect to Stash. Please check your connection.</div>
+  return (
+    <div className={styles.VersionReport}>
+      <FontAwesomeIcon
+        className="mr-2"
+        icon={faCircle}
+        color="var(--success)"
+      />
+      <span>Connected to Stash.</span>
+    </div>
   );
-
-  return <div className={styles.VersionReport}>{connectionMessage}</div>;
 };
 
 export default StashVersionReport;
