@@ -201,13 +201,15 @@ const HomePage: React.FC<HomePageProps> = ({
             </li>
           </ul>
         </nav>
-        <StashVersionReport
-          request={{
-            data: props.versionData,
-            error: props.versionError,
-            loading: props.versionLoading,
-          }}
-        />
+        <div className={styles.report}>
+          <StashVersionReport
+            request={{
+              data: props.versionData,
+              error: props.versionError,
+              loading: props.versionLoading,
+            }}
+          />
+        </div>
         <footer>
           <a href="https://github.com/Valkyr-JS/glicko">
             <FontAwesomeIcon icon={faGithub} />
