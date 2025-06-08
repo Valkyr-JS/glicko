@@ -17,6 +17,7 @@ const meta = {
     clickSkipHandler: fn(),
     clickStopHandler: fn(),
     clickUndoHandler: fn(),
+    matchCount: 5,
     matchIndex: 0,
     players: [
       {
