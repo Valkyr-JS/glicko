@@ -15,8 +15,6 @@ interface StashVersionReportProps {
 }
 
 const StashVersionReport: React.FC<StashVersionReportProps> = (props) => {
-  console.log(props);
-
   if (props.request.loading) {
     return (
       <div className={styles.VersionReport}>
