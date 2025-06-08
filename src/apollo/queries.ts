@@ -6,6 +6,7 @@ export const GET_PERFORMER_IMAGE = gql`
       filter: { per_page: 1, sort: "random" }
       image_filter: {
         performers: { value: [$performerID], modifier: INCLUDES }
+        orientation: { value: PORTRAIT }
         id: { value: $currentImageID, modifier: NOT_EQUALS }
       }
     ) {
