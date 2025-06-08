@@ -142,13 +142,16 @@ const HomePage: React.FC<HomePageProps> = ({
     setAttemptNavigate(true);
   };
 
-  const newTournamentLoading = fetchLoading && !props.inProgress;
+  const newTournamentLoading =
+    props.versionLoading || (fetchLoading && !props.inProgress);
+
+  const newTournamentDisabled = !!props.versionError || newTournamentLoading;
 
   const newTournamentButton = (
     <button
       type="button"
       className={newTournamentClasses}
-      disabled={newTournamentLoading}
+      disabled={newTournamentDisabled}
       onClick={handleNewTournament}
     >
       {newTournamentLoading ? (
@@ -174,6 +177,7 @@ const HomePage: React.FC<HomePageProps> = ({
     <button
       type="button"
       className="btn btn-secondary"
+      disabled={props.versionLoading || !!props.versionError}
       onClick={handleChangeSettings}
     >
       Tournament settings

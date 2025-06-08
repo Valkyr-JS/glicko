@@ -181,3 +181,45 @@ export const NotEnoughPerformers: Story = {
     });
   },
 };
+
+export const IsConnecting: Story = {
+  args: {
+    versionLoading: true,
+    inProgress: false,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const newBtn = canvas.getByRole("button", {
+      name: "New tournament",
+    });
+    const settingsBtn = canvas.getByRole("button", {
+      name: "Tournament settings",
+    });
+
+    expect(newBtn).toBeDisabled();
+    expect(settingsBtn).toBeDisabled();
+  },
+};
+
+export const UnableToConnect: Story = {
+  args: {
+    versionError: {
+      ...new ApolloError({}),
+      name: "Apollo Error",
+      message: "Response not successful: Received status code 422",
+    },
+    inProgress: false,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const newBtn = canvas.getByRole("button", {
+      name: "New tournament",
+    });
+    const settingsBtn = canvas.getByRole("button", {
+      name: "Tournament settings",
+    });
+
+    expect(newBtn).toBeDisabled();
+    expect(settingsBtn).toBeDisabled();
+  },
+};
