@@ -35,8 +35,8 @@ function App() {
   const [matchIndex, setMatchIndex] = useState(0);
   const [matchList, setMatchList] = useState<Match[]>([]);
   const [filters, setFilters] = useState<PlayerFilters>({
-    genders: ["FEMALE"],
-    limit: 10,
+    genders: [],
+    limit: 15,
   });
 
   const queryStashVersion = useQuery(GET_STASH_VERSION);
