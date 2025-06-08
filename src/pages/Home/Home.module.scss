@@ -9,6 +9,7 @@
   grid-template-rows:
     [home-top header-top] auto[header-bottom
     nav-top] auto [nav-bottom
+    report-top] max-content [report-bottom
     footer-top] max-content [footer-bottom home-bottom];
   flex-direction: column;
   align-items: center;

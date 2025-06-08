@@ -6,15 +6,21 @@ import { faHand } from "@fortawesome/pro-solid-svg-icons/faHand";
 import { faSpinnerThird } from "@fortawesome/pro-solid-svg-icons/faSpinnerThird";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { default as cx } from "classnames";
-import type { StashFindPerformersResultType } from "@/apollo/schema";
+import type {
+  StashFindPerformersResultType,
+  StashVersion,
+} from "@/apollo/schema";
 import Modal from "@/components/Modal/Modal";
 import type { PageProps } from "../../../types/global";
 import styles from "./Home.module.scss";
+import StashVersionReport from "@/components/StashVersionReport/StashVersionReport";
 
 type performerFetchRequest = QueryResult<
   StashFindPerformersResultType,
   OperationVariables
 >;
+
+type versionFetchRequest = QueryResult<StashVersion, OperationVariables>;
 
 interface HomePageProps extends PageProps {
   /** The data returned by a successful performers fetch request. */
@@ -28,6 +34,12 @@ interface HomePageProps extends PageProps {
   /** Handler for starting a new tournament. The resolved boolean dictates
    * whether a new tournament is ready to start. */
   startNewTournamentHandler: () => Promise<void>;
+  /** The data returned by a successful version fetch request. */
+  versionData: StashVersion;
+  /** The Apollo error returned by the version fetch request. */
+  versionError: versionFetchRequest["error"];
+  /** The Apollo error returned by the version fetch request. */
+  versionLoading: boolean;
 }
 
 const HomePage: React.FC<HomePageProps> = ({
@@ -189,6 +201,13 @@ const HomePage: React.FC<HomePageProps> = ({
             </li>
           </ul>
         </nav>
+        <StashVersionReport
+          request={{
+            data: props.versionData,
+            error: props.versionError,
+            loading: props.versionLoading,
+          }}
+        />
         <footer>
           <a href="https://github.com/Valkyr-JS/glicko">
             <FontAwesomeIcon icon={faGithub} />

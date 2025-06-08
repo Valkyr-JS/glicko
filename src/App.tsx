@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useLazyQuery } from "@apollo/client";
+import { useLazyQuery, useQuery } from "@apollo/client";
 import { Glicko2 } from "glicko2";
 import type {
   GlickoPlayer,
@@ -8,7 +8,11 @@ import type {
   PlayerData,
   PlayerFilters,
 } from "@/types/global";
-import { GET_PERFORMER_IMAGE, GET_PERFORMERS } from "./apollo/queries";
+import {
+  GET_PERFORMER_IMAGE,
+  GET_PERFORMERS,
+  GET_STASH_VERSION,
+} from "./apollo/queries";
 import {
   type StashFindImages,
   type StashFindPerformersResultType,
@@ -34,6 +38,8 @@ function App() {
     genders: ["FEMALE"],
     limit: 10,
   });
+
+  const queryStashVersion = useQuery(GET_STASH_VERSION);
 
   const [fetchPerformers, fetchPerformersResponse] =
     useLazyQuery<StashFindPerformersResultType>(GET_PERFORMERS, {
@@ -202,6 +208,9 @@ function App() {
           fetchLoading={fetchPerformersResponse.loading}
           setActivePage={setActivePage}
           startNewTournamentHandler={handleStartNewTournament}
+          versionData={queryStashVersion.data ?? null}
+          versionError={queryStashVersion.error}
+          versionLoading={queryStashVersion.loading}
         />
       );
 
