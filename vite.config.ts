@@ -10,6 +10,13 @@ export default defineConfig({
   build: {
     emptyOutDir: true,
     outDir: "./dist/app",
+    rollupOptions: {
+      output: {
+        entryFileNames: "assets/[name].js",
+        chunkFileNames: "assets/[name].js",
+        assetFileNames: "assets/[name].[ext]"
+      }
+    }
   },
   define: {
     __APP_VERSION__: JSON.stringify(pkg.version),
