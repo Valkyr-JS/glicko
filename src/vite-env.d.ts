@@ -46,6 +46,6 @@ interface PageProps {
 /** Filters that dictate what Stash performers qualify for the game. */
 interface PerformerFilter {
   /** All specified genders will qualify for the game. All genders qualify if
-   * `undefined`. */
-  genders?: Gender[];
+   * the array is empty.. */
+  genders: Gender[];
 }
