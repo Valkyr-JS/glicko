@@ -30,6 +30,17 @@ enum GendersEnum {
 
 type Gender = `${GendersEnum}`;
 
+/** A match that has not yet been completed. An array containing the Stash IDs
+ * of the two performers. */
+type GlickoMatch = [p1ID: number, p2ID: number, p1Outcome: 0 | 1 | 0.5];
+
+/** A match that has been completed. An array containging the Stash IDs of the
+ * two performers, and the outcome as it relates to player 1 - `0` is a loss,
+ * `1` is a win, and `0.5` is a draw. */
+type GlickoMatchResult = [p1ID: number, p2ID: number, p1Outcome: 0 | 1 | 0.5];
+
+/** The data for a single performer in a match. */
+
 enum PagesEnum {
   HOME = "HOME",
   RESULTS = "RESULTS",
