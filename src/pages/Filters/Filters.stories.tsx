@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, fn, userEvent, within } from "storybook/test";
 import Filters from "./Filters";
 
-const defaultFilters: PerformerFilter = {
+const defaultFilters: PerformerFilters = {
   genders: [],
 };
 
@@ -10,8 +10,8 @@ const meta = {
   title: "Pages/Filters",
   component: Filters,
   args: {
-    filter: defaultFilters,
-    saveSettingsHandler: fn(),
+    filters: defaultFilters,
+    saveFiltersHandler: fn(),
     setActivePage: fn(),
   },
 } satisfies Meta<typeof Filters>;
@@ -21,7 +21,7 @@ type Story = StoryObj<typeof meta>;
 
 export const CancelChangedSettings: Story = {
   args: {
-    filter: { ...defaultFilters, genders: [] },
+    filters: { ...defaultFilters, genders: [] },
   },
   play: async ({ canvasElement, step }) => {
     const canvas = within(canvasElement);

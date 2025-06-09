@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useQuery } from "@apollo/client";
+import { ZodError } from "zod/v4";
 import { GET_STASH_VERSION } from "./apollo/queries";
 import HomePage from "./pages/Home/Home";
 import { StashVersionSchema } from "./apollo/schema";
-import { ZodError } from "zod/v4";
-// import SettingsPage from "./pages/Settings/Settings";
+import FiltersPage from "./pages/Filters/Filters";
 // import TournamentPage from "./pages/Tournament/Tournament";
 // import ResultsPage from "./pages/Results/ResultsPage";
 
@@ -14,7 +14,9 @@ function App() {
   const [activePage, setActivePage] = useState<Pages>("HOME");
   const [gameError, setGameError] = useState<GameError | null>(null);
   const [gameLoading] = useState(false);
-  // const [performerFilter] = useState<PerformerFilter>({})
+  const [performerFilters, setPerformerFilters] = useState<PerformerFilters>({
+    genders: [],
+  });
 
   const queryStashVersion = useQuery(GET_STASH_VERSION);
   try {
@@ -28,6 +30,12 @@ function App() {
       });
     }
   }
+
+  /* ------------------------------------------ Handlers ------------------------------------------ */
+
+  /** Handler for saving changing to the performer filters. */
+  const handleSaveFilters = (updatedFilters: PerformerFilters) =>
+    setPerformerFilters(updatedFilters);
 
   /* ------------------------------------------- Router ------------------------------------------- */
 
@@ -45,6 +53,15 @@ function App() {
         />
       );
 
+    case "FILTERS":
+      return (
+        <FiltersPage
+          filters={performerFilters}
+          saveFiltersHandler={handleSaveFilters}
+          setActivePage={setActivePage}
+        />
+      );
+
     // case "RESULTS":
     //   return (
     //     <ResultsPage
@@ -53,17 +70,6 @@ function App() {
     //       players={players}
     //       setActivePage={setActivePage}
     //       wipeTournamentHandler={handleWipeTournament}
-    //     />
-    //   );
-
-    // case "SETTINGS":
-    //   return (
-    //     <SettingsPage
-    //       activePage={activePage}
-    //       filters={filters}
-    //       inProgress={!!tournament}
-    //       saveSettingsHandler={handleSaveSettings}
-    //       setActivePage={setActivePage}
     //     />
     //   );
 

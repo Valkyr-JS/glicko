@@ -5,15 +5,15 @@ import CheckboxGroup from "@/components/forms/CheckboxGroup/CheckboxGroup";
 import Modal from "@/components/Modal/Modal";
 import styles from "./Filters.module.scss";
 
-interface SettingsPageProps extends PageProps {
+interface FiltersPageProps extends PageProps {
   /** The current performer filters. */
-  filter: PerformerFilter;
-  /** The handler for updating the tournament filters. */
-  saveSettingsHandler: (updatedFilters: PerformerFilter) => void;
+  filters: PerformerFilters;
+  /** The handler for updating the performer filters. */
+  saveFiltersHandler: (updatedFilters: PerformerFilters) => void;
 }
 
-const SettingsPage: React.FC<SettingsPageProps> = (props) => {
-  const [settingsChanged, setSettingsChanged] = useState(false);
+const FiltersPage: React.FC<FiltersPageProps> = (props) => {
+  const [filtersChanged, setFiltersChanged] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
 
   const classes = cx("container", styles.Filters);
@@ -26,11 +26,11 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
     const formData = new FormData(formRef.current);
     const currentFilters = convertFormDataToPlayerFilters(formData);
     const filtersHaveChanged = !comparePlayerFilters(
-      props.filter,
+      props.filters,
       currentFilters
     );
 
-    setSettingsChanged(filtersHaveChanged);
+    setFiltersChanged(filtersHaveChanged);
   };
 
   /* --------------------------------------- Cancel changes --------------------------------------- */
@@ -40,7 +40,7 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
   /** Handler for clicking the cancel button at the bottom of the page. */
   const handleCancel: React.MouseEventHandler = () => {
     if (!formRef.current) return props.setActivePage("HOME");
-    if (settingsChanged) setShowCancelModal(true);
+    if (filtersChanged) setShowCancelModal(true);
     else props.setActivePage("HOME");
   };
 
@@ -55,7 +55,7 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
       );
 
       // Save settings to the App control state
-      props.saveSettingsHandler(updatedFilters);
+      props.saveFiltersHandler(updatedFilters);
     }
   };
 
@@ -84,39 +84,40 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
             title="Genders"
             checkboxes={[
               {
-                isChecked: props.filter.genders.includes("MALE") ?? false,
+                isChecked: props.filters.genders.includes("MALE") ?? false,
                 id: "genderMale",
                 label: "Male",
                 name: "gender-male",
               },
               {
-                isChecked: props.filter.genders.includes("FEMALE") ?? false,
+                isChecked: props.filters.genders.includes("FEMALE") ?? false,
                 id: "genderFemale",
                 label: "Female",
                 name: "gender-female",
               },
               {
                 isChecked:
-                  props.filter.genders.includes("TRANSGENDER_MALE") ?? false,
+                  props.filters.genders.includes("TRANSGENDER_MALE") ?? false,
                 id: "genderTransgenderMale",
                 label: "Transgender male",
                 name: "gender-transgender_male",
               },
               {
                 isChecked:
-                  props.filter.genders.includes("TRANSGENDER_FEMALE") ?? false,
+                  props.filters.genders.includes("TRANSGENDER_FEMALE") ?? false,
                 id: "genderTransgenderFemale",
                 label: "Transgender Female",
                 name: "gender-transgender_female",
               },
               {
-                isChecked: props.filter.genders.includes("INTERSEX") ?? false,
+                isChecked: props.filters.genders.includes("INTERSEX") ?? false,
                 id: "genderIntersex",
                 label: "Intersex",
                 name: "gender-intersex",
               },
               {
-                isChecked: props.filter.genders.includes("NON_BINARY") ?? false,
+                isChecked:
+                  props.filters.genders.includes("NON_BINARY") ?? false,
                 id: "genderNonBinary",
                 label: "Non-Binary",
                 name: "gender-non_binary",
@@ -125,8 +126,8 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
           >
             <small>
               <p className="mt-2">
-                Select all the genders that qualify for the tournament.
-                Selecting none will qualify any gender.
+                Select all the genders that qualify for the game. Selecting none
+                will qualify any gender.
               </p>
             </small>
           </CheckboxGroup>
@@ -141,7 +142,7 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
             <button
               type="submit"
               className="btn btn-primary"
-              disabled={!settingsChanged}
+              disabled={!filtersChanged}
             >
               Save
             </button>
@@ -178,22 +179,22 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
   );
 };
 
-export default SettingsPage;
+export default FiltersPage;
 
 /* ---------------------------------------------------------------------------------------------- */
 /*                                            Functions                                           */
 /* ---------------------------------------------------------------------------------------------- */
 
 /** Convert data from the settings form into PlayerFilters data. */
-const convertFormDataToPlayerFilters = (data: FormData): PerformerFilter => {
+const convertFormDataToPlayerFilters = (data: FormData): PerformerFilters => {
   const formJson = Object.fromEntries(data.entries());
 
   const genders = Object.keys(formJson)
     .filter((p) => p.match("gender-"))
     .map((p) => p.split("gender-")[1].toUpperCase());
 
-  const updatedFilters: PerformerFilter = {
-    genders: genders as PerformerFilter["genders"],
+  const updatedFilters: PerformerFilters = {
+    genders: genders as PerformerFilters["genders"],
   };
 
   return updatedFilters;
@@ -201,8 +202,8 @@ const convertFormDataToPlayerFilters = (data: FormData): PerformerFilter => {
 
 /** Compares two sets of player filters for equality. */
 const comparePlayerFilters = (
-  setA: PerformerFilter,
-  setB: PerformerFilter
+  setA: PerformerFilters,
+  setB: PerformerFilters
 ): boolean => {
   // Genders
   const setAGenders = JSON.stringify(setA.genders.sort());
