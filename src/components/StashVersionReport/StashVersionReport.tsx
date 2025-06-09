@@ -52,7 +52,7 @@ const StashVersionReport: React.FC<StashVersionReportProps> = (props) => {
       <FontAwesomeIcon
         className="mr-2"
         icon={faCircle}
-        color={"var(--green)"}
+        color={"var(--success)"}
       />
       This version is fully compatible with Glicko.
     </div>
