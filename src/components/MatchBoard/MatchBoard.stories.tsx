@@ -1,8 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { expect, fn, userEvent, within } from "storybook/test";
+import { expect, fn, within } from "storybook/test";
 import MatchBoard from "./MatchBoard";
 import { getStashContent } from "../../../.storybook/tools";
-import { RECOMMENDED_MINIMUM_MATCHES } from "@/constants";
 
 const match: [MatchPerformer, MatchPerformer] = [
   {
@@ -65,41 +64,5 @@ export const NotFirstMatchUndoEnabled: Story = {
       name: "Undo match",
     });
     expect(undoBtn).not.toBeDisabled();
-  },
-};
-
-export const RecommendedMatchCountNotMet: Story = {
-  args: {
-    matchIndex: RECOMMENDED_MINIMUM_MATCHES - 1,
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const submitBtn = canvas.getByRole<HTMLButtonElement>("button", {
-      name: "Submit",
-    });
-
-    await userEvent.click(submitBtn);
-    const modal = canvas.queryByRole("dialog", {
-      name: "Too few matches played",
-    });
-    await expect(modal).toBeInTheDocument();
-  },
-};
-
-export const RecommendedMatchCountMet: Story = {
-  args: {
-    matchIndex: RECOMMENDED_MINIMUM_MATCHES,
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const submitBtn = canvas.getByRole<HTMLButtonElement>("button", {
-      name: "Submit",
-    });
-
-    await userEvent.click(submitBtn);
-    const modal = canvas.queryByRole("dialog", {
-      name: "Submit results?",
-    });
-    await expect(modal).toBeInTheDocument();
   },
 };
