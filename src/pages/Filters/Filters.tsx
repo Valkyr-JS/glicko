@@ -4,8 +4,8 @@ import { default as cx } from "classnames";
 import CheckboxGroup from "@/components/forms/CheckboxGroup/CheckboxGroup";
 import NumberInput from "@/components/forms/NumberInput/NumberInput";
 import Modal from "@/components/Modal/Modal";
-import type { PageProps, PlayerFilters } from "@/types/global";
-import styles from "./Settings.module.scss";
+import type { PlayerFilters } from "@/types/global";
+import styles from "./Filters.module.scss";
 
 interface SettingsPageProps extends PageProps {
   /** The current filters. */
@@ -29,7 +29,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({
     if (shouldNavigate) setActivePage("HOME");
   }, [setActivePage, shouldNavigate]);
 
-  const classes = cx("container", styles.Settings);
+  const classes = cx("container", styles.Filters);
 
   /* --------------------------------------- General changes -------------------------------------- */
 

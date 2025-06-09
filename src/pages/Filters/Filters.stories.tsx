@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, fn, userEvent, within } from "storybook/test";
-import Settings from "./Settings";
+import Filters from "./Filters";
 
 const defaultFilters = {
   genders: [],
@@ -8,16 +8,15 @@ const defaultFilters = {
 };
 
 const meta = {
-  title: "Pages/Settings",
-  component: Settings,
+  title: "Pages/Filters",
+  component: Filters,
   args: {
-    activePage: "SETTINGS",
     filters: defaultFilters,
     inProgress: false,
     saveSettingsHandler: fn(),
     setActivePage: fn(),
   },
-} satisfies Meta<typeof Settings>;
+} satisfies Meta<typeof Filters>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
