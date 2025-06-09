@@ -1,55 +1,53 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import TournamentPage from "./Tournament";
-import mockPerformers from "../../mocks/Performers.json";
-import { Glicko2 } from "glicko2";
-import { getStashContent } from "../../../.storybook/tools";
-import { createRoundRobinMatchList } from "@/helpers/gameplay";
 import { expect, fn, userEvent, within } from "storybook/test";
-import type { GlickoPlayer } from "@/types/global";
+import GamePage from "./Tournament";
+import { getStashContent } from "../../../.storybook/tools";
 
-const tournament = new Glicko2();
-const matchList = createRoundRobinMatchList(mockPerformers.length);
-const players = mockPerformers.map((p) => ({
-  ...p,
-  coverImg: getStashContent(p.coverImg),
-  glicko: tournament.makePlayer(1500) as GlickoPlayer,
-  imagesAvailable: true,
-  initialRating: p.custom_fields.glicko_rating,
-}));
+const match = [
+  {
+    coverImg: getStashContent("/performer/12/image"),
+    id: 12,
+    imagesAvailable: true,
+    initialRating: 1769,
+    name: "Danielle",
+  },
+  {
+    coverImg: getStashContent("/performer/124/image"),
+    id: 124,
+    imagesAvailable: true,
+    initialRating: 1824,
+    name: "Lily",
+  },
+];
 
 const meta = {
-  title: "Pages/Tournament",
-  component: TournamentPage,
+  title: "Pages/Game",
+  component: GamePage,
   args: {
-    activePage: "TOURNAMENT",
     changeImageHandler: fn(),
-    declareDrawHandler: fn(),
-    matchIndex: 0,
-    matchList,
-    players,
-    processResultsHandler: fn(),
-    selectWinnerHandler: fn(),
+    match,
+    results: [],
     setActivePage: fn(),
+    setDrawHandler: fn(),
+    setWinnerHandler: fn(),
+    submitHandler: fn(),
     undoMatchHandler: fn(),
-    wipeTournamentHandler: fn(),
+    wipeResultsHandler: fn(),
   },
-} satisfies Meta<typeof TournamentPage>;
+} satisfies Meta<typeof GamePage>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const NewTournament: Story = {};
-
 export const AltImagesAvailable: Story = {
   args: {
-    matchList: createRoundRobinMatchList(2),
-    players: [
+    match: [
       {
-        ...players[0],
+        ...match[0],
         imagesAvailable: true,
       },
       {
-        ...players[1],
+        ...match[1],
         imagesAvailable: true,
       },
     ],
@@ -57,7 +55,7 @@ export const AltImagesAvailable: Story = {
   play: async ({ args, canvasElement }) => {
     const canvas = within(canvasElement);
     const imgButton = canvas.getByRole<HTMLButtonElement>("button", {
-      name: "Change image for " + args.players[0].name,
+      name: "Change image for " + args.match[0].name,
     });
 
     expect(imgButton).not.toBeDisabled();
@@ -66,14 +64,13 @@ export const AltImagesAvailable: Story = {
 
 export const AltImagesUnavailable: Story = {
   args: {
-    matchList: createRoundRobinMatchList(2),
-    players: [
+    match: [
       {
-        ...players[0],
+        ...match[0],
         imagesAvailable: false,
       },
       {
-        ...players[1],
+        ...match[1],
         imagesAvailable: false,
       },
     ],
@@ -81,7 +78,7 @@ export const AltImagesUnavailable: Story = {
   play: async ({ args, canvasElement }) => {
     const canvas = within(canvasElement);
     const imgButton = canvas.getByRole<HTMLButtonElement>("button", {
-      name: "No alternative images available for " + args.players[0].name,
+      name: "No alternative images available for " + args.match[0].name,
     });
 
     expect(imgButton).toBeDisabled();
@@ -90,14 +87,13 @@ export const AltImagesUnavailable: Story = {
 
 export const ConcludeTournament: Story = {
   args: {
-    matchList: createRoundRobinMatchList(2),
-    players: [
+    match: [
       {
-        ...players[0],
+        ...match[0],
         imagesAvailable: false,
       },
       {
-        ...players[1],
+        ...match[1],
         imagesAvailable: false,
       },
     ],
@@ -105,7 +101,7 @@ export const ConcludeTournament: Story = {
   play: async ({ args, canvasElement }) => {
     const canvas = within(canvasElement);
     const playerButton = canvas.getByRole<HTMLButtonElement>("button", {
-      name: args.players[0].name,
+      name: args.match[0].name,
     });
 
     await userEvent.click(playerButton);

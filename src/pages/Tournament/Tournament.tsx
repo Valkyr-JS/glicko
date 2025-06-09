@@ -11,8 +11,24 @@ import type {
   StashImage,
   StashPerformer,
 } from "@/apollo/schema";
-import type { Match, PlayerData } from "@/types/global";
 import styles from "./Tournament.module.scss";
+
+interface MatchPerformer {
+  /** The path to the performer profile image in Stash */
+  coverImg: string;
+  /** The player's Stash App performer ID. */
+  id: number;
+  /** Dictates whether alternative images featuring the performer can be
+   * sourced. */
+  imagesAvailable: boolean;
+  /** The players' rating before the start of the tournament. */
+  initialRating: number;
+  /** The player's name. */
+  name: string;
+  /** The Stash ID of the image currently displayed for the performer. If
+   * undefined, the cover image should be displayed instead. */
+  imageID?: number;
+}
 
 interface TournamentPageProps extends PageProps {
   /** Handler for setting a new performer image */
@@ -27,7 +43,7 @@ interface TournamentPageProps extends PageProps {
   /** The list of matches, including scores if they have been played. */
   matchList: Match[];
   /** The data for all players involved in the tournament. */
-  players: PlayerData[];
+  players: [MatchPerformer, MatchPerformer];
   /** Handle for updating the tournament with the match results */
   processResultsHandler: () => void;
   /** Handler for selecting the winner of a match. */
