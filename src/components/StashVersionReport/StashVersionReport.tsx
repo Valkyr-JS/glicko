@@ -36,7 +36,7 @@ const StashVersionReport: React.FC<StashVersionReportProps> = (props) => {
   }
 
   const [vMajor, vMinor, vPatch] = getStashVersionBreakdown(
-    props.request.data?.version.version ?? "vxx.yy.zz"
+    props.request.data?.version?.version ?? "vxx.yy.zz"
   );
 
   const versionString = vMajor + "." + vMinor + "." + vPatch;

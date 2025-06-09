@@ -11,7 +11,7 @@ import type {
   StashImage,
   StashPerformer,
 } from "@/apollo/schema";
-import type { Match, PageProps, PlayerData } from "@/types/global";
+import type { Match, PlayerData } from "@/types/global";
 import styles from "./Tournament.module.scss";
 
 interface TournamentPageProps extends PageProps {

@@ -27,13 +27,17 @@ export const StashPerformerSchema = z.object({
 
 export type StashPerformer = z.infer<typeof StashPerformerSchema>;
 
-export const StashVersionSchema = z.object({
-  version: z.object({
-    build_time: z.string(),
-    hash: z.string(),
-    version: z.string(),
-  }),
-});
+export const StashVersionSchema = z
+  .object({
+    version: z
+      .object({
+        build_time: z.string(),
+        hash: z.string(),
+        version: z.string(),
+      })
+      .partial(),
+  })
+  .partial();
 
 export type StashVersion = z.infer<typeof StashVersionSchema>;
 
