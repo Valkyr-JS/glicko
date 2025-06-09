@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useQuery } from "@apollo/client";
 import { GET_STASH_VERSION } from "./apollo/queries";
 import HomePage from "./pages/Home/Home";
+import { StashVersionSchema } from "./apollo/schema";
+import { ZodError } from "zod/v4";
 // import SettingsPage from "./pages/Settings/Settings";
 // import TournamentPage from "./pages/Tournament/Tournament";
 // import ResultsPage from "./pages/Results/ResultsPage";
@@ -10,10 +12,21 @@ function App() {
   /* -------------------------------------- State management -------------------------------------- */
 
   const [activePage, setActivePage] = useState<Pages>("HOME");
-  const [gameError] = useState<GameError | null>(null);
+  const [gameError, setGameError] = useState<GameError | null>(null);
   const [gameLoading] = useState(false);
 
   const queryStashVersion = useQuery(GET_STASH_VERSION);
+  try {
+    StashVersionSchema.safeParse(queryStashVersion);
+  } catch (error) {
+    if (error instanceof ZodError) {
+      setGameError({
+        name: error.name,
+        message: error.message,
+        details: error,
+      });
+    }
+  }
 
   /* ------------------------------------------- Router ------------------------------------------- */
 

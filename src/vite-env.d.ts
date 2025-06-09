@@ -9,7 +9,7 @@ interface GameError {
   /** The error code, if provided. */
   code?: string;
   /** Full details of the error, if provided. */
-  details?: string;
+  details?: unknown;
 }
 
 enum GameModeEnum {
@@ -31,4 +31,4 @@ interface PageProps {
   setActivePage: (page: Pages) => void;
 }
 
-type versionFetchRequest = QueryResult<StashVersion, OperationVariables>;
+type StashVersionFetchRequest = QueryResult<StashVersion, OperationVariables>;

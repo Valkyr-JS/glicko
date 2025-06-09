@@ -8,7 +8,7 @@ import { default as cx } from "classnames";
 import Modal from "@/components/Modal/Modal";
 import StashVersionReport from "@/components/StashVersionReport/StashVersionReport";
 import styles from "./Home.module.scss";
-import type { StashVersion } from "@/apollo/schema";
+import { type StashVersion } from "@/apollo/schema";
 
 interface HomePageProps extends PageProps {
   /** Any kind of game error that stop the user from playing. */
@@ -20,7 +20,7 @@ interface HomePageProps extends PageProps {
   /** The data returned by a successful Stash version fetch request. */
   versionData: StashVersion;
   /** The Apollo error returned by the Stash version fetch request. */
-  versionError: versionFetchRequest["error"];
+  versionError: StashVersionFetchRequest["error"];
   /** The Apollo error returned by the Stash version fetch request. */
   versionLoading: boolean;
 }
