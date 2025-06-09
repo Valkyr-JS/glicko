@@ -40,6 +40,22 @@ type GlickoMatch = [p1ID: number, p2ID: number, p1Outcome: 0 | 1 | 0.5];
 type GlickoMatchResult = [p1ID: number, p2ID: number, p1Outcome: 0 | 1 | 0.5];
 
 /** The data for a single performer in a match. */
+interface MatchPerformer {
+  /** The path to the performer profile image in Stash */
+  coverImg: string;
+  /** The player's Stash App performer ID. */
+  id: number;
+  /** Dictates whether alternative images featuring the performer can be
+   * sourced. */
+  imagesAvailable: boolean;
+  /** The players' rating before the start of the tournament. */
+  initialRating: number;
+  /** The player's name. */
+  name: string;
+  /** The Stash ID of the image currently displayed for the performer. If
+   * undefined, the cover image should be displayed instead. */
+  imageID?: number;
+}
 
 enum PagesEnum {
   HOME = "HOME",

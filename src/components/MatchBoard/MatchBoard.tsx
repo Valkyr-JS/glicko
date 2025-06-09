@@ -9,7 +9,6 @@ import { faSpinnerThird } from "@fortawesome/pro-solid-svg-icons/faSpinnerThird"
 import { faStop } from "@fortawesome/pro-solid-svg-icons/faStop";
 import { faTrophy } from "@fortawesome/pro-solid-svg-icons/faTrophy";
 import type { StashFindImages, StashPerformer } from "@/apollo/schema";
-import type { PlayerData } from "@/types/global";
 import styles from "./MatchBoard.module.scss";
 
 interface OneVsOneBoardProps {
@@ -25,31 +24,29 @@ interface OneVsOneBoardProps {
   clickSkipHandler: React.MouseEventHandler<HTMLButtonElement>;
   /** Handler for clicking the stop button. */
   clickStopHandler: React.MouseEventHandler<HTMLButtonElement>;
+  /** Handler for clicking the submit button. */
+  clickSubmitHandler: React.MouseEventHandler<HTMLButtonElement>;
   /** Handler for clicking the undo button. */
   clickUndoHandler: React.MouseEventHandler<HTMLButtonElement>;
-  /** The total number of matches in the tournament. */
-  matchCount: number;
-  /** The zero-based index of the current match in the match list. */
+  /** The zero-based index of the match in the current game session. */
   matchIndex: number;
   /** The players in the current match. */
-  players: [PlayerData, PlayerData];
+  match: [MatchPerformer, MatchPerformer];
 }
 
 const OneVsOneBoard: React.FC<OneVsOneBoardProps> = (props) => {
   return (
     <section className={styles["one-vs-one-board"]}>
-      <h2>
-        Round {props.matchIndex + 1} / {props.matchCount}
-      </h2>
+      <h2>Round {props.matchIndex + 1}</h2>
       <div className={styles["profiles"]}>
         <PlayerProfile
-          {...props.players[0]}
+          {...props.match[0]}
           changeImageHandler={props.changeImageHandler}
           clickSelectHandler={props.clickSelectHandler}
           position={0}
         />
         <PlayerProfile
-          {...props.players[1]}
+          {...props.match[1]}
           changeImageHandler={props.changeImageHandler}
           clickSelectHandler={props.clickSelectHandler}
           position={1}
@@ -83,7 +80,7 @@ const OneVsOneBoard: React.FC<OneVsOneBoardProps> = (props) => {
 
 export default OneVsOneBoard;
 
-interface PlayerProfileProps extends PlayerData {
+interface PlayerProfileProps extends MatchPerformer {
   /** Executes when the user clicks to change the current player's image. */
   changeImageHandler: (
     performerID: StashPerformer["id"]
@@ -123,7 +120,7 @@ const PlayerProfile = (props: PlayerProfileProps) => {
       <span className={styles["rating"]}>
         <FontAwesomeIcon icon={faTrophy} />{" "}
         <span className="sr-only">{props.name}'s rating: </span>
-        {props.glicko.getRating()}
+        {Math.round(props.initialRating)}
       </span>
       <button
         type="button"
