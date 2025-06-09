@@ -7,7 +7,6 @@ const meta = {
   title: "Pages/Home",
   component: Home,
   args: {
-    activePage: "HOME",
     gameError: undefined,
     gameLoading: false,
     setActivePage: fn(),

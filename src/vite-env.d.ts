@@ -28,7 +28,6 @@ enum PagesEnum {
 type Pages = `${PagesEnum}`;
 
 interface PageProps {
-  activePage: Pages;
   setActivePage: (page: Pages) => void;
 }
 

@@ -21,7 +21,6 @@ function App() {
     case "HOME":
       return (
         <HomePage
-          activePage={activePage}
           gameError={gameError}
           gameLoading={gameLoading}
           setActivePage={setActivePage}
