@@ -10,6 +10,7 @@ import { faStop } from "@fortawesome/pro-solid-svg-icons/faStop";
 import { faTrophy } from "@fortawesome/pro-solid-svg-icons/faTrophy";
 import type { StashFindImages, StashPerformer } from "@/apollo/schema";
 import styles from "./MatchBoard.module.scss";
+import { faSend } from "@fortawesome/pro-solid-svg-icons";
 
 interface OneVsOneBoardProps {
   /** Handler for clicking the change player image button. */
@@ -57,21 +58,45 @@ const OneVsOneBoard: React.FC<OneVsOneBoardProps> = (props) => {
           className="btn btn-secondary"
           disabled={props.matchIndex === 0}
           onClick={props.clickUndoHandler}
+          type="button"
         >
           <span className="sr-only">Undo match</span>
           <FontAwesomeIcon icon={faRotateLeft} />
         </button>
-        <button className="btn btn-danger" onClick={props.clickStopHandler}>
+        <button
+          className="btn btn-danger"
+          onClick={props.clickStopHandler}
+          type="button"
+        >
           <span className="sr-only">Abandon tournament</span>
           <FontAwesomeIcon icon={faStop} />
         </button>
-        <button className="btn btn-secondary" onClick={props.clickPauseHandler}>
+        <button
+          className="btn btn-secondary"
+          onClick={props.clickPauseHandler}
+          type="button"
+        >
           <span className="sr-only">Pause tournament</span>
           <FontAwesomeIcon icon={faPause} />
         </button>
-        <button className="btn btn-secondary" onClick={props.clickSkipHandler}>
+        <button
+          className="btn btn-secondary"
+          onClick={props.clickSkipHandler}
+          type="button"
+        >
           <span className="sr-only">Skip match</span>
           <FontAwesomeIcon icon={faForwardStep} />
+        </button>
+      </div>
+      <div className={styles["submit"]}>
+        <button
+          className="btn btn-primary"
+          disabled={props.matchIndex === 0}
+          onClick={props.clickSubmitHandler}
+          type="button"
+        >
+          <FontAwesomeIcon icon={faSend} className="mr-2" />
+          <span>Submit</span>
         </button>
       </div>
     </section>

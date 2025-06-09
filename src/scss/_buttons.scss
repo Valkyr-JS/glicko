@@ -1,6 +1,8 @@
 @use "./helpers";
 
+$accessible-size: helpers.pxToRem(40);
+
 @mixin minimum-size {
-  min-height: helpers.pxToRem(40);
-  min-width: helpers.pxToRem(40);
+  min-height: $accessible-size;
+  min-width: $accessible-size;
 }
