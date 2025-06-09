@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
+import { ApolloError } from "@apollo/client";
 import Home from "./Home";
 
 const meta = {
@@ -9,7 +10,6 @@ const meta = {
     activePage: "HOME",
     gameError: undefined,
     gameLoading: false,
-    gameMode: "infinite",
     setActivePage: fn(),
     startGameHandler: fn(),
     versionData: {
@@ -87,8 +87,8 @@ export const ConnectingToStash: Story = {
 export const UnableToConnect: Story = {
   args: {
     versionError: {
+      ...new ApolloError({}),
       name: "Apollo Error",
-      details: "Full error details",
       message: "Response not successful: Received status code 422",
     },
   },

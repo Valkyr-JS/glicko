@@ -1,7 +1,5 @@
 import { useState } from "react";
 import { useQuery } from "@apollo/client";
-import { Glicko2 } from "glicko2";
-import type { Pages } from "@/types/global";
 import { GET_STASH_VERSION } from "./apollo/queries";
 import HomePage from "./pages/Home/Home";
 // import SettingsPage from "./pages/Settings/Settings";
@@ -12,7 +10,8 @@ function App() {
   /* -------------------------------------- State management -------------------------------------- */
 
   const [activePage, setActivePage] = useState<Pages>("HOME");
-  const [tournament] = useState<Glicko2 | null>(null);
+  const [gameError] = useState<GameError | null>(null);
+  const [gameLoading] = useState(false);
 
   const queryStashVersion = useQuery(GET_STASH_VERSION);
 
@@ -23,12 +22,10 @@ function App() {
       return (
         <HomePage
           activePage={activePage}
-          inProgress={!!tournament}
-          fetchData={fetchPerformersResponse.data ?? null}
-          fetchError={fetchPerformersResponse.error}
-          fetchLoading={fetchPerformersResponse.loading}
+          gameError={gameError}
+          gameLoading={gameLoading}
           setActivePage={setActivePage}
-          startNewTournamentHandler={handleStartNewTournament}
+          startGameHandler={() => console.log("Start game")}
           versionData={queryStashVersion.data ?? null}
           versionError={queryStashVersion.error}
           versionLoading={queryStashVersion.loading}
