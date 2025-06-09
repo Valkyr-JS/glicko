@@ -27,6 +27,21 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+export const GameReady: Story = {
+  args: {
+    gameError: null,
+    gameLoading: false,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const startButton = canvas.getByRole("button", {
+      name: "Start",
+    });
+
+    expect(startButton).not.toBeDisabled();
+  },
+};
+
 export const GameLoading: Story = {
   args: {
     gameLoading: true,
@@ -63,6 +78,25 @@ export const GameError: Story = {
       });
       expect(modal).toBeInTheDocument();
     });
+  },
+};
+
+export const ConnectedToStash: Story = {
+  args: {
+    versionError: null,
+    versionLoading: false,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const startButton = canvas.getByRole("button", {
+      name: "Start",
+    });
+    const filtersBtn = canvas.getByRole("button", {
+      name: "Performer filters",
+    });
+
+    expect(startButton).not.toBeDisabled();
+    expect(filtersBtn).not.toBeDisabled();
   },
 };
 
