@@ -10,7 +10,7 @@ const meta = {
   title: "Pages/Filters",
   component: Filters,
   args: {
-    filters: defaultFilters,
+    filter: defaultFilters,
     saveSettingsHandler: fn(),
     setActivePage: fn(),
   },
@@ -21,7 +21,7 @@ type Story = StoryObj<typeof meta>;
 
 export const CancelChangedSettings: Story = {
   args: {
-    filters: { ...defaultFilters, genders: [] },
+    filter: { ...defaultFilters, genders: [] },
   },
   play: async ({ canvasElement, step }) => {
     const canvas = within(canvasElement);
@@ -91,31 +91,6 @@ export const SaveChangedSettings: Story = {
     await step("Check the button is no longer disabled.", () => {
       expect(saveBtn).not.toBeDisabled();
     });
-  },
-};
-
-export const SaveChangedSettingsInProgress: Story = {
-  args: {
-    inProgress: true,
-  },
-  play: async ({ context, canvasElement, step }) => {
-    const canvas = within(canvasElement);
-    const saveBtn = canvas.getByRole<HTMLButtonElement>("button", {
-      name: "Save",
-    });
-
-    if (SaveChangedSettings.play) await SaveChangedSettings.play(context);
-
-    await step(
-      "Click the 'Save' button and expect a modal to appear.",
-      async () => {
-        await userEvent.click(saveBtn);
-        const modal = canvas.getByRole("dialog", {
-          name: "Tournament progress will be lost",
-        });
-        await expect(modal).toBeInTheDocument();
-      }
-    );
   },
 };
 

@@ -1,61 +1,37 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { faHand } from "@fortawesome/pro-solid-svg-icons/faHand";
 import { default as cx } from "classnames";
 import CheckboxGroup from "@/components/forms/CheckboxGroup/CheckboxGroup";
-import NumberInput from "@/components/forms/NumberInput/NumberInput";
 import Modal from "@/components/Modal/Modal";
-import type { PlayerFilters } from "@/types/global";
 import styles from "./Filters.module.scss";
 
 interface SettingsPageProps extends PageProps {
-  /** The current filters. */
-  filters: PlayerFilters;
-  /** Dictates whether a tournament is in progress. */
-  inProgress: boolean;
+  /** The current performer filters. */
+  filter: PerformerFilter;
   /** The handler for updating the tournament filters. */
-  saveSettingsHandler: (updatedFilters: PlayerFilters) => void;
+  saveSettingsHandler: (updatedFilters: PerformerFilter) => void;
 }
 
-const SettingsPage: React.FC<SettingsPageProps> = ({
-  setActivePage,
-  ...props
-}) => {
+const SettingsPage: React.FC<SettingsPageProps> = (props) => {
   const [settingsChanged, setSettingsChanged] = useState(false);
-  const [shouldNavigate, setShouldNavigate] = useState(false);
-
   const formRef = useRef<HTMLFormElement>(null);
-
-  useEffect(() => {
-    if (shouldNavigate) setActivePage("HOME");
-  }, [setActivePage, shouldNavigate]);
 
   const classes = cx("container", styles.Filters);
 
   /* --------------------------------------- General changes -------------------------------------- */
 
   const onFormChange: React.FormEventHandler<HTMLFormElement> = () => {
-    if (!formRef.current) return setShouldNavigate(true);
+    if (!formRef.current) return props.setActivePage("HOME");
 
     const formData = new FormData(formRef.current);
     const currentFilters = convertFormDataToPlayerFilters(formData);
     const filtersHaveChanged = !comparePlayerFilters(
-      props.filters,
+      props.filter,
       currentFilters
     );
 
     setSettingsChanged(filtersHaveChanged);
   };
-
-  /* -------------------------------------------- Limit ------------------------------------------- */
-
-  // Only for getting the current value. Do not use to update the value or in
-  // form submission.
-  const [currentLimit, setCurrentLimit] = useState(props.filters.limit);
-  const limitSoftMax = 25;
-  const limitSoftMin = 15;
-
-  /** Get the number of round-robin matches based on the number of players.  */
-  const getLimitMatches = (p: number) => (p * (p - 1)) / 2;
 
   /* --------------------------------------- Cancel changes --------------------------------------- */
 
@@ -63,14 +39,12 @@ const SettingsPage: React.FC<SettingsPageProps> = ({
 
   /** Handler for clicking the cancel button at the bottom of the page. */
   const handleCancel: React.MouseEventHandler = () => {
-    if (!formRef.current) return setShouldNavigate(true);
+    if (!formRef.current) return props.setActivePage("HOME");
     if (settingsChanged) setShowCancelModal(true);
-    else setShouldNavigate(true);
+    else props.setActivePage("HOME");
   };
 
   /* ---------------------------------------- Save settings --------------------------------------- */
-
-  const [showInProgressModal, setShowInProgressModal] = useState(false);
 
   /** Save settings to the App control state. */
   const handleSaveToControl = () => {
@@ -89,21 +63,9 @@ const SettingsPage: React.FC<SettingsPageProps> = ({
   const handleSaveSettings: React.FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
 
-    // If there is a tournament in progress, render a modal.
-    if (props.inProgress) return setShowInProgressModal(true);
-
     // Save, then redirect to the homepage
     handleSaveToControl();
-    setShouldNavigate(true);
-  };
-
-  /** Handler for clicking the 'Continue' button in the modal for saving
-   * settings whilst a tournament is in progress */
-  const handleSaveSettingsInProgress: React.MouseEventHandler<
-    HTMLButtonElement
-  > = () => {
-    handleSaveToControl();
-    setShouldNavigate(true);
+    props.setActivePage("HOME");
   };
 
   /* ------------------------------------------ Component ----------------------------------------- */
@@ -117,76 +79,44 @@ const SettingsPage: React.FC<SettingsPageProps> = ({
           ref={formRef}
           onChange={onFormChange}
         >
-          <h1>Tournament settings</h1>
-          <NumberInput
-            id="playerLimit"
-            initialValue={props.filters.limit}
-            label="Performer limit"
-            name="player-limit"
-            min={2}
-            softMax={{
-              value: limitSoftMax,
-              warning: `Consider reducing the performer limit to ${limitSoftMax} or less.`,
-            }}
-            softMin={{
-              value: limitSoftMin,
-              warning: `Consider increasing the performer limit to ${limitSoftMin} or more.`,
-            }}
-            valueCallback={setCurrentLimit}
-          >
-            <small>
-              <p className="mt-2">
-                This is the maximum number of performers that will be pulled
-                from your Stash library. Less than {limitSoftMin} performers may
-                return inaccurate results. More than {limitSoftMax} performers
-                may cause the tournament to take a long time, or cause your
-                device to hang or crash at higher values.
-              </p>
-              <p>
-                {currentLimit} performers will generate a tournament of{" "}
-                {getLimitMatches(currentLimit)} matches.
-              </p>
-            </small>
-          </NumberInput>
+          <h1>Performer filters</h1>
           <CheckboxGroup
             title="Genders"
             checkboxes={[
               {
-                isChecked: props.filters.genders?.includes("MALE") ?? false,
+                isChecked: props.filter.genders.includes("MALE") ?? false,
                 id: "genderMale",
                 label: "Male",
                 name: "gender-male",
               },
               {
-                isChecked: props.filters.genders?.includes("FEMALE") ?? false,
+                isChecked: props.filter.genders.includes("FEMALE") ?? false,
                 id: "genderFemale",
                 label: "Female",
                 name: "gender-female",
               },
               {
                 isChecked:
-                  props.filters.genders?.includes("TRANSGENDER_MALE") ?? false,
+                  props.filter.genders.includes("TRANSGENDER_MALE") ?? false,
                 id: "genderTransgenderMale",
                 label: "Transgender male",
                 name: "gender-transgender_male",
               },
               {
                 isChecked:
-                  props.filters.genders?.includes("TRANSGENDER_FEMALE") ??
-                  false,
+                  props.filter.genders.includes("TRANSGENDER_FEMALE") ?? false,
                 id: "genderTransgenderFemale",
                 label: "Transgender Female",
                 name: "gender-transgender_female",
               },
               {
-                isChecked: props.filters.genders?.includes("INTERSEX") ?? false,
+                isChecked: props.filter.genders.includes("INTERSEX") ?? false,
                 id: "genderIntersex",
                 label: "Intersex",
                 name: "gender-intersex",
               },
               {
-                isChecked:
-                  props.filters.genders?.includes("NON_BINARY") ?? false,
+                isChecked: props.filter.genders.includes("NON_BINARY") ?? false,
                 id: "genderNonBinary",
                 label: "Non-Binary",
                 name: "gender-non_binary",
@@ -224,36 +154,6 @@ const SettingsPage: React.FC<SettingsPageProps> = ({
             element: "button",
             children: "No",
             className: "btn btn-secondary",
-            onClick: () => setShowInProgressModal(false),
-            type: "button",
-          },
-          {
-            element: "button",
-            className: "btn btn-danger",
-            children: "Yes",
-            onClick: handleSaveSettingsInProgress,
-            type: "button",
-          },
-        ]}
-        icon={faHand}
-        show={showInProgressModal}
-        title="Tournament progress will be lost"
-      >
-        <p>
-          A tournament is currently in progress. Changing your settings now will
-          cause the tournament's progress to be lost. This cannot be undone.
-        </p>
-        <p>
-          Are you sure you want to save your changes and lose all progress in
-          the current tournament?
-        </p>
-      </Modal>
-      <Modal
-        buttons={[
-          {
-            element: "button",
-            children: "No",
-            className: "btn btn-secondary",
             onClick: () => setShowCancelModal(false),
             type: "button",
           },
@@ -261,7 +161,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({
             element: "button",
             className: "btn btn-danger",
             children: "Yes",
-            onClick: () => setActivePage("HOME"),
+            onClick: () => props.setActivePage("HOME"),
             type: "button",
           },
         ]}
@@ -285,16 +185,15 @@ export default SettingsPage;
 /* ---------------------------------------------------------------------------------------------- */
 
 /** Convert data from the settings form into PlayerFilters data. */
-const convertFormDataToPlayerFilters = (data: FormData): PlayerFilters => {
+const convertFormDataToPlayerFilters = (data: FormData): PerformerFilter => {
   const formJson = Object.fromEntries(data.entries());
 
   const genders = Object.keys(formJson)
     .filter((p) => p.match("gender-"))
     .map((p) => p.split("gender-")[1].toUpperCase());
 
-  const updatedFilters: PlayerFilters = {
-    genders: genders as PlayerFilters["genders"],
-    limit: +formJson["player-limit"],
+  const updatedFilters: PerformerFilter = {
+    genders: genders as PerformerFilter["genders"],
   };
 
   return updatedFilters;
@@ -302,17 +201,14 @@ const convertFormDataToPlayerFilters = (data: FormData): PlayerFilters => {
 
 /** Compares two sets of player filters for equality. */
 const comparePlayerFilters = (
-  setA: PlayerFilters,
-  setB: PlayerFilters
+  setA: PerformerFilter,
+  setB: PerformerFilter
 ): boolean => {
   // Genders
   const setAGenders = JSON.stringify(setA.genders.sort());
   const setBGenders = JSON.stringify(setB.genders.sort());
 
   if (setAGenders !== setBGenders) return false;
-
-  // Limit
-  if (setA.limit !== setB.limit) return false;
 
   return true;
 };
