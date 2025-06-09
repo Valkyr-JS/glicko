@@ -14,6 +14,7 @@ function App() {
   const [activePage, setActivePage] = useState<Pages>("HOME");
   const [gameError, setGameError] = useState<GameError | null>(null);
   const [gameLoading] = useState(false);
+  // const [performerFilter] = useState<PerformerFilter>({})
 
   const queryStashVersion = useQuery(GET_STASH_VERSION);
   try {
