@@ -28,7 +28,6 @@ const meta = {
   },
   args: {
     changeImageHandler: fn(),
-    clickPauseHandler: fn(),
     clickSelectHandler: fn(),
     clickSkipHandler: fn(),
     clickStopHandler: fn(),

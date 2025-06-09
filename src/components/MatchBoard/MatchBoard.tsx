@@ -3,7 +3,6 @@ import type { OperationVariables, QueryResult } from "@apollo/client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faForwardStep } from "@fortawesome/pro-solid-svg-icons/faForwardStep";
 import { faImage } from "@fortawesome/pro-solid-svg-icons/faImage";
-import { faPause } from "@fortawesome/pro-solid-svg-icons/faPause";
 import { faRotateLeft } from "@fortawesome/pro-solid-svg-icons/faRotateLeft";
 import { faSpinnerThird } from "@fortawesome/pro-solid-svg-icons/faSpinnerThird";
 import { faStop } from "@fortawesome/pro-solid-svg-icons/faStop";
@@ -17,8 +16,6 @@ interface OneVsOneBoardProps {
   changeImageHandler: (
     performerID: StashPerformer["id"]
   ) => Promise<QueryResult<StashFindImages, OperationVariables>>;
-  /** Handler for clicking the pause button. */
-  clickPauseHandler: React.MouseEventHandler<HTMLButtonElement>;
   /** Executes when the user selects the winning player. */
   clickSelectHandler: (winner: 0 | 1) => void;
   /** Handler for clicking the skip button. */
@@ -70,14 +67,6 @@ const OneVsOneBoard: React.FC<OneVsOneBoardProps> = (props) => {
         >
           <span className="sr-only">Abandon tournament</span>
           <FontAwesomeIcon icon={faStop} />
-        </button>
-        <button
-          className="btn btn-secondary"
-          onClick={props.clickPauseHandler}
-          type="button"
-        >
-          <span className="sr-only">Pause tournament</span>
-          <FontAwesomeIcon icon={faPause} />
         </button>
         <button
           className="btn btn-secondary"
