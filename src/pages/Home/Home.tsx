@@ -5,10 +5,13 @@ import { faHand } from "@fortawesome/pro-solid-svg-icons/faHand";
 import { faSpinnerThird } from "@fortawesome/pro-solid-svg-icons/faSpinnerThird";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { default as cx } from "classnames";
+import type { StashVersion } from "@/apollo/schema";
+import type { OperationVariables, QueryResult } from "@apollo/client";
 import Modal from "@/components/Modal/Modal";
 import StashVersionReport from "@/components/StashVersionReport/StashVersionReport";
 import styles from "./Home.module.scss";
-import { type StashVersion } from "@/apollo/schema";
+
+type StashVersionFetchRequest = QueryResult<StashVersion, OperationVariables>;
 
 interface HomePageProps extends PageProps {
   /** Any kind of game error that stop the user from playing. */

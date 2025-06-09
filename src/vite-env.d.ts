@@ -1,4 +1,5 @@
 /// <reference types="vite/client" />
+
 declare const __APP_VERSION__: string;
 
 interface GameError {
@@ -30,5 +31,3 @@ type Pages = `${PagesEnum}`;
 interface PageProps {
   setActivePage: (page: Pages) => void;
 }
-
-type StashVersionFetchRequest = QueryResult<StashVersion, OperationVariables>;
