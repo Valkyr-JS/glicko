@@ -2,80 +2,52 @@ import React, { useState } from "react";
 import { default as cx } from "classnames";
 import type { OperationVariables, QueryResult } from "@apollo/client";
 import { faHand } from "@fortawesome/pro-solid-svg-icons/faHand";
-import { faPartyHorn } from "@fortawesome/pro-solid-svg-icons/faPartyHorn";
-import MatchBoard from "@/components/MatchBoard/MatchBoard";
-import Modal from "@/components/Modal/Modal";
-import ProgressBoard from "@/components/ProgressBoard";
 import type {
   StashFindImages,
   StashImage,
   StashPerformer,
 } from "@/apollo/schema";
+import MatchBoard from "@/components/MatchBoard/MatchBoard";
+import Modal from "@/components/Modal/Modal";
 import styles from "./Tournament.module.scss";
 
-interface MatchPerformer {
-  /** The path to the performer profile image in Stash */
-  coverImg: string;
-  /** The player's Stash App performer ID. */
-  id: number;
-  /** Dictates whether alternative images featuring the performer can be
-   * sourced. */
-  imagesAvailable: boolean;
-  /** The players' rating before the start of the tournament. */
-  initialRating: number;
-  /** The player's name. */
-  name: string;
-  /** The Stash ID of the image currently displayed for the performer. If
-   * undefined, the cover image should be displayed instead. */
-  imageID?: number;
-}
-
-interface TournamentPageProps extends PageProps {
+interface GamePageProps extends PageProps {
   /** Handler for setting a new performer image */
   changeImageHandler: (
     performerID: StashPerformer["id"],
     currentImageID: StashImage["id"]
   ) => Promise<QueryResult<StashFindImages, OperationVariables>>;
-  /** Handler for declaring a match a draw. */
-  declareDrawHandler: () => void;
+  /** The data for all players involved in the tournament. */
+  match: [MatchPerformer, MatchPerformer];
+  /** The list of match results, including scores. */
+  results: GlickoMatchResult[];
   /** The zero-based index of the current match in the match list. */
   matchIndex: number;
-  /** The list of matches, including scores if they have been played. */
-  matchList: Match[];
-  /** The data for all players involved in the tournament. */
-  players: [MatchPerformer, MatchPerformer];
-  /** Handle for updating the tournament with the match results */
-  processResultsHandler: () => void;
+  /** Handler for declaring a match a draw. */
+  setDrawHandler: () => void;
   /** Handler for selecting the winner of a match. */
-  selectWinnerHandler: (winner: 0 | 1) => void;
+  setWinnerHandler: (winner: 0 | 1) => void;
+  /** Handle for submitting the match results. */
+  submitHandler: () => void;
   /** Handler for reloading the previous match. */
   undoMatchHandler: () => void;
   /** Handler for clearing all tournament data. */
-  wipeTournamentHandler: () => void;
+  wipeResultsHandler: () => void;
 }
 
-const TournamentPage: React.FC<TournamentPageProps> = (props) => {
+const GamePage: React.FC<GamePageProps> = (props) => {
   const [showAbandonModal, setShowAbandonModal] = useState(false);
-  const [showConcludeModal, setShowConcludeModal] = useState(false);
 
-  if (!props.matchList.length) return null;
+  if (props.match.length !== 2) return null;
 
-  const currentMatch = props.matchList[props.matchIndex];
-  const playerA = props.players[currentMatch[0]];
-  const playerB = props.players[currentMatch[1]];
+  const playerA = props.match[0];
+  const playerB = props.match[1];
 
   /** Handler for clicking the change player image button. */
   const changeImageHandler = (performerID: StashPerformer["id"]) => {
-    const player = playerA.id === performerID.toString() ? playerA : playerB;
+    const player = playerA.id === performerID ? playerA : playerB;
     const currentImageID = player.imageID;
     return props.changeImageHandler(+player.id, +(currentImageID ?? 0));
-  };
-
-  /** Handler for clicking the pause button. */
-  const clickPauseHandler = () => {
-    // TODO - For now, just navigate home. This will trigger saving data to the
-    // Stash config when continuing tournaments is properly supported.
-    props.setActivePage("HOME");
   };
 
   /** Handler for confirming abandonment of the current tournament. */
@@ -90,35 +62,7 @@ const TournamentPage: React.FC<TournamentPageProps> = (props) => {
     props.setActivePage("HOME");
 
     // Clear all tournament data
-    props.wipeTournamentHandler();
-  };
-
-  /** Handler for selecting a winner in a match */
-  const handleSelectWinner = (winner: 0 | 1) => {
-    props.selectWinnerHandler(winner);
-
-    // Check if this is the final match, and activate the conclude tournament
-    // modal if it is.
-    if (props.matchIndex + 1 === props.matchList.length)
-      setShowConcludeModal(true);
-  };
-
-  /** Handler for declaring a match a draw. */
-  const handleSkipMatch = () => {
-    props.declareDrawHandler();
-
-    // Check if this is the final match, and activate the conclude tournament
-    // modal if it is.
-    if (props.matchIndex + 1 === props.matchList.length)
-      setShowConcludeModal(true);
-  };
-
-  const handleConcludeTournament = () => {
-    // Process the results of the tournament
-    props.processResultsHandler();
-
-    // Load the results page
-    props.setActivePage("RESULTS");
+    props.wipeResultsHandler();
   };
 
   const classes = cx("container", styles.Tournament);
@@ -128,25 +72,13 @@ const TournamentPage: React.FC<TournamentPageProps> = (props) => {
       <main className={classes}>
         <MatchBoard
           changeImageHandler={changeImageHandler}
-          clickPauseHandler={clickPauseHandler}
-          clickSelectHandler={handleSelectWinner}
-          clickSkipHandler={handleSkipMatch}
+          clickSelectHandler={props.setWinnerHandler}
+          clickSkipHandler={props.setDrawHandler}
           clickStopHandler={handleAbandonTournament}
+          clickSubmitHandler={() => console.log("submit")}
           clickUndoHandler={props.undoMatchHandler}
-          matchCount={props.matchList.length}
           matchIndex={props.matchIndex}
-          players={[playerA, playerB]}
-        />
-        <ProgressBoard
-          columnTitles={["Performer A", "Performer B"]}
-          reverse
-          tableData={props.matchList
-            .filter((m) => m.length === 3)
-            .map((m) => [
-              props.players[m[0]].name,
-              props.players[m[1]].name,
-              m[2],
-            ])}
+          match={props.match}
         />
       </main>
       <AbandonMatchModal
@@ -154,16 +86,11 @@ const TournamentPage: React.FC<TournamentPageProps> = (props) => {
         continueHandler={handleConfirmAbandonTournament}
         show={showAbandonModal}
       />
-      <ConcludeTournamentModal
-        closeHandler={() => setShowConcludeModal(false)}
-        continueHandler={handleConcludeTournament}
-        show={showConcludeModal}
-      />
     </>
   );
 };
 
-export default TournamentPage;
+export default GamePage;
 
 /* ---------------------------------------------------------------------------------------------- */
 /*                                       Abandon match modal                                      */
@@ -206,55 +133,6 @@ const AbandonMatchModal: React.FC<AbandonMatchModalProps> = (props) => {
         undone.
       </p>
       <p>Are you sure you want to abandon the tournament?</p>
-    </Modal>
-  );
-};
-
-/* ---------------------------------------------------------------------------------------------- */
-/*                                    Conclude tournament modal                                   */
-/* ---------------------------------------------------------------------------------------------- */
-
-interface ConcludeTournamentModalProps {
-  /** Handler for cancelling concluding the current tournament. */
-  closeHandler: () => void;
-  /** Handler for confirming concluding the current tournament. */
-  continueHandler: () => void;
-  /** Dictates whether the modal is active. */
-  show: boolean;
-}
-
-const ConcludeTournamentModal: React.FC<ConcludeTournamentModalProps> = (
-  props
-) => {
-  return (
-    <Modal
-      buttons={[
-        {
-          element: "button",
-          children: "No",
-          className: "btn btn-secondary",
-          onClick: props.closeHandler,
-          type: "button",
-        },
-        {
-          element: "button",
-          className: "btn btn-primary",
-          children: "Yes",
-          type: "button",
-          onClick: props.continueHandler,
-        },
-      ]}
-      icon={faPartyHorn}
-      show={props.show}
-      title="Tournament concluded"
-    >
-      <p>You have reached the end of the tournament!</p>
-
-      <p>
-        The results need to be processed before they can be viewed - this may
-        take some time depending on how many performers are in your database.
-      </p>
-      <p>Would you like to continue to process the results?</p>
     </Modal>
   );
 };

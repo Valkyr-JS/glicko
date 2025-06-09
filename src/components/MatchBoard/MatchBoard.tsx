@@ -11,7 +11,7 @@ import type { StashFindImages, StashPerformer } from "@/apollo/schema";
 import styles from "./MatchBoard.module.scss";
 import { faSend } from "@fortawesome/pro-solid-svg-icons";
 
-interface OneVsOneBoardProps {
+interface MatchBoardProps {
   /** Handler for clicking the change player image button. */
   changeImageHandler: (
     performerID: StashPerformer["id"]
@@ -32,7 +32,7 @@ interface OneVsOneBoardProps {
   match: [MatchPerformer, MatchPerformer];
 }
 
-const OneVsOneBoard: React.FC<OneVsOneBoardProps> = (props) => {
+const MatchBoard: React.FC<MatchBoardProps> = (props) => {
   return (
     <section className={styles["one-vs-one-board"]}>
       <h2>Round {props.matchIndex + 1}</h2>
@@ -92,7 +92,7 @@ const OneVsOneBoard: React.FC<OneVsOneBoardProps> = (props) => {
   );
 };
 
-export default OneVsOneBoard;
+export default MatchBoard;
 
 interface PlayerProfileProps extends MatchPerformer {
   /** Executes when the user clicks to change the current player's image. */
