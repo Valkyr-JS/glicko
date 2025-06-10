@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { default as cx } from "classnames";
 import type { OperationVariables, QueryResult } from "@apollo/client";
 import { faExclamationCircle } from "@fortawesome/pro-solid-svg-icons/faExclamationCircle";
@@ -44,10 +44,9 @@ const GamePage: React.FC<GamePageProps> = (props) => {
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [showSubmitModal, setShowSubmitModal] = useState(false);
 
-  if (!props.match || props.match.length !== 2) return null;
-
-  const playerA = props.match[0];
-  const playerB = props.match[1];
+  useEffect(() => {
+    if (props.gameError) setShowErrorModal(true);
+  }, [props.gameError]);
 
   const classes = cx("container", styles.Game);
 
@@ -55,6 +54,10 @@ const GamePage: React.FC<GamePageProps> = (props) => {
 
   /** Handler for clicking the change player image button. */
   const changeImageHandler = (performerID: StashPerformer["id"]) => {
+    if (!props.match) return undefined;
+
+    const playerA = props.match[0];
+    const playerB = props.match[1];
     const player = +playerA.id === performerID ? playerA : playerB;
     const currentImageID = player.imageID;
     return props.changeImageHandler(+player.id, +(currentImageID ?? 0));
@@ -75,12 +78,15 @@ const GamePage: React.FC<GamePageProps> = (props) => {
     props.wipeResultsHandler();
   };
 
+  /** Handler for clicking the Submit button */
   const handleSubmitClick: React.MouseEventHandler = () =>
     setShowSubmitModal(true);
 
+  /** Handler for clicking the Cancel button in the submission modal */
   const handleCancelSubmit: React.MouseEventHandler = () =>
     setShowSubmitModal(false);
 
+  /** Handler for closing the game error modal. */
   const handleErrorClose = () => setShowErrorModal(false);
 
   /* ------------------------------------------ Component ----------------------------------------- */

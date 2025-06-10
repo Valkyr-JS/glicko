@@ -15,7 +15,9 @@ interface MatchBoardProps {
   /** Handler for clicking the change player image button. */
   changeImageHandler: (
     performerID: StashPerformer["id"]
-  ) => Promise<QueryResult<StashFindImagesResult, OperationVariables>>;
+  ) =>
+    | Promise<QueryResult<StashFindImagesResult, OperationVariables>>
+    | undefined;
   /** Executes when the user selects the winning player. */
   clickSelectHandler: (winner: 0 | 1) => void;
   /** Handler for clicking the skip button. */
@@ -29,10 +31,12 @@ interface MatchBoardProps {
   /** The zero-based index of the match in the current game session. */
   matchIndex: number;
   /** The players in the current match. */
-  match: [MatchPerformer, MatchPerformer];
+  match: Match | null;
 }
 
 const MatchBoard: React.FC<MatchBoardProps> = (props) => {
+  if (!props.match) return null;
+
   return (
     <section className={styles["one-vs-one-board"]}>
       <h2>Round {props.matchIndex + 1}</h2>
@@ -98,7 +102,9 @@ interface PlayerProfileProps extends MatchPerformer {
   /** Executes when the user clicks to change the current player's image. */
   changeImageHandler: (
     performerID: StashPerformer["id"]
-  ) => Promise<QueryResult<StashFindImagesResult, OperationVariables>>;
+  ) =>
+    | Promise<QueryResult<StashFindImagesResult, OperationVariables>>
+    | undefined;
   /** Executes when the user selects the winning player. */
   clickSelectHandler: (winner: 0 | 1) => void;
   /** Whether the profile is on the left, i.e. `0`, or right, i.e. `1` */
