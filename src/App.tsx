@@ -1,11 +1,15 @@
 import { useState } from "react";
-import { useQuery } from "@apollo/client";
+import { useLazyQuery, useQuery } from "@apollo/client";
 import { ZodError } from "zod/v4";
-import { GET_STASH_VERSION } from "./apollo/queries";
-import HomePage from "./pages/Home/Home";
-import { StashVersionSchema } from "./apollo/schema";
+import { GET_PERFORMER_IMAGE, GET_STASH_VERSION } from "./apollo/queries";
+import {
+  StashVersionSchema,
+  type StashImage,
+  type StashPerformer,
+} from "./apollo/schema";
 import FiltersPage from "./pages/Filters/Filters";
 import GamePage from "./pages/Game/Game";
+import HomePage from "./pages/Home/Home";
 
 function App() {
   /* -------------------------------------- State management -------------------------------------- */
@@ -18,6 +22,8 @@ function App() {
   const [performerFilters, setPerformerFilters] = useState<PerformerFilters>({
     genders: [],
   });
+
+  /* ---------------------------------------- Stash queries --------------------------------------- */
 
   const queryStashVersion = useQuery(GET_STASH_VERSION);
   try {
@@ -32,7 +38,18 @@ function App() {
     }
   }
 
+  const [queryStashPerformerImage] = useLazyQuery(GET_PERFORMER_IMAGE);
+
   /* ------------------------------------------ Handlers ------------------------------------------ */
+
+  /** Handle changing the performer image. */
+  const handleChangeImage = async (
+    performerID: StashPerformer["id"],
+    currentImageID: StashImage["id"]
+  ) =>
+    queryStashPerformerImage({
+      variables: { performerID, currentImageID },
+    });
 
   /** Handler for saving changing to the performer filters. */
   const handleSaveFilters = (updatedFilters: PerformerFilters) =>
@@ -66,7 +83,7 @@ function App() {
     case "GAME":
       return (
         <GamePage
-          // changeImageHandler={}
+          changeImageHandler={handleChangeImage}
           match={currentMatch}
           matchIndex={results.length}
           results={results}
