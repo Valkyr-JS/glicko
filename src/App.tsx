@@ -37,6 +37,8 @@ function App() {
   });
   const [results, setResults] = useState<GlickoMatchResult[]>([]);
 
+  console.log("results", results);
+
   /* ---------------------------------------- Stash queries --------------------------------------- */
 
   const queryStashVersionResult: QueryResult<
@@ -153,6 +155,31 @@ function App() {
   const handleSaveFilters = (updatedFilters: PerformerFilters) =>
     setPerformerFilters(updatedFilters);
 
+  /** Handler for scoring the match as a draw. */
+  const handleSetDraw = async () => {
+    if (currentMatch === null) return;
+
+    // Create a match result from the current match. The outcome is based on the
+    // result of player 1, where 0 is a loss and 1 is a win
+    const result: GlickoMatchResult = [
+      currentMatch[0].id,
+      currentMatch[1].id,
+      0.5,
+    ];
+
+    // Update the results
+    setResults([...results, result]);
+
+    // Create a new match
+    const resolvedPlayers = await createMatch();
+
+    // Update the state
+    setCurrentMatch(resolvedPlayers);
+
+    // Refresh the data for the next match
+    stashPerformerMatchResponse.refetch();
+  };
+
   /** Handler for setting the winner of a match. */
   const handleSetWinner = async (winnerIndex: 0 | 1) => {
     if (currentMatch === null) return;
@@ -235,7 +262,7 @@ function App() {
           matchIndex={results.length}
           results={results}
           setActivePage={setActivePage}
-          setDrawHandler={() => console.log("Set draw handler")}
+          setDrawHandler={handleSetDraw}
           setWinnerHandler={handleSetWinner}
           submitHandler={() => console.log("Submit handler")}
           undoMatchHandler={() => console.log("Set undo match handler")}
