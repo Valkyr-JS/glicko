@@ -65,7 +65,7 @@ const MatchBoard: React.FC<MatchBoardProps> = (props) => {
           onClick={props.clickStopHandler}
           type="button"
         >
-          <span className="sr-only">Abandon tournament</span>
+          <span className="sr-only">Abandon progress</span>
           <FontAwesomeIcon icon={faStop} />
         </button>
         <button

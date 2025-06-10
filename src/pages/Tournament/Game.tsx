@@ -61,7 +61,7 @@ const GamePage: React.FC<GamePageProps> = (props) => {
     // Navigate home
     props.setActivePage("HOME");
 
-    // Clear all tournament data
+    // Clear all session data
     props.wipeResultsHandler();
   };
 
