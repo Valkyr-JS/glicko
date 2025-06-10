@@ -3,53 +3,52 @@ import type { OperationVariables, QueryResult } from "@apollo/client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faForwardStep } from "@fortawesome/pro-solid-svg-icons/faForwardStep";
 import { faImage } from "@fortawesome/pro-solid-svg-icons/faImage";
-import { faPause } from "@fortawesome/pro-solid-svg-icons/faPause";
 import { faRotateLeft } from "@fortawesome/pro-solid-svg-icons/faRotateLeft";
 import { faSpinnerThird } from "@fortawesome/pro-solid-svg-icons/faSpinnerThird";
 import { faStop } from "@fortawesome/pro-solid-svg-icons/faStop";
 import { faTrophy } from "@fortawesome/pro-solid-svg-icons/faTrophy";
-import type { StashFindImages, StashPerformer } from "@/apollo/schema";
-import type { PlayerData } from "@/types/global";
+import type { StashFindImagesResult, StashPerformer } from "@/apollo/schema";
 import styles from "./MatchBoard.module.scss";
+import { faSend } from "@fortawesome/pro-solid-svg-icons";
 
-interface OneVsOneBoardProps {
+interface MatchBoardProps {
   /** Handler for clicking the change player image button. */
   changeImageHandler: (
     performerID: StashPerformer["id"]
-  ) => Promise<QueryResult<StashFindImages, OperationVariables>>;
-  /** Handler for clicking the pause button. */
-  clickPauseHandler: React.MouseEventHandler<HTMLButtonElement>;
+  ) =>
+    | Promise<QueryResult<StashFindImagesResult, OperationVariables>>
+    | undefined;
   /** Executes when the user selects the winning player. */
   clickSelectHandler: (winner: 0 | 1) => void;
   /** Handler for clicking the skip button. */
   clickSkipHandler: React.MouseEventHandler<HTMLButtonElement>;
   /** Handler for clicking the stop button. */
   clickStopHandler: React.MouseEventHandler<HTMLButtonElement>;
+  /** Handler for clicking the submit button. */
+  clickSubmitHandler: React.MouseEventHandler<HTMLButtonElement>;
   /** Handler for clicking the undo button. */
   clickUndoHandler: React.MouseEventHandler<HTMLButtonElement>;
-  /** The total number of matches in the tournament. */
-  matchCount: number;
-  /** The zero-based index of the current match in the match list. */
+  /** The zero-based index of the match in the current game session. */
   matchIndex: number;
   /** The players in the current match. */
-  players: [PlayerData, PlayerData];
+  match: Match | null;
 }
 
-const OneVsOneBoard: React.FC<OneVsOneBoardProps> = (props) => {
+const MatchBoard: React.FC<MatchBoardProps> = (props) => {
+  if (!props.match) return null;
+
   return (
     <section className={styles["one-vs-one-board"]}>
-      <h2>
-        Round {props.matchIndex + 1} / {props.matchCount}
-      </h2>
+      <h2>Round {props.matchIndex + 1}</h2>
       <div className={styles["profiles"]}>
         <PlayerProfile
-          {...props.players[0]}
+          {...props.match[0]}
           changeImageHandler={props.changeImageHandler}
           clickSelectHandler={props.clickSelectHandler}
           position={0}
         />
         <PlayerProfile
-          {...props.players[1]}
+          {...props.match[1]}
           changeImageHandler={props.changeImageHandler}
           clickSelectHandler={props.clickSelectHandler}
           position={1}
@@ -60,34 +59,52 @@ const OneVsOneBoard: React.FC<OneVsOneBoardProps> = (props) => {
           className="btn btn-secondary"
           disabled={props.matchIndex === 0}
           onClick={props.clickUndoHandler}
+          type="button"
         >
           <span className="sr-only">Undo match</span>
           <FontAwesomeIcon icon={faRotateLeft} />
         </button>
-        <button className="btn btn-danger" onClick={props.clickStopHandler}>
-          <span className="sr-only">Abandon tournament</span>
+        <button
+          className="btn btn-danger"
+          onClick={props.clickStopHandler}
+          type="button"
+        >
+          <span className="sr-only">Abandon progress</span>
           <FontAwesomeIcon icon={faStop} />
         </button>
-        <button className="btn btn-secondary" onClick={props.clickPauseHandler}>
-          <span className="sr-only">Pause tournament</span>
-          <FontAwesomeIcon icon={faPause} />
-        </button>
-        <button className="btn btn-secondary" onClick={props.clickSkipHandler}>
+        <button
+          className="btn btn-secondary"
+          onClick={props.clickSkipHandler}
+          type="button"
+        >
           <span className="sr-only">Skip match</span>
           <FontAwesomeIcon icon={faForwardStep} />
+        </button>
+      </div>
+      <div className={styles["submit"]}>
+        <button
+          className="btn btn-primary"
+          disabled={props.matchIndex === 0}
+          onClick={props.clickSubmitHandler}
+          type="button"
+        >
+          <FontAwesomeIcon icon={faSend} className="mr-2" />
+          <span>Submit</span>
         </button>
       </div>
     </section>
   );
 };
 
-export default OneVsOneBoard;
+export default MatchBoard;
 
-interface PlayerProfileProps extends PlayerData {
+interface PlayerProfileProps extends MatchPerformer {
   /** Executes when the user clicks to change the current player's image. */
   changeImageHandler: (
     performerID: StashPerformer["id"]
-  ) => Promise<QueryResult<StashFindImages, OperationVariables>>;
+  ) =>
+    | Promise<QueryResult<StashFindImagesResult, OperationVariables>>
+    | undefined;
   /** Executes when the user selects the winning player. */
   clickSelectHandler: (winner: 0 | 1) => void;
   /** Whether the profile is on the left, i.e. `0`, or right, i.e. `1` */
@@ -99,6 +116,7 @@ const PlayerProfile = (props: PlayerProfileProps) => {
   const handleImageChange = async () => {
     setImageLoading(true);
     await props.changeImageHandler(+props.id);
+    setImageLoading(false);
   };
 
   const baseUrl =
@@ -123,7 +141,7 @@ const PlayerProfile = (props: PlayerProfileProps) => {
       <span className={styles["rating"]}>
         <FontAwesomeIcon icon={faTrophy} />{" "}
         <span className="sr-only">{props.name}'s rating: </span>
-        {props.glicko.getRating()}
+        {Math.round(props.initialRating)}
       </span>
       <button
         type="button"

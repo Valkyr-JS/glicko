@@ -1,198 +1,378 @@
 import { useState } from "react";
-import { useLazyQuery, useQuery } from "@apollo/client";
-import { Glicko2 } from "glicko2";
-import type {
-  GlickoPlayer,
-  Match,
-  Pages,
-  PlayerData,
-  PlayerFilters,
-} from "@/types/global";
 import {
+  useLazyQuery,
+  useQuery,
+  type OperationVariables,
+  type QueryResult,
+} from "@apollo/client";
+import { ZodError } from "zod/v4";
+import {
+  GET_ALL_PERFORMERS_BY_PAGE,
+  GET_MATCH_PERFORMERS,
   GET_PERFORMER_IMAGE,
-  GET_PERFORMERS,
+  GET_SPECIFIC_MATCH_PERFORMERS,
   GET_STASH_VERSION,
 } from "./apollo/queries";
 import {
-  type StashFindImages,
-  type StashFindPerformersResultType,
+  StashFindPerformersResultSchema,
+  StashVersionSchema,
+  type StashFindImagesResult,
+  type StashFindPerformersResult,
   type StashImage,
   type StashPerformer,
+  type StashVersionResult,
 } from "./apollo/schema";
-import { GLICKO } from "./constants";
-import { createRoundRobinMatchList } from "./helpers/gameplay";
+import FiltersPage from "./pages/Filters/Filters";
+import GamePage from "./pages/Game/Game";
 import HomePage from "./pages/Home/Home";
-import SettingsPage from "./pages/Settings/Settings";
-import TournamentPage from "./pages/Tournament/Tournament";
-import ResultsPage from "./pages/Results/ResultsPage";
+import { GLICKO } from "./constants";
+import { Glicko2, Player } from "glicko2";
 
 function App() {
   /* -------------------------------------- State management -------------------------------------- */
 
   const [activePage, setActivePage] = useState<Pages>("HOME");
-  const [tournament, setTournament] = useState<Glicko2 | null>(null);
-  const [players, setPlayers] = useState<PlayerData[]>([]);
-  const [matchIndex, setMatchIndex] = useState(0);
-  const [matchList, setMatchList] = useState<Match[]>([]);
-  const [filters, setFilters] = useState<PlayerFilters>({
+  const [currentMatch, setCurrentMatch] = useState<Match | null>(null);
+  const [gameError, setGameError] = useState<GameError | null>(null);
+  const [gameLoading, setGameLoading] = useState(false);
+  const [performerFilters, setPerformerFilters] = useState<PerformerFilters>({
     genders: [],
-    limit: 15,
   });
+  const [processing, setProcessing] = useState(false);
+  const [results, setResults] = useState<GlickoMatchResult[]>([]);
 
-  const queryStashVersion = useQuery(GET_STASH_VERSION);
+  /* ---------------------------------------- Stash queries --------------------------------------- */
 
-  const [fetchPerformers, fetchPerformersResponse] =
-    useLazyQuery<StashFindPerformersResultType>(GET_PERFORMERS, {
-      variables: filters,
-    });
-  const [getPerformerImage] =
-    useLazyQuery<StashFindImages>(GET_PERFORMER_IMAGE);
+  const queryStashVersionResult: QueryResult<
+    StashVersionResult,
+    OperationVariables
+  > = useQuery(GET_STASH_VERSION);
+  try {
+    StashVersionSchema.parse(queryStashVersionResult);
+  } catch (error) {
+    if (error instanceof ZodError) {
+      setGameError({
+        name: error.name,
+        message: error.message,
+        details: error,
+      });
+    }
+  }
 
-  /* --------------------------------------- New tournament --------------------------------------- */
+  const [queryAllStashPerformers] = useLazyQuery<StashFindPerformersResult>(
+    GET_ALL_PERFORMERS_BY_PAGE
+  );
+  const [queryStashPerformerMatch, stashPerformerMatchResponse] =
+    useLazyQuery<StashFindPerformersResult>(GET_MATCH_PERFORMERS);
+  const [querySpecificStashPerformerMatch] =
+    useLazyQuery<StashFindPerformersResult>(GET_SPECIFIC_MATCH_PERFORMERS);
+  const [queryStashPerformerImage] =
+    useLazyQuery<StashFindImagesResult>(GET_PERFORMER_IMAGE);
 
-  /** Handler for starting a new tournament. The resolved boolean dictates
-   * whether a new tournament is ready to start. */
-  const handleStartNewTournament = async (): Promise<void> => {
-    return await fetchPerformers().then(async (res) => {
-      const newTournament = new Glicko2();
+  /* ------------------------------------------ Handlers ------------------------------------------ */
 
-      const newPlayers: Promise<PlayerData>[] = (
-        res.data?.findPerformers.performers ?? []
-      ).map(async (p) => {
+  /** Get performer data to create a new match. Gets a specific match up between
+   * two provided Stash performer IDs, or a random matchup if blank. */
+  const createMatch = async (
+    ids?: [StashPerformer["id"], StashPerformer["id"]]
+  ): Promise<Match | null> => {
+    // Use the appropriate query depending on whether specific IDs have been
+    // passed.
+    const matchResponse: QueryResult<
+      StashFindPerformersResult,
+      OperationVariables
+    > = ids
+      ? await querySpecificStashPerformerMatch({
+          variables: { ids },
+        })
+      : await queryStashPerformerMatch({
+          variables: performerFilters,
+        });
+
+    try {
+      StashFindPerformersResultSchema.safeParse(matchResponse);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        setGameError({
+          name: error.name,
+          message: error.message,
+          details: error,
+        });
+      }
+    }
+
+    if (!matchResponse.data) {
+      setGameError({
+        name: "Performer data could not be found.",
+        message: "Performer data could not be retrieved from Stash.",
+      });
+      setGameLoading(false);
+      return null;
+    }
+
+    if (matchResponse.data.findPerformers.count < 2) {
+      setGameError({
+        name: "Not enough performers",
+        message:
+          "Less than two performers were found using your current filters. Update your filters to allow more performers.",
+      });
+      setGameLoading(false);
+      return null;
+    }
+
+    // Process the response
+    const matchPerformers: Promise<MatchPerformer>[] =
+      matchResponse.data.findPerformers.performers.map(async (p) => {
         const imagesAvailable =
-          (await getPerformerImage({
+          (await queryStashPerformerImage({
             variables: { performerID: p.id, currentImageID: 0 },
           }).then((res) => res.data && res.data.findImages.count > 1)) ?? false;
 
         return {
           coverImg: p.image_path,
-          id: p.id.toString(),
+          id: p.id,
           imagesAvailable,
           initialRating: p.custom_fields.glicko_rating ?? GLICKO.RATING_DEFAULT,
           name: p.name,
-          glicko: newTournament.makePlayer(
-            p.custom_fields.glicko_rating ?? GLICKO.RATING_DEFAULT,
-            p.custom_fields.glicko_deviation ?? GLICKO.DEVIATION_DEFAULT,
-            p.custom_fields.glicko_volatility ?? GLICKO.VOLATILITY_DEFAULT
-          ) as GlickoPlayer,
         };
       });
 
-      // Check there are enough performers before updating
-      const resolvedPlayers = await Promise.all(newPlayers);
-      if (resolvedPlayers.length < 2) return;
-
-      const newMatchList = createRoundRobinMatchList(resolvedPlayers.length);
-      setPlayers(resolvedPlayers);
-      setMatchList(newMatchList);
-      setTournament(newTournament);
-
-      // Refetch data ready for the next tournament, assuming the settings
-      // aren't changed. If they are, this will be done anyway.
-      fetchPerformersResponse.refetch();
-    });
+    const resolvedPlayers = (await Promise.all(matchPerformers)) as Match;
+    return resolvedPlayers;
   };
 
-  /* ------------------------------------------ Settings ------------------------------------------ */
-
-  /** Handler for wiping all current tournament progress. */
-  const handleWipeTournament = () => {
-    setMatchIndex(0);
-    setMatchList([]);
-    setPlayers([]);
-    setTournament(null);
-  };
-
-  /** Handler for saving tournament settings. */
-  const handleSaveSettings = (updatedFilters: PlayerFilters) => {
-    handleWipeTournament();
-    setFilters(updatedFilters);
-  };
-
-  /* ----------------------------------------- Tournament ----------------------------------------- */
-
+  /** Handle changing the performer image. */
   const handleChangeImage = async (
     performerID: StashPerformer["id"],
     currentImageID: StashImage["id"]
   ) => {
-    return getPerformerImage({
+    return queryStashPerformerImage({
       variables: { performerID, currentImageID },
     }).then((res) => {
-      if (res.data) {
-        const findImages = res.data.findImages;
-        const updatedPlayers: PlayerData[] = players.map((p) => {
-          const { id } = findImages.images[0];
-          return p.id === performerID.toString()
-            ? {
-                ...p,
-                imageID: id.toString(),
-              }
-            : p;
-        });
-        setPlayers(updatedPlayers);
-      }
+      // Process the value
+      const updatedMatch = (currentMatch ?? []).map((p) => {
+        return +p.id === performerID
+          ? { ...p, imageID: res.data?.findImages.images[0].id }
+          : p;
+      });
 
-      // Referch to clear the cache
+      // Update state
+      setCurrentMatch(updatedMatch as Match);
+
+      // Refetch in preparation for the next request
       res.refetch();
       return res;
     });
   };
 
-  /** Handler selecting the winner of a match */
-  const handleSelectWinner = (winner: 0 | 1) => {
-    /** Update the current match in the match list. The winner value is
-     * inverted, as the score is based on whether player 1 won or lost: 1 ===
-     * player 1 won, 0 === player 1 lost. Essentially the value the index of the
-     * loser. See the "Usage" section of the npm page for info
-     * https://www.npmjs.com/package/glicko2 */
-    const updatedMatchList: Match[] = matchList.map((m, i) =>
-      i === matchIndex ? [m[0], m[1], winner === 0 ? 1 : 0] : m
-    );
+  /** Handle resetting the error state */
+  const handleClearGameError = () => setGameError(null);
 
-    setMatchList(updatedMatchList);
+  /** Handler for saving changing to the performer filters. */
+  const handleSaveFilters = (updatedFilters: PerformerFilters) =>
+    setPerformerFilters(updatedFilters);
 
-    // Load the next match if one is available
-    if (matchIndex + 1 < matchList.length) setMatchIndex(matchIndex + 1);
+  /** Handler for scoring the match as a draw. */
+  const handleSetDraw = async () => {
+    if (currentMatch === null) return;
+
+    // Create a match result from the current match. The outcome is based on the
+    // result of player 1, where 0 is a loss and 1 is a win
+    const result: GlickoMatchResult = [
+      currentMatch[0].id,
+      currentMatch[1].id,
+      0.5,
+    ];
+
+    // Update the results
+    setResults([...results, result]);
+
+    // Create a new match
+    const resolvedPlayers = await createMatch();
+
+    // Update the state
+    setCurrentMatch(resolvedPlayers);
+
+    // Refresh the data for the next match
+    stashPerformerMatchResponse.refetch();
   };
 
-  /** Handler for declaring a match a draw  */
-  const handleSkipMatch = () => {
-    // Update the current match in the match list. 0.5 indicates a draw.
-    const updatedMatchList: Match[] = matchList.map((m, i) =>
-      i === matchIndex ? [m[0], m[1], 0.5] : m
-    );
+  /** Handler for setting the winner of a match. */
+  const handleSetWinner = async (winnerIndex: 0 | 1) => {
+    if (currentMatch === null) return;
 
-    setMatchList(updatedMatchList);
+    // Create a match result from the current match. The outcome is based on the
+    // result of player 1, where 0 is a loss and 1 is a win
+    const outcome = winnerIndex === 0 ? 1 : 0;
+    const result: GlickoMatchResult = [
+      currentMatch[0].id,
+      currentMatch[1].id,
+      outcome,
+    ];
 
-    // Load the next match if one is available
-    if (matchIndex + 1 < matchList.length) setMatchIndex(matchIndex + 1);
+    // Update the results
+    setResults([...results, result]);
+
+    // Create a new match
+    const resolvedPlayers = await createMatch();
+
+    // Update the state
+    setCurrentMatch(resolvedPlayers);
+
+    // Refresh the data for the next match
+    stashPerformerMatchResponse.refetch();
   };
 
-  /** Handler reloading the previous match. */
-  const handleUndoMatch = () => {
-    // Remove the result from the previous match before loading it
-    const updatedMatchList: Match[] = matchList.map((m, i) =>
-      i === matchIndex - 1 ? [m[0], m[1]] : m
-    );
+  /** Handle starting a new game. */
+  const handleStartGame = async () => {
+    // Set the game as loading
+    setGameLoading(true);
 
-    // Update the match results
-    setMatchList(updatedMatchList);
+    // Create a match
+    const resolvedPlayers = await createMatch();
 
-    // Load the previous match
-    setMatchIndex(matchIndex - 1);
+    // Update the state
+    setCurrentMatch(resolvedPlayers);
+
+    // Refresh the data for the next match
+    stashPerformerMatchResponse.refetch();
+
+    // Set the game as ready
+    setGameLoading(false);
+
+    // Load the game page
+    setActivePage("GAME");
   };
 
-  const processResults = () => {
-    const tournamentMatchList: [GlickoPlayer, GlickoPlayer, 0 | 0.5 | 1][] =
-      matchList.map((m) => {
-        return [
-          players[m[0]].glicko,
-          players[m[1]].glicko,
-          m[2] as 0 | 0.5 | 1,
-        ];
+  /** Handle submitting results of a session */
+  const handleSubmitResults = async () => {
+    // Update the processing state
+    setProcessing(true);
+
+    // Create a tournament
+    const tournament = new Glicko2();
+
+    // Get ALL performers from Stash
+    let page = 1;
+    const perPage = 25;
+
+    // Get the first page of performers
+    const firstPage = await queryAllStashPerformers({
+      variables: { page, perPage },
+    });
+
+    if (!firstPage.data || firstPage.error) {
+      // Throw an error
+      setGameError({
+        name: "Processing error",
+        message:
+          "There was an error in fetching performer data while processing your results.",
+        details: firstPage.error,
       });
 
-    tournament?.updateRatings(tournamentMatchList);
+      // Update the processing state
+      setProcessing(false);
+      return;
+    }
+
+    let allStashPerformers = firstPage.data.findPerformers.performers;
+
+    const pageLimit = Math.ceil(firstPage.data.findPerformers.count / perPage);
+    page++;
+
+    const getRemainingPages = async () => {
+      while (page <= pageLimit) {
+        const nextPage = await queryAllStashPerformers({
+          variables: { page, perPage },
+        });
+
+        if (!nextPage.data || nextPage.error) {
+          // Throw an error
+          setGameError({
+            name: "Processing error",
+            message:
+              "There was an error in fetching performer data while processing your results.",
+            details: nextPage.error,
+          });
+
+          // Update the processing state
+          setProcessing(false);
+          return;
+        }
+
+        allStashPerformers = [
+          ...allStashPerformers,
+          ...nextPage.data.findPerformers.performers,
+        ];
+        page++;
+      }
+    };
+
+    await getRemainingPages();
+
+    // Create Glicko players from ALL performers in Stash
+    const allGlickoPerformers = allStashPerformers.map((p) => {
+      const rating = p.custom_fields.glicko_rating ?? GLICKO.RATING_DEFAULT;
+      const deviation =
+        p.custom_fields.glicko_deviation ?? GLICKO.DEVIATION_DEFAULT;
+      const volatility =
+        p.custom_fields.glicko_volatility ?? GLICKO.VOLATILITY_DEFAULT;
+
+      return {
+        ...p,
+        glicko: tournament.makePlayer(rating, deviation, volatility),
+      };
+    });
+
+    // Loop through results and create tournament matches using the IDs
+    const matches = results.map((r) => {
+      // Get players
+      const player1 = allGlickoPerformers.find((p) => p.id === r[0]);
+      const player2 = allGlickoPerformers.find((p) => p.id === r[1]);
+
+      return [player1?.glicko, player2?.glicko, r[2]] as [
+        Player,
+        Player,
+        0 | 1 | 0.5
+      ];
+    });
+
+    // Update the tournament
+    tournament.updateRatings(matches);
+    console.log(tournament.getPlayers());
+
+    // TODO - Update Stash performer data with results
+
+    // Update the processing state
+    setProcessing(false);
+  };
+
+  /** Handle undoing the previous match result */
+  const handleUndoMatch = async () => {
+    const lastMatch = results[results.length - 1];
+
+    // Remove the previous result
+    const updatedResults = results.slice(0, -1);
+    setResults(updatedResults);
+
+    // Create a new match
+    const resolvedPlayers = await createMatch([lastMatch[0], lastMatch[1]]);
+
+    // Update the state
+    setCurrentMatch(resolvedPlayers);
+
+    // Refresh the data for the next match
+    stashPerformerMatchResponse.refetch();
+  };
+
+  /** Handle clearing all results */
+  const handleWipeResults = () => {
+    // Clear the state
+    setCurrentMatch(null);
+    setResults([]);
+
+    // Return to homepage
+    setActivePage("HOME");
   };
 
   /* ------------------------------------------- Router ------------------------------------------- */
@@ -201,55 +381,41 @@ function App() {
     case "HOME":
       return (
         <HomePage
-          activePage={activePage}
-          inProgress={!!tournament}
-          fetchData={fetchPerformersResponse.data ?? null}
-          fetchError={fetchPerformersResponse.error}
-          fetchLoading={fetchPerformersResponse.loading}
+          clearGameError={handleClearGameError}
+          gameError={gameError}
+          gameLoading={gameLoading}
           setActivePage={setActivePage}
-          startNewTournamentHandler={handleStartNewTournament}
-          versionData={queryStashVersion.data ?? null}
-          versionError={queryStashVersion.error}
-          versionLoading={queryStashVersion.loading}
+          startGameHandler={handleStartGame}
+          versionData={queryStashVersionResult.data ?? null}
+          versionError={queryStashVersionResult.error}
+          versionLoading={queryStashVersionResult.loading}
         />
       );
 
-    case "RESULTS":
+    case "FILTERS":
       return (
-        <ResultsPage
-          activePage={activePage}
-          matchList={matchList.map((m) => [m[0], m[1], m[2] ?? 0.5])}
-          players={players}
-          setActivePage={setActivePage}
-          wipeTournamentHandler={handleWipeTournament}
-        />
-      );
-
-    case "SETTINGS":
-      return (
-        <SettingsPage
-          activePage={activePage}
-          filters={filters}
-          inProgress={!!tournament}
-          saveSettingsHandler={handleSaveSettings}
+        <FiltersPage
+          filters={performerFilters}
+          saveFiltersHandler={handleSaveFilters}
           setActivePage={setActivePage}
         />
       );
 
-    case "TOURNAMENT":
+    case "GAME":
       return (
-        <TournamentPage
-          activePage={activePage}
+        <GamePage
           changeImageHandler={handleChangeImage}
-          declareDrawHandler={handleSkipMatch}
-          matchIndex={matchIndex}
-          matchList={matchList}
-          players={players}
-          processResultsHandler={processResults}
-          selectWinnerHandler={handleSelectWinner}
+          gameError={gameError}
+          match={currentMatch}
+          matchIndex={results.length}
+          processingResults={processing}
+          results={results}
           setActivePage={setActivePage}
+          setDrawHandler={handleSetDraw}
+          setWinnerHandler={handleSetWinner}
+          submitHandler={handleSubmitResults}
           undoMatchHandler={handleUndoMatch}
-          wipeTournamentHandler={handleWipeTournament}
+          wipeResultsHandler={handleWipeResults}
         />
       );
   }

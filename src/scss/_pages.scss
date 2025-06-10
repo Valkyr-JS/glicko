@@ -3,6 +3,7 @@
 
 @mixin layout {
   padding-top: spacing.$default;
+  padding-bottom: spacing.$default;
 
   h1 {
     @include typography.title;

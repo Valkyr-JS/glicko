@@ -9,7 +9,8 @@
   grid-template-rows:
     [board-top round-count-top] auto [round-count-bottom
     profiles-top] 1fr [profiles-bottom
-    tools-top] auto [tools-bottom board-bottom];
+    tools-top] auto [tools-bottom
+    submit-top] auto [submit-bottom board-bottom];
   gap: spacing.$default;
 
   width: 100%;
@@ -56,6 +57,17 @@
 
     button {
       @include buttons.minimum-size;
+    }
+  }
+
+  .submit {
+    display: flex;
+    justify-content: center;
+
+    button {
+      // Set the minimum size to match the width of the tools buttons.
+      min-width: (buttons.$accessible-size * 3) + (spacing.$default * 2);
+      min-height: buttons.$accessible-size;
     }
   }
 

@@ -12,3 +12,5 @@ export const PATH = {
   HOME: basePath,
   TOURNAMENT: basePath + "tournament",
 } as const;
+
+export const RECOMMENDED_MINIMUM_MATCHES = 15 as const;
