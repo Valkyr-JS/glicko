@@ -39,6 +39,23 @@ export const GET_PERFORMERS = gql`
   }
 `;
 
+export const GET_MATCH_PERFORMERS = gql`
+  query GetPerformers($genders: [GenderEnum!]) {
+    findPerformers(
+      filter: { per_page: 2, sort: "random" }
+      performer_filter: { gender: { value_list: $genders, modifier: INCLUDES } }
+    ) {
+      count
+      performers {
+        custom_fields
+        id
+        image_path
+        name
+      }
+    }
+  }
+`;
+
 export const GET_STASH_VERSION = gql`
   query GetStashVersion {
     version {

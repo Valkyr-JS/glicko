@@ -14,6 +14,8 @@ import styles from "./Home.module.scss";
 type StashVersionFetchRequest = QueryResult<StashVersion, OperationVariables>;
 
 interface HomePageProps extends PageProps {
+  /** Handler for clearing any game error data. */
+  clearGameError: () => void;
   /** Any kind of game error that stop the user from playing. */
   gameError: GameError | null;
   /** Dictates whether the game is currently loading in preparation for play. */
@@ -21,7 +23,7 @@ interface HomePageProps extends PageProps {
   /** Handler for starting a new game of the set game mode. */
   startGameHandler: () => void;
   /** The data returned by a successful Stash version fetch request. */
-  versionData: StashVersion;
+  versionData: StashVersion | null;
   /** The Apollo error returned by the Stash version fetch request. */
   versionError: StashVersionFetchRequest["error"];
   /** The Apollo error returned by the Stash version fetch request. */
@@ -80,6 +82,13 @@ const HomePage: React.FC<HomePageProps> = (props) => {
     </button>
   );
 
+  /* --------------------------------------- Error handling --------------------------------------- */
+
+  const handleCloseErrorModal = () => {
+    props.clearGameError();
+    setShowGameErrorModal(false);
+  };
+
   /* ------------------------------------------ Component ----------------------------------------- */
 
   return (
@@ -103,7 +112,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
         <div className={styles.report}>
           <StashVersionReport
             request={{
-              data: props.versionData,
+              data: props.versionData ?? undefined,
               error: props.versionError,
               loading: props.versionLoading,
             }}
@@ -137,7 +146,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
             element: "button",
             children: "Close",
             className: "btn btn-primary",
-            onClick: () => setShowGameErrorModal(false),
+            onClick: handleCloseErrorModal,
             type: "button",
           },
         ]}

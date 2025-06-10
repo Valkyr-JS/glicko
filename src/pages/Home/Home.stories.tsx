@@ -7,6 +7,7 @@ const meta = {
   title: "Pages/Home",
   component: Home,
   args: {
+    clearGameError: fn(),
     gameError: undefined,
     gameLoading: false,
     setActivePage: fn(),
@@ -82,7 +83,7 @@ export const GameError: Story = {
 
 export const ConnectedToStash: Story = {
   args: {
-    versionError: null,
+    versionError: undefined,
     versionLoading: false,
   },
   play: async ({ canvasElement }) => {
