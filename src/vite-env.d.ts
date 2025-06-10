@@ -39,6 +39,9 @@ type GlickoMatch = [p1ID: number, p2ID: number, p1Outcome: 0 | 1 | 0.5];
  * `1` is a win, and `0.5` is a draw. */
 type GlickoMatchResult = [p1ID: number, p2ID: number, p1Outcome: 0 | 1 | 0.5];
 
+/** The data for the two performers in the current match. */
+type Match = [MatchPerformer, MatchPerformer];
+
 /** The data for a single performer in a match. */
 interface MatchPerformer {
   /** The path to the performer profile image in Stash */
@@ -59,9 +62,9 @@ interface MatchPerformer {
 
 enum PagesEnum {
   HOME = "HOME",
-  RESULTS = "RESULTS",
   FILTERS = "FILTERS",
-  TOURNAMENT = "TOURNAMENT",
+  GAME = "GAME",
+  RESULTS = "RESULTS",
 }
 
 type Pages = `${PagesEnum}`;

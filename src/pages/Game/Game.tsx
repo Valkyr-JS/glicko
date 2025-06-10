@@ -20,7 +20,7 @@ interface GamePageProps extends PageProps {
     currentImageID: StashImage["id"]
   ) => Promise<QueryResult<StashFindImages, OperationVariables>>;
   /** The data for the players involved in the match. */
-  match: [MatchPerformer, MatchPerformer];
+  match: Match | null;
   /** The zero-based index of the current match in the match list. */
   matchIndex: number;
   /** The list of match results, including scores. */
@@ -41,7 +41,7 @@ const GamePage: React.FC<GamePageProps> = (props) => {
   const [showAbandonModal, setShowAbandonModal] = useState(false);
   const [showSubmitModal, setShowSubmitModal] = useState(false);
 
-  if (props.match.length !== 2) return null;
+  if (!props.match || props.match.length !== 2) return null;
 
   const playerA = props.match[0];
   const playerB = props.match[1];

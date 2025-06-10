@@ -54,10 +54,10 @@ export const AltImagesAvailable: Story = {
       },
     ],
   },
-  play: async ({ args, canvasElement }) => {
+  play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const imgButton = canvas.getByRole<HTMLButtonElement>("button", {
-      name: "Change image for " + args.match[0].name,
+      name: "Change image for Danielle",
     });
 
     expect(imgButton).not.toBeDisabled();
@@ -77,10 +77,10 @@ export const AltImagesUnavailable: Story = {
       },
     ],
   },
-  play: async ({ args, canvasElement }) => {
+  play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const imgButton = canvas.getByRole<HTMLButtonElement>("button", {
-      name: "No alternative images available for " + args.match[0].name,
+      name: "No alternative images available for Danielle",
     });
 
     expect(imgButton).toBeDisabled();
