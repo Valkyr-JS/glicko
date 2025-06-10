@@ -7,7 +7,7 @@ import { faRotateLeft } from "@fortawesome/pro-solid-svg-icons/faRotateLeft";
 import { faSpinnerThird } from "@fortawesome/pro-solid-svg-icons/faSpinnerThird";
 import { faStop } from "@fortawesome/pro-solid-svg-icons/faStop";
 import { faTrophy } from "@fortawesome/pro-solid-svg-icons/faTrophy";
-import type { StashFindImages, StashPerformer } from "@/apollo/schema";
+import type { StashFindImagesResult, StashPerformer } from "@/apollo/schema";
 import styles from "./MatchBoard.module.scss";
 import { faSend } from "@fortawesome/pro-solid-svg-icons";
 
@@ -15,7 +15,7 @@ interface MatchBoardProps {
   /** Handler for clicking the change player image button. */
   changeImageHandler: (
     performerID: StashPerformer["id"]
-  ) => Promise<QueryResult<StashFindImages, OperationVariables>>;
+  ) => Promise<QueryResult<StashFindImagesResult, OperationVariables>>;
   /** Executes when the user selects the winning player. */
   clickSelectHandler: (winner: 0 | 1) => void;
   /** Handler for clicking the skip button. */
@@ -98,7 +98,7 @@ interface PlayerProfileProps extends MatchPerformer {
   /** Executes when the user clicks to change the current player's image. */
   changeImageHandler: (
     performerID: StashPerformer["id"]
-  ) => Promise<QueryResult<StashFindImages, OperationVariables>>;
+  ) => Promise<QueryResult<StashFindImagesResult, OperationVariables>>;
   /** Executes when the user selects the winning player. */
   clickSelectHandler: (winner: 0 | 1) => void;
   /** Whether the profile is on the left, i.e. `0`, or right, i.e. `1` */

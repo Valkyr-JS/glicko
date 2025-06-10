@@ -5,13 +5,16 @@ import { faHand } from "@fortawesome/pro-solid-svg-icons/faHand";
 import { faSpinnerThird } from "@fortawesome/pro-solid-svg-icons/faSpinnerThird";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { default as cx } from "classnames";
-import type { StashVersion } from "@/apollo/schema";
+import type { StashVersionResult } from "@/apollo/schema";
 import type { OperationVariables, QueryResult } from "@apollo/client";
 import Modal from "@/components/Modal/Modal";
 import StashVersionReport from "@/components/StashVersionReport/StashVersionReport";
 import styles from "./Home.module.scss";
 
-type StashVersionFetchRequest = QueryResult<StashVersion, OperationVariables>;
+type StashVersionFetchRequest = QueryResult<
+  StashVersionResult,
+  OperationVariables
+>;
 
 interface HomePageProps extends PageProps {
   /** Handler for clearing any game error data. */
@@ -23,7 +26,7 @@ interface HomePageProps extends PageProps {
   /** Handler for starting a new game of the set game mode. */
   startGameHandler: () => void;
   /** The data returned by a successful Stash version fetch request. */
-  versionData: StashVersion | null;
+  versionData: StashVersionResult | null;
   /** The Apollo error returned by the Stash version fetch request. */
   versionError: StashVersionFetchRequest["error"];
   /** The Apollo error returned by the Stash version fetch request. */

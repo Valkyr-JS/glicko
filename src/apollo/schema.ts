@@ -39,7 +39,7 @@ export const StashVersionSchema = z
   })
   .partial();
 
-export type StashVersion = z.infer<typeof StashVersionSchema>;
+export type StashVersionResult = z.infer<typeof StashVersionSchema>;
 
 export const StashFindImagesSchema = z.object({
   findImages: z.object({
@@ -48,7 +48,7 @@ export const StashFindImagesSchema = z.object({
   }),
 });
 
-export type StashFindImages = z.infer<typeof StashFindImagesSchema>;
+export type StashFindImagesResult = z.infer<typeof StashFindImagesSchema>;
 
 export const StashFindPerformersResultSchema = z.object({
   findPerformers: z.object({
@@ -57,6 +57,6 @@ export const StashFindPerformersResultSchema = z.object({
   }),
 });
 
-export type StashFindPerformersResultType = z.infer<
+export type StashFindPerformersResult = z.infer<
   typeof StashFindPerformersResultSchema
 >;

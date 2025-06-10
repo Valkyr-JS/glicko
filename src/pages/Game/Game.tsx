@@ -4,7 +4,7 @@ import type { OperationVariables, QueryResult } from "@apollo/client";
 import { faExclamationCircle } from "@fortawesome/pro-solid-svg-icons/faExclamationCircle";
 import { faSend } from "@fortawesome/pro-solid-svg-icons/faSend";
 import type {
-  StashFindImages,
+  StashFindImagesResult,
   StashImage,
   StashPerformer,
 } from "@/apollo/schema";
@@ -18,7 +18,7 @@ interface GamePageProps extends PageProps {
   changeImageHandler: (
     performerID: StashPerformer["id"],
     currentImageID: StashImage["id"]
-  ) => Promise<QueryResult<StashFindImages, OperationVariables>>;
+  ) => Promise<QueryResult<StashFindImagesResult, OperationVariables>>;
   /** The data for the players involved in the match. */
   match: Match | null;
   /** The zero-based index of the current match in the match list. */

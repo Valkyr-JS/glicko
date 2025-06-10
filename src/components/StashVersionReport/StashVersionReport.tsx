@@ -1,6 +1,6 @@
 import React from "react";
 import type { OperationVariables, QueryResult } from "@apollo/client";
-import type { StashVersion } from "@/apollo/schema";
+import type { StashVersionResult } from "@/apollo/schema";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircle, faSpinnerThird } from "@fortawesome/pro-solid-svg-icons";
 import { getStashVersionBreakdown } from "@/helpers/stash";
@@ -9,8 +9,8 @@ import styles from "./StashVersionReport.module.scss";
 interface StashVersionReportProps {
   request: {
     loading: boolean;
-    data: QueryResult<StashVersion, OperationVariables>["data"];
-    error: QueryResult<StashVersion, OperationVariables>["error"];
+    data: QueryResult<StashVersionResult, OperationVariables>["data"];
+    error: QueryResult<StashVersionResult, OperationVariables>["error"];
   };
 }
 

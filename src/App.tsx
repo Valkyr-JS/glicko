@@ -14,11 +14,11 @@ import {
 import {
   StashFindPerformersResultSchema,
   StashVersionSchema,
-  type StashFindImages,
-  type StashFindPerformersResultType,
+  type StashFindImagesResult,
+  type StashFindPerformersResult,
   type StashImage,
   type StashPerformer,
-  type StashVersion,
+  type StashVersionResult,
 } from "./apollo/schema";
 import FiltersPage from "./pages/Filters/Filters";
 import GamePage from "./pages/Game/Game";
@@ -39,10 +39,12 @@ function App() {
 
   /* ---------------------------------------- Stash queries --------------------------------------- */
 
-  const queryStashVersion: QueryResult<StashVersion, OperationVariables> =
-    useQuery(GET_STASH_VERSION);
+  const queryStashVersionResult: QueryResult<
+    StashVersionResult,
+    OperationVariables
+  > = useQuery(GET_STASH_VERSION);
   try {
-    StashVersionSchema.safeParse(queryStashVersion);
+    StashVersionSchema.parse(queryStashVersionResult);
   } catch (error) {
     if (error instanceof ZodError) {
       setGameError({
@@ -54,9 +56,9 @@ function App() {
   }
 
   const [queryStashPerformerMatch, stashPerformerMatchResponse] =
-    useLazyQuery(GET_MATCH_PERFORMERS);
+    useLazyQuery<StashFindPerformersResult>(GET_MATCH_PERFORMERS);
   const [queryStashPerformerImage] =
-    useLazyQuery<StashFindImages>(GET_PERFORMER_IMAGE);
+    useLazyQuery<StashFindImagesResult>(GET_PERFORMER_IMAGE);
 
   /* ------------------------------------------ Handlers ------------------------------------------ */
 
@@ -95,7 +97,7 @@ function App() {
 
     // Get the first set of performers
     const matchResponse: QueryResult<
-      StashFindPerformersResultType,
+      StashFindPerformersResult,
       OperationVariables
     > = await queryStashPerformerMatch({ variables: performerFilters });
 
@@ -155,8 +157,6 @@ function App() {
     // Set the game as ready
     setGameLoading(false);
 
-    console.log(resolvedPlayers);
-
     // Load the game page
     setActivePage("GAME");
   };
@@ -172,9 +172,9 @@ function App() {
           gameLoading={gameLoading}
           setActivePage={setActivePage}
           startGameHandler={handleStartGame}
-          versionData={queryStashVersion.data ?? null}
-          versionError={queryStashVersion.error}
-          versionLoading={queryStashVersion.loading}
+          versionData={queryStashVersionResult.data ?? null}
+          versionError={queryStashVersionResult.error}
+          versionLoading={queryStashVersionResult.loading}
         />
       );
 
