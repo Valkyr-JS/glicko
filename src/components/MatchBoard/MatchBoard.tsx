@@ -110,6 +110,7 @@ const PlayerProfile = (props: PlayerProfileProps) => {
   const handleImageChange = async () => {
     setImageLoading(true);
     await props.changeImageHandler(+props.id);
+    setImageLoading(false);
   };
 
   const baseUrl =

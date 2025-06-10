@@ -55,8 +55,7 @@ function App() {
 
   const [queryStashPerformerMatch, stashPerformerMatchResponse] =
     useLazyQuery(GET_MATCH_PERFORMERS);
-  const [queryStashPerformerImage] = useLazyQuery(GET_PERFORMER_IMAGE);
-  const [getPerformerImage] =
+  const [queryStashPerformerImage] =
     useLazyQuery<StashFindImages>(GET_PERFORMER_IMAGE);
 
   /* ------------------------------------------ Handlers ------------------------------------------ */
@@ -65,10 +64,25 @@ function App() {
   const handleChangeImage = async (
     performerID: StashPerformer["id"],
     currentImageID: StashImage["id"]
-  ) =>
-    queryStashPerformerImage({
+  ) => {
+    return queryStashPerformerImage({
       variables: { performerID, currentImageID },
+    }).then((res) => {
+      // Process the value
+      const updatedMatch = (currentMatch ?? []).map((p) => {
+        return +p.id === performerID
+          ? { ...p, imageID: res.data?.findImages.images[0].id }
+          : p;
+      });
+
+      // Update state
+      setCurrentMatch(updatedMatch as Match);
+
+      // Refetch in preparation for the next request
+      res.refetch();
+      return res;
     });
+  };
 
   const handleClearGameError = () => setGameError(null);
 
@@ -97,8 +111,6 @@ function App() {
       }
     }
 
-    console.log(matchResponse);
-
     if (!matchResponse.data) {
       setGameError({
         name: "Performer data could not be found.",
@@ -119,7 +131,7 @@ function App() {
     const matchPerformers: Promise<MatchPerformer>[] =
       matchResponse.data.findPerformers.performers.map(async (p) => {
         const imagesAvailable =
-          (await getPerformerImage({
+          (await queryStashPerformerImage({
             variables: { performerID: p.id, currentImageID: 0 },
           }).then((res) => res.data && res.data.findImages.count > 1)) ?? false;
 
@@ -142,6 +154,8 @@ function App() {
 
     // Set the game as ready
     setGameLoading(false);
+
+    console.log(resolvedPlayers);
 
     // Load the game page
     setActivePage("GAME");

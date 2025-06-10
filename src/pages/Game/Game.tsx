@@ -52,7 +52,7 @@ const GamePage: React.FC<GamePageProps> = (props) => {
 
   /** Handler for clicking the change player image button. */
   const changeImageHandler = (performerID: StashPerformer["id"]) => {
-    const player = playerA.id === performerID ? playerA : playerB;
+    const player = +playerA.id === performerID ? playerA : playerB;
     const currentImageID = player.imageID;
     return props.changeImageHandler(+player.id, +(currentImageID ?? 0));
   };
