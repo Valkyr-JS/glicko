@@ -11,11 +11,12 @@ import {
   GET_MATCH_PERFORMERS,
   GET_PERFORMER_IMAGE,
   GET_SPECIFIC_MATCH_PERFORMERS,
+  GET_STASH_CONFIGURATION,
   GET_STASH_VERSION,
 } from "./apollo/queries";
 import {
   StashFindPerformersResultSchema,
-  StashVersionSchema,
+  type StashConfigResult,
   type StashFindImagesResult,
   type StashFindPerformersResult,
   type StashImage,
@@ -47,17 +48,11 @@ function App() {
     StashVersionResult,
     OperationVariables
   > = useQuery(GET_STASH_VERSION);
-  try {
-    StashVersionSchema.parse(queryStashVersionResult);
-  } catch (error) {
-    if (error instanceof ZodError) {
-      setGameError({
-        name: error.name,
-        message: error.message,
-        details: error,
-      });
-    }
-  }
+
+  const queryStashConfiguration: QueryResult<
+    StashConfigResult,
+    OperationVariables
+  > = useQuery(GET_STASH_CONFIGURATION);
 
   const [queryAllStashPerformers] = useLazyQuery<StashFindPerformersResult>(
     GET_ALL_PERFORMERS_BY_PAGE
@@ -398,6 +393,7 @@ function App() {
           filters={performerFilters}
           saveFiltersHandler={handleSaveFilters}
           setActivePage={setActivePage}
+          stashConfig={queryStashConfiguration.data?.configuration}
         />
       );
 

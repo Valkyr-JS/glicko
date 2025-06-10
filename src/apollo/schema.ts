@@ -50,15 +50,13 @@ export type StashVersionResult = z.infer<typeof StashVersionSchema>;
 
 export const StashConfigResultSchema = z.object({
   configuration: z.object({
-    general: z
-      .object({
-        stashBoxes: z
-          .object({
-            ...StashBoxSchema.shape,
-          })
-          .optional(),
-      })
-      .optional(),
+    general: z.object({
+      stashBoxes: z.array(
+        z.object({
+          ...StashBoxSchema.shape,
+        })
+      ),
+    }),
   }),
 });
 

@@ -79,3 +79,14 @@ interface PerformerFilters {
    * the array is empty.. */
   genders: Gender[];
 }
+
+interface StashConfigResult {
+  general: {
+    stashBoxes: StashBox[];
+  };
+}
+
+interface StashBox {
+  endpoint: string;
+  name: string;
+}

@@ -84,8 +84,8 @@ export const GET_SPECIFIC_MATCH_PERFORMERS = gql`
   }
 `;
 
-export const GET_STASH_BOX_ENDPOINTS = gql`
-  query GetStashBoxEndpoints {
+export const GET_STASH_CONFIGURATION = gql`
+  query GetStashConfiguration {
     configuration {
       general {
         stashBoxes {

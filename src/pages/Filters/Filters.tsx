@@ -10,6 +10,8 @@ interface FiltersPageProps extends PageProps {
   filters: PerformerFilters;
   /** The handler for updating the performer filters. */
   saveFiltersHandler: (updatedFilters: PerformerFilters) => void;
+  /** The user's Stash config data */
+  stashConfig?: StashConfigResult;
 }
 
 const FiltersPage: React.FC<FiltersPageProps> = (props) => {
@@ -17,6 +19,8 @@ const FiltersPage: React.FC<FiltersPageProps> = (props) => {
   const formRef = useRef<HTMLFormElement>(null);
 
   const classes = cx("container", styles.Filters);
+
+  console.log(props.stashConfig);
 
   /* --------------------------------------- General changes -------------------------------------- */
 
