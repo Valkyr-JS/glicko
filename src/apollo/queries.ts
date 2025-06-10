@@ -1,5 +1,19 @@
 import { gql } from "@apollo/client";
 
+export const GET_ALL_PERFORMERS_BY_PAGE = gql`
+  query GetPerformersByPage($page: Int, $perPage: Int) {
+    findPerformers(filter: { page: $page, per_page: $perPage }) {
+      count
+      performers {
+        custom_fields
+        id
+        image_path
+        name
+      }
+    }
+  }
+`;
+
 export const GET_PERFORMER_IMAGE = gql`
   query GetPerformerImage($performerID: ID!, $currentImageID: Int!) {
     findImages(
@@ -40,7 +54,7 @@ export const GET_PERFORMERS = gql`
 `;
 
 export const GET_SPECIFIC_MATCH_PERFORMERS = gql`
-  query GetPerformers($ids: [Int!]) {
+  query GetSpecificPerformers($ids: [Int!]) {
     findPerformers(performer_ids: $ids) {
       count
       performers {

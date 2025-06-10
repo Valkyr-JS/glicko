@@ -7,6 +7,7 @@ import {
 } from "@apollo/client";
 import { ZodError } from "zod/v4";
 import {
+  GET_ALL_PERFORMERS_BY_PAGE,
   GET_MATCH_PERFORMERS,
   GET_PERFORMER_IMAGE,
   GET_SPECIFIC_MATCH_PERFORMERS,
@@ -25,6 +26,7 @@ import FiltersPage from "./pages/Filters/Filters";
 import GamePage from "./pages/Game/Game";
 import HomePage from "./pages/Home/Home";
 import { GLICKO } from "./constants";
+import { Glicko2, Player } from "glicko2";
 
 function App() {
   /* -------------------------------------- State management -------------------------------------- */
@@ -36,9 +38,8 @@ function App() {
   const [performerFilters, setPerformerFilters] = useState<PerformerFilters>({
     genders: [],
   });
+  const [processing, setProcessing] = useState(false);
   const [results, setResults] = useState<GlickoMatchResult[]>([]);
-
-  console.log("results", results);
 
   /* ---------------------------------------- Stash queries --------------------------------------- */
 
@@ -58,6 +59,9 @@ function App() {
     }
   }
 
+  const [queryAllStashPerformers] = useLazyQuery<StashFindPerformersResult>(
+    GET_ALL_PERFORMERS_BY_PAGE
+  );
   const [queryStashPerformerMatch, stashPerformerMatchResponse] =
     useLazyQuery<StashFindPerformersResult>(GET_MATCH_PERFORMERS);
   const [querySpecificStashPerformerMatch] =
@@ -240,14 +244,116 @@ function App() {
     setActivePage("GAME");
   };
 
+  /** Handle submitting results of a session */
+  const handleSubmitResults = async () => {
+    // Update the processing state
+    setProcessing(true);
+
+    // Create a tournament
+    const tournament = new Glicko2();
+
+    // Get ALL performers from Stash
+    let page = 1;
+    const perPage = 25;
+
+    // Get the first page of performers
+    const firstPage = await queryAllStashPerformers({
+      variables: { page, perPage },
+    });
+
+    if (!firstPage.data || firstPage.error) {
+      // Throw an error
+      setGameError({
+        name: "Processing error",
+        message:
+          "There was an error in fetching performer data while processing your results.",
+        details: firstPage.error,
+      });
+
+      // Update the processing state
+      setProcessing(false);
+      return;
+    }
+
+    let allStashPerformers = firstPage.data.findPerformers.performers;
+
+    const pageLimit = Math.ceil(firstPage.data.findPerformers.count / perPage);
+    page++;
+
+    const getRemainingPages = async () => {
+      while (page <= pageLimit) {
+        const nextPage = await queryAllStashPerformers({
+          variables: { page, perPage },
+        });
+
+        if (!nextPage.data || nextPage.error) {
+          // Throw an error
+          setGameError({
+            name: "Processing error",
+            message:
+              "There was an error in fetching performer data while processing your results.",
+            details: nextPage.error,
+          });
+
+          // Update the processing state
+          setProcessing(false);
+          return;
+        }
+
+        allStashPerformers = [
+          ...allStashPerformers,
+          ...nextPage.data.findPerformers.performers,
+        ];
+        page++;
+      }
+    };
+
+    await getRemainingPages();
+
+    // Create Glicko players from ALL performers in Stash
+    const allGlickoPerformers = allStashPerformers.map((p) => {
+      const rating = p.custom_fields.glicko_rating ?? GLICKO.RATING_DEFAULT;
+      const deviation =
+        p.custom_fields.glicko_deviation ?? GLICKO.DEVIATION_DEFAULT;
+      const volatility =
+        p.custom_fields.glicko_volatility ?? GLICKO.VOLATILITY_DEFAULT;
+
+      return {
+        ...p,
+        glicko: tournament.makePlayer(rating, deviation, volatility),
+      };
+    });
+
+    // Loop through results and create tournament matches using the IDs
+    const matches = results.map((r) => {
+      // Get players
+      console.log(r);
+      const player1 = allGlickoPerformers.find((p) => p.id === r[0]);
+      const player2 = allGlickoPerformers.find((p) => p.id === r[1]);
+
+      return [player1?.glicko, player2?.glicko, r[2]] as [
+        Player,
+        Player,
+        0 | 1 | 0.5
+      ];
+    });
+
+    // Update the tournament
+    tournament.updateRatings(matches);
+    console.log(tournament.getPlayers());
+
+    // TODO - Update Stash performer data with results
+
+    // Update the processing state
+    setProcessing(false);
+  };
+
   /** Handle undoing the previous match result */
   const handleUndoMatch = async () => {
     const lastMatch = results[results.length - 1];
-    console.log(lastMatch);
 
     // Remove the previous result
     const updatedResults = results.slice(0, -1);
-    console.log(updatedResults);
     setResults(updatedResults);
 
     // Create a new match
@@ -307,7 +413,7 @@ function App() {
           setActivePage={setActivePage}
           setDrawHandler={handleSetDraw}
           setWinnerHandler={handleSetWinner}
-          submitHandler={() => console.log("Submit handler")}
+          submitHandler={handleSubmitResults}
           undoMatchHandler={handleUndoMatch}
           wipeResultsHandler={handleWipeResults}
         />
