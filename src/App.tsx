@@ -62,7 +62,8 @@ function App() {
 
   /* ------------------------------------------ Handlers ------------------------------------------ */
 
-  const getMatch = async () => {
+  /** Get performer data to create a new match. */
+  const createMatch = async (): Promise<Match | null> => {
     // Get the first set of performers
     const matchResponse: QueryResult<
       StashFindPerformersResult,
@@ -86,15 +87,18 @@ function App() {
         name: "Performer data could not be found.",
         message: "Performer data could not be retrieved from Stash.",
       });
-      return setGameLoading(false);
+      setGameLoading(false);
+      return null;
     }
+
     if (matchResponse.data.findPerformers.count < 2) {
       setGameError({
         name: "Not enough performers",
         message:
           "Less than two performers were found using your current filters. Update your filters to allow more performers.",
       });
-      return setGameLoading(false);
+      setGameLoading(false);
+      return null;
     }
 
     // Process the response
@@ -114,7 +118,7 @@ function App() {
         };
       });
 
-    const resolvedPlayers = await Promise.all(matchPerformers);
+    const resolvedPlayers = (await Promise.all(matchPerformers)) as Match;
     return resolvedPlayers;
   };
 
@@ -165,7 +169,7 @@ function App() {
     // Update the results
     setResults([...results, result]);
 
-    const resolvedPlayers = await getMatch();
+    const resolvedPlayers = await createMatch();
 
     if (!resolvedPlayers) return null;
 
@@ -178,14 +182,16 @@ function App() {
 
   /** Handle starting a new game. */
   const handleStartGame = async () => {
+    // Set the game as loading
     setGameLoading(true);
 
-    const resolvedPlayers = await getMatch();
+    // Create a new match
+    const resolvedPlayers = await createMatch();
 
-    if (!resolvedPlayers) return null;
+    // If no players are returned, throw an error
 
     // Update the state
-    setCurrentMatch([resolvedPlayers[0], resolvedPlayers[1]]);
+    setCurrentMatch(resolvedPlayers);
 
     // Refresh the data for the next match
     stashPerformerMatchResponse.refetch();
@@ -227,6 +233,7 @@ function App() {
       return (
         <GamePage
           changeImageHandler={handleChangeImage}
+          gameError={gameError}
           match={currentMatch}
           matchIndex={results.length}
           results={results}

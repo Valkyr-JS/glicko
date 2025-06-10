@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { faGithub } from "@fortawesome/free-brands-svg-icons/faGithub";
 import { faChessRook } from "@fortawesome/pro-solid-svg-icons/faChessRook";
-import { faHand } from "@fortawesome/pro-solid-svg-icons/faHand";
 import { faSpinnerThird } from "@fortawesome/pro-solid-svg-icons/faSpinnerThird";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { default as cx } from "classnames";
 import type { StashVersionResult } from "@/apollo/schema";
 import type { OperationVariables, QueryResult } from "@apollo/client";
-import Modal from "@/components/Modal/Modal";
+import { GameErrorModal } from "@/components/Modal/Modal";
 import StashVersionReport from "@/components/StashVersionReport/StashVersionReport";
 import styles from "./Home.module.scss";
 
@@ -129,46 +128,11 @@ const HomePage: React.FC<HomePageProps> = (props) => {
           <span>Version {__APP_VERSION__}</span>
         </footer>
       </main>
-      <Modal
-        buttons={[
-          {
-            element: "anchor",
-            children: "Open issue on GitHub",
-            className: "btn btn-secondary",
-            target: "_blank",
-            href:
-              "https://github.com/Valkyr-JS/glicko/issues/new?title=[ Game%20error ]&labels=bug&body=**Please add any other relevant details before submitting.**%0D%0A%0D%0A%0D%0A%0D%0A---%0D%0A%0D%0AVersion " +
-              __APP_VERSION__ +
-              "%0D%0A%0D%0A```%0D%0A" +
-              encodeURI(
-                JSON.stringify(props.gameError?.details) ?? "No error"
-              ) +
-              "%0D%0A```",
-          },
-          {
-            element: "button",
-            children: "Close",
-            className: "btn btn-primary",
-            onClick: handleCloseErrorModal,
-            type: "button",
-          },
-        ]}
-        icon={faHand}
+      <GameErrorModal
+        closeHandler={handleCloseErrorModal}
+        gameError={props.gameError}
         show={showGameErrorModal}
-        title={props.gameError?.name ?? "No error name"}
-      >
-        <p>An error occured whilst attempting to fetch data from Stash.</p>
-        <p>
-          <code>{props.gameError?.message ?? "No error message"}</code>
-        </p>
-        <p>
-          Please check your settings and retry. If you continue to run into this
-          error, please raise an issue on GitHub using the button below.
-        </p>
-        {props.gameError?.details ? (
-          <code>{JSON.stringify(props.gameError?.details) ?? "No error"}</code>
-        ) : null}
-      </Modal>
+      />
     </>
   );
 };

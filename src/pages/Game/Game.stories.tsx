@@ -26,6 +26,7 @@ const meta = {
   component: GamePage,
   args: {
     changeImageHandler: fn(),
+    gameError: undefined,
     match,
     matchIndex: 0,
     results: [],

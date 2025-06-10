@@ -9,7 +9,7 @@ import type {
   StashPerformer,
 } from "@/apollo/schema";
 import MatchBoard from "@/components/MatchBoard/MatchBoard";
-import Modal from "@/components/Modal/Modal";
+import Modal, { GameErrorModal } from "@/components/Modal/Modal";
 import { RECOMMENDED_MINIMUM_MATCHES } from "@/constants";
 import styles from "./Game.module.scss";
 
@@ -19,6 +19,8 @@ interface GamePageProps extends PageProps {
     performerID: StashPerformer["id"],
     currentImageID: StashImage["id"]
   ) => Promise<QueryResult<StashFindImagesResult, OperationVariables>>;
+  /** Any kind of game error that stop the user from playing. */
+  gameError: GameError | null;
   /** The data for the players involved in the match. */
   match: Match | null;
   /** The zero-based index of the current match in the match list. */
@@ -39,6 +41,7 @@ interface GamePageProps extends PageProps {
 
 const GamePage: React.FC<GamePageProps> = (props) => {
   const [showAbandonModal, setShowAbandonModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
   const [showSubmitModal, setShowSubmitModal] = useState(false);
 
   if (!props.match || props.match.length !== 2) return null;
@@ -78,6 +81,8 @@ const GamePage: React.FC<GamePageProps> = (props) => {
   const handleCancelSubmit: React.MouseEventHandler = () =>
     setShowSubmitModal(false);
 
+  const handleErrorClose = () => setShowErrorModal(false);
+
   /* ------------------------------------------ Component ----------------------------------------- */
 
   return (
@@ -94,6 +99,11 @@ const GamePage: React.FC<GamePageProps> = (props) => {
           match={props.match}
         />
       </main>
+      <GameErrorModal
+        closeHandler={handleErrorClose}
+        gameError={props.gameError}
+        show={showErrorModal}
+      />
       <AbandonMatchModal
         closeHandler={handleCancelAbandonProgress}
         continueHandler={handleConfirmAbandonProgress}
