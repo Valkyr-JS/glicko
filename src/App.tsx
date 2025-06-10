@@ -327,7 +327,6 @@ function App() {
     // Loop through results and create tournament matches using the IDs
     const matches = results.map((r) => {
       // Get players
-      console.log(r);
       const player1 = allGlickoPerformers.find((p) => p.id === r[0]);
       const player2 = allGlickoPerformers.find((p) => p.id === r[1]);
 
@@ -409,6 +408,7 @@ function App() {
           gameError={gameError}
           match={currentMatch}
           matchIndex={results.length}
+          processingResults={processing}
           results={results}
           setActivePage={setActivePage}
           setDrawHandler={handleSetDraw}

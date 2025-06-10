@@ -12,6 +12,8 @@ import MatchBoard from "@/components/MatchBoard/MatchBoard";
 import Modal, { GameErrorModal } from "@/components/Modal/Modal";
 import { RECOMMENDED_MINIMUM_MATCHES } from "@/constants";
 import styles from "./Game.module.scss";
+import { faSpinnerThird } from "@fortawesome/pro-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 interface GamePageProps extends PageProps {
   /** Handler for setting a new performer image */
@@ -25,6 +27,8 @@ interface GamePageProps extends PageProps {
   match: Match | null;
   /** The zero-based index of the current match in the match list. */
   matchIndex: number;
+  /** Dictates whether the results of the session are currently being processed. */
+  processingResults: boolean;
   /** The list of match results, including scores. */
   results: GlickoMatchResult[];
   /** Handler for declaring a match a draw. */
@@ -119,6 +123,7 @@ const GamePage: React.FC<GamePageProps> = (props) => {
         closeHandler={handleCancelSubmit}
         continueHandler={props.submitHandler}
         matchIndex={props.matchIndex}
+        processingResults={props.processingResults}
         show={showSubmitModal}
       />
     </>
@@ -183,11 +188,19 @@ interface SubmitProgressModalProps {
   continueHandler: React.MouseEventHandler;
   /** The zero-based index of the current match in the match list. */
   matchIndex: number;
+  /** Dictates whether the results of the session are currently being processed. */
+  processingResults: boolean;
   /** Dictates whether the modal is active. */
   show: boolean;
 }
 
 const SubmitProgressModal: React.FC<SubmitProgressModalProps> = (props) => {
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  useEffect(() => {
+    setIsProcessing(props.processingResults);
+  }, [props.processingResults]);
+
   const isNotEnough = props.matchIndex < RECOMMENDED_MINIMUM_MATCHES - 1;
 
   const children = isNotEnough ? (
@@ -226,7 +239,14 @@ const SubmitProgressModal: React.FC<SubmitProgressModalProps> = (props) => {
         {
           element: "button",
           className: "btn btn-primary",
-          children: "Yes",
+          children: (
+            <>
+              {isProcessing ? (
+                <FontAwesomeIcon icon={faSpinnerThird} spin className="mr-2" />
+              ) : null}
+              Yes
+            </>
+          ),
           type: "button",
           onClick: props.continueHandler,
         },

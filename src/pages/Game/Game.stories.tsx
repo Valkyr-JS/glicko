@@ -29,6 +29,7 @@ const meta = {
     gameError: undefined,
     match,
     matchIndex: 0,
+    processingResults: false,
     results: [],
     setActivePage: fn(),
     setDrawHandler: fn(),
