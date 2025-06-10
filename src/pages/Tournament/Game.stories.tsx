@@ -89,7 +89,7 @@ export const AltImagesUnavailable: Story = {
 
 export const RecommendedMatchCountNotMet: Story = {
   args: {
-    matchIndex: RECOMMENDED_MINIMUM_MATCHES - 1,
+    matchIndex: RECOMMENDED_MINIMUM_MATCHES - 2,
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -107,7 +107,7 @@ export const RecommendedMatchCountNotMet: Story = {
 
 export const RecommendedMatchCountMet: Story = {
   args: {
-    matchIndex: RECOMMENDED_MINIMUM_MATCHES,
+    matchIndex: RECOMMENDED_MINIMUM_MATCHES - 1,
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -125,7 +125,7 @@ export const RecommendedMatchCountMet: Story = {
 
 export const AbandonSession: Story = {
   args: {
-    matchIndex: RECOMMENDED_MINIMUM_MATCHES - 1,
+    matchIndex: RECOMMENDED_MINIMUM_MATCHES - 2,
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
