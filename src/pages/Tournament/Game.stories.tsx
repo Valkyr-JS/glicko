@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, fn, within } from "storybook/test";
-import GamePage from "./Tournament";
+import GamePage from "./Game";
 import { getStashContent } from "../../../.storybook/tools";
 
 const match: [MatchPerformer, MatchPerformer] = [

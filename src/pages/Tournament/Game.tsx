@@ -9,7 +9,7 @@ import type {
 } from "@/apollo/schema";
 import MatchBoard from "@/components/MatchBoard/MatchBoard";
 import Modal from "@/components/Modal/Modal";
-import styles from "./Tournament.module.scss";
+import styles from "./Game.module.scss";
 
 interface GamePageProps extends PageProps {
   /** Handler for setting a new performer image */
@@ -17,7 +17,7 @@ interface GamePageProps extends PageProps {
     performerID: StashPerformer["id"],
     currentImageID: StashImage["id"]
   ) => Promise<QueryResult<StashFindImages, OperationVariables>>;
-  /** The data for all players involved in the tournament. */
+  /** The data for the players involved in the match. */
   match: [MatchPerformer, MatchPerformer];
   /** The list of match results, including scores. */
   results: GlickoMatchResult[];
@@ -31,7 +31,7 @@ interface GamePageProps extends PageProps {
   submitHandler: () => void;
   /** Handler for reloading the previous match. */
   undoMatchHandler: () => void;
-  /** Handler for clearing all tournament data. */
+  /** Handler for clearing all session data. */
   wipeResultsHandler: () => void;
 }
 
@@ -50,14 +50,14 @@ const GamePage: React.FC<GamePageProps> = (props) => {
     return props.changeImageHandler(+player.id, +(currentImageID ?? 0));
   };
 
-  /** Handler for confirming abandonment of the current tournament. */
-  const handleAbandonTournament = () => setShowAbandonModal(true);
+  /** Handler for confirming abandonment of the current session. */
+  const handleAbandonProgress = () => setShowAbandonModal(true);
 
-  /** Handler for cancelling abandonment of the current tournament. */
-  const handleCancelAbandonTournament = () => setShowAbandonModal(false);
+  /** Handler for cancelling abandonment of the current session. */
+  const handleCancelAbandonProgress = () => setShowAbandonModal(false);
 
   /** Handler for clicking the stop button. */
-  const handleConfirmAbandonTournament = () => {
+  const handleConfirmAbandonProgress = () => {
     // Navigate home
     props.setActivePage("HOME");
 
@@ -65,7 +65,7 @@ const GamePage: React.FC<GamePageProps> = (props) => {
     props.wipeResultsHandler();
   };
 
-  const classes = cx("container", styles.Tournament);
+  const classes = cx("container", styles.Game);
 
   return (
     <>
@@ -74,7 +74,7 @@ const GamePage: React.FC<GamePageProps> = (props) => {
           changeImageHandler={changeImageHandler}
           clickSelectHandler={props.setWinnerHandler}
           clickSkipHandler={props.setDrawHandler}
-          clickStopHandler={handleAbandonTournament}
+          clickStopHandler={handleAbandonProgress}
           clickSubmitHandler={() => console.log("submit")}
           clickUndoHandler={props.undoMatchHandler}
           matchIndex={props.matchIndex}
@@ -82,8 +82,8 @@ const GamePage: React.FC<GamePageProps> = (props) => {
         />
       </main>
       <AbandonMatchModal
-        closeHandler={handleCancelAbandonTournament}
-        continueHandler={handleConfirmAbandonTournament}
+        closeHandler={handleCancelAbandonProgress}
+        continueHandler={handleConfirmAbandonProgress}
         show={showAbandonModal}
       />
     </>
@@ -97,9 +97,9 @@ export default GamePage;
 /* ---------------------------------------------------------------------------------------------- */
 
 interface AbandonMatchModalProps {
-  /** Handler for cancelling abandonment of the current tournament. */
+  /** Handler for cancelling abandonment of the current session. */
   closeHandler: () => void;
-  /** Handler for confirming abandonment of the current tournament. */
+  /** Handler for confirming abandonment of the current session. */
   continueHandler: () => void;
   /** Dictates whether the modal is active. */
   show: boolean;
@@ -126,13 +126,13 @@ const AbandonMatchModal: React.FC<AbandonMatchModalProps> = (props) => {
       ]}
       icon={faHand}
       show={props.show}
-      title="Abandon tournament?"
+      title="Abandon progress?"
     >
       <p>
-        If you abandon the tournament, all progress will be lost. This cannot be
+        If you abandon the session, all progress will be lost. This cannot be
         undone.
       </p>
-      <p>Are you sure you want to abandon the tournament?</p>
+      <p>Are you sure you want to abandon the session?</p>
     </Modal>
   );
 };
