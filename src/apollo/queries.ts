@@ -39,6 +39,20 @@ export const GET_PERFORMERS = gql`
   }
 `;
 
+export const GET_SPECIFIC_MATCH_PERFORMERS = gql`
+  query GetPerformers($ids: [Int!]) {
+    findPerformers(performer_ids: $ids) {
+      count
+      performers {
+        custom_fields
+        id
+        image_path
+        name
+      }
+    }
+  }
+`;
+
 export const GET_MATCH_PERFORMERS = gql`
   query GetPerformers($genders: [GenderEnum!]) {
     findPerformers(

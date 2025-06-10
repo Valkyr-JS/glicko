@@ -9,6 +9,7 @@ import { ZodError } from "zod/v4";
 import {
   GET_MATCH_PERFORMERS,
   GET_PERFORMER_IMAGE,
+  GET_SPECIFIC_MATCH_PERFORMERS,
   GET_STASH_VERSION,
 } from "./apollo/queries";
 import {
@@ -59,18 +60,30 @@ function App() {
 
   const [queryStashPerformerMatch, stashPerformerMatchResponse] =
     useLazyQuery<StashFindPerformersResult>(GET_MATCH_PERFORMERS);
+  const [querySpecificStashPerformerMatch] =
+    useLazyQuery<StashFindPerformersResult>(GET_SPECIFIC_MATCH_PERFORMERS);
   const [queryStashPerformerImage] =
     useLazyQuery<StashFindImagesResult>(GET_PERFORMER_IMAGE);
 
   /* ------------------------------------------ Handlers ------------------------------------------ */
 
-  /** Get performer data to create a new match. */
-  const createMatch = async (): Promise<Match | null> => {
-    // Get the first set of performers
+  /** Get performer data to create a new match. Gets a specific match up between
+   * two provided Stash performer IDs, or a random matchup if blank. */
+  const createMatch = async (
+    ids?: [StashPerformer["id"], StashPerformer["id"]]
+  ): Promise<Match | null> => {
+    // Use the appropriate query depending on whether specific IDs have been
+    // passed.
     const matchResponse: QueryResult<
       StashFindPerformersResult,
       OperationVariables
-    > = await queryStashPerformerMatch({ variables: performerFilters });
+    > = ids
+      ? await querySpecificStashPerformerMatch({
+          variables: { ids },
+        })
+      : await queryStashPerformerMatch({
+          variables: performerFilters,
+        });
 
     try {
       StashFindPerformersResultSchema.safeParse(matchResponse);
@@ -227,6 +240,26 @@ function App() {
     setActivePage("GAME");
   };
 
+  /** Handle undoing the previous match result */
+  const handleUndoMatch = async () => {
+    const lastMatch = results[results.length - 1];
+    console.log(lastMatch);
+
+    // Remove the previous result
+    const updatedResults = results.slice(0, -1);
+    console.log(updatedResults);
+    setResults(updatedResults);
+
+    // Create a new match
+    const resolvedPlayers = await createMatch([lastMatch[0], lastMatch[1]]);
+
+    // Update the state
+    setCurrentMatch(resolvedPlayers);
+
+    // Refresh the data for the next match
+    stashPerformerMatchResponse.refetch();
+  };
+
   /* ------------------------------------------- Router ------------------------------------------- */
 
   switch (activePage) {
@@ -265,7 +298,7 @@ function App() {
           setDrawHandler={handleSetDraw}
           setWinnerHandler={handleSetWinner}
           submitHandler={() => console.log("Submit handler")}
-          undoMatchHandler={() => console.log("Set undo match handler")}
+          undoMatchHandler={handleUndoMatch}
           wipeResultsHandler={() => console.log("Wipe results handler")}
         />
       );
