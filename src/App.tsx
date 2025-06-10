@@ -260,6 +260,16 @@ function App() {
     stashPerformerMatchResponse.refetch();
   };
 
+  /** Handle clearing all results */
+  const handleWipeResults = () => {
+    // Clear the state
+    setCurrentMatch(null);
+    setResults([]);
+
+    // Return to homepage
+    setActivePage("HOME");
+  };
+
   /* ------------------------------------------- Router ------------------------------------------- */
 
   switch (activePage) {
@@ -299,7 +309,7 @@ function App() {
           setWinnerHandler={handleSetWinner}
           submitHandler={() => console.log("Submit handler")}
           undoMatchHandler={handleUndoMatch}
-          wipeResultsHandler={() => console.log("Wipe results handler")}
+          wipeResultsHandler={handleWipeResults}
         />
       );
   }
