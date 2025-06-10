@@ -162,7 +162,9 @@ const HomePage: React.FC<HomePageProps> = (props) => {
           Please check your settings and retry. If you continue to run into this
           error, please raise an issue on GitHub using the button below.
         </p>
-        <code>{JSON.stringify(props.gameError?.details) ?? "No error"}</code>
+        {props.gameError?.details ? (
+          <code>{JSON.stringify(props.gameError?.details) ?? "No error"}</code>
+        ) : null}
       </Modal>
     </>
   );
