@@ -169,12 +169,11 @@ function App() {
     // Update the results
     setResults([...results, result]);
 
+    // Create a new match
     const resolvedPlayers = await createMatch();
 
-    if (!resolvedPlayers) return null;
-
     // Update the state
-    setCurrentMatch([resolvedPlayers[0], resolvedPlayers[1]]);
+    setCurrentMatch(resolvedPlayers);
 
     // Refresh the data for the next match
     stashPerformerMatchResponse.refetch();
@@ -185,10 +184,8 @@ function App() {
     // Set the game as loading
     setGameLoading(true);
 
-    // Create a new match
+    // Create a match
     const resolvedPlayers = await createMatch();
-
-    // If no players are returned, throw an error
 
     // Update the state
     setCurrentMatch(resolvedPlayers);
