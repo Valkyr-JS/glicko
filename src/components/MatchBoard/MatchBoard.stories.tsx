@@ -41,28 +41,36 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const FirstMatchUndoDisabled: Story = {
+export const FirstMatch: Story = {
   args: {
     matchIndex: 0,
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
+    const submitBtn = canvas.getByRole<HTMLButtonElement>("button", {
+      name: "Submit",
+    });
     const undoBtn = canvas.getByRole<HTMLButtonElement>("button", {
       name: "Undo match",
     });
+    expect(submitBtn).toBeDisabled();
     expect(undoBtn).toBeDisabled();
   },
 };
 
-export const NotFirstMatchUndoEnabled: Story = {
+export const NotFirstMatch: Story = {
   args: {
     matchIndex: 5,
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
+    const submitBtn = canvas.getByRole<HTMLButtonElement>("button", {
+      name: "Submit",
+    });
     const undoBtn = canvas.getByRole<HTMLButtonElement>("button", {
       name: "Undo match",
     });
+    expect(submitBtn).not.toBeDisabled();
     expect(undoBtn).not.toBeDisabled();
   },
 };
