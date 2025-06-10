@@ -35,7 +35,7 @@ function App() {
   const [performerFilters, setPerformerFilters] = useState<PerformerFilters>({
     genders: [],
   });
-  const [results] = useState<GlickoMatchResult[]>([]);
+  const [results, setResults] = useState<GlickoMatchResult[]>([]);
 
   /* ---------------------------------------- Stash queries --------------------------------------- */
 
@@ -62,39 +62,7 @@ function App() {
 
   /* ------------------------------------------ Handlers ------------------------------------------ */
 
-  /** Handle changing the performer image. */
-  const handleChangeImage = async (
-    performerID: StashPerformer["id"],
-    currentImageID: StashImage["id"]
-  ) => {
-    return queryStashPerformerImage({
-      variables: { performerID, currentImageID },
-    }).then((res) => {
-      // Process the value
-      const updatedMatch = (currentMatch ?? []).map((p) => {
-        return +p.id === performerID
-          ? { ...p, imageID: res.data?.findImages.images[0].id }
-          : p;
-      });
-
-      // Update state
-      setCurrentMatch(updatedMatch as Match);
-
-      // Refetch in preparation for the next request
-      res.refetch();
-      return res;
-    });
-  };
-
-  const handleClearGameError = () => setGameError(null);
-
-  /** Handler for saving changing to the performer filters. */
-  const handleSaveFilters = (updatedFilters: PerformerFilters) =>
-    setPerformerFilters(updatedFilters);
-
-  const handleStartGame = async () => {
-    setGameLoading(true);
-
+  const getMatch = async () => {
     // Get the first set of performers
     const matchResponse: QueryResult<
       StashFindPerformersResult,
@@ -147,6 +115,74 @@ function App() {
       });
 
     const resolvedPlayers = await Promise.all(matchPerformers);
+    return resolvedPlayers;
+  };
+
+  /** Handle changing the performer image. */
+  const handleChangeImage = async (
+    performerID: StashPerformer["id"],
+    currentImageID: StashImage["id"]
+  ) => {
+    return queryStashPerformerImage({
+      variables: { performerID, currentImageID },
+    }).then((res) => {
+      // Process the value
+      const updatedMatch = (currentMatch ?? []).map((p) => {
+        return +p.id === performerID
+          ? { ...p, imageID: res.data?.findImages.images[0].id }
+          : p;
+      });
+
+      // Update state
+      setCurrentMatch(updatedMatch as Match);
+
+      // Refetch in preparation for the next request
+      res.refetch();
+      return res;
+    });
+  };
+
+  /** Handle resetting the error state */
+  const handleClearGameError = () => setGameError(null);
+
+  /** Handler for saving changing to the performer filters. */
+  const handleSaveFilters = (updatedFilters: PerformerFilters) =>
+    setPerformerFilters(updatedFilters);
+
+  /** Handler for setting the winner of a match. */
+  const handleSetWinner = async (winnerIndex: 0 | 1) => {
+    if (currentMatch === null) return;
+
+    // Create a match result from the current match. The outcome is based on the
+    // result of player 1, where 0 is a loss and 1 is a win
+    const outcome = winnerIndex === 0 ? 1 : 0;
+    const result: GlickoMatchResult = [
+      currentMatch[0].id,
+      currentMatch[1].id,
+      outcome,
+    ];
+
+    // Update the results
+    setResults([...results, result]);
+
+    const resolvedPlayers = await getMatch();
+
+    if (!resolvedPlayers) return null;
+
+    // Update the state
+    setCurrentMatch([resolvedPlayers[0], resolvedPlayers[1]]);
+
+    // Refresh the data for the next match
+    stashPerformerMatchResponse.refetch();
+  };
+
+  /** Handle starting a new game. */
+  const handleStartGame = async () => {
+    setGameLoading(true);
+
+    const resolvedPlayers = await getMatch();
+
+    if (!resolvedPlayers) return null;
 
     // Update the state
     setCurrentMatch([resolvedPlayers[0], resolvedPlayers[1]]);
@@ -196,7 +232,7 @@ function App() {
           results={results}
           setActivePage={setActivePage}
           setDrawHandler={() => console.log("Set draw handler")}
-          setWinnerHandler={() => console.log("Set winner handler")}
+          setWinnerHandler={handleSetWinner}
           submitHandler={() => console.log("Submit handler")}
           undoMatchHandler={() => console.log("Set undo match handler")}
           wipeResultsHandler={() => console.log("Wipe results handler")}

@@ -28,7 +28,7 @@ interface GamePageProps extends PageProps {
   /** Handler for declaring a match a draw. */
   setDrawHandler: () => void;
   /** Handler for selecting the winner of a match. */
-  setWinnerHandler: (winner: 0 | 1) => void;
+  setWinnerHandler: (winnerIndex: 0 | 1) => void;
   /** Handle for submitting the match results. */
   submitHandler: () => void;
   /** Handler for reloading the previous match. */
