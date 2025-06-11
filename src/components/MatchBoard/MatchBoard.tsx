@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import type { OperationVariables, QueryResult } from "@apollo/client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faForwardStep } from "@fortawesome/pro-solid-svg-icons/faForwardStep";
@@ -114,8 +114,14 @@ const PlayerProfile = (props: PlayerProfileProps) => {
   const handleImageChange = async () => {
     setImageLoading(true);
     await props.changeImageHandler(+props.id);
-    setImageLoading(false);
   };
+
+  const imageRef = useRef<HTMLImageElement>(null);
+
+  // Wait until the image is finished loading
+  useEffect(() => {
+    if (imageRef.current?.complete) setImageLoading(false);
+  }, [imageRef.current?.complete]);
 
   const baseUrl =
     import.meta.env.MODE === "development"
@@ -134,6 +140,7 @@ const PlayerProfile = (props: PlayerProfileProps) => {
           src={imageSource}
           alt={props.name}
           onLoad={() => setImageLoading(false)}
+          ref={imageRef}
         />
       </div>
       <span className={styles["rating"]}>
