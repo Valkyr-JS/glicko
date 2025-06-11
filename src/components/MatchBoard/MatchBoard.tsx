@@ -111,6 +111,7 @@ interface PlayerProfileProps extends MatchPerformer {
 }
 
 const PlayerProfile = (props: PlayerProfileProps) => {
+  const [imageSource, setImageSource] = useState(props.coverImg);
   const [imageLoading, setImageLoading] = useState(false);
 
   /** Handler for changing the image for the performer */
@@ -121,7 +122,7 @@ const PlayerProfile = (props: PlayerProfileProps) => {
 
   /** Handler for resetting the performer's image back to their cover image. */
   const handleCoverReset = () => {
-    console.log("change");
+    setImageSource(props.coverImg);
   };
 
   const imageRef = useRef<HTMLImageElement>(null);
@@ -135,13 +136,17 @@ const PlayerProfile = (props: PlayerProfileProps) => {
     import.meta.env.MODE === "development"
       ? import.meta.env.VITE_STASH_SERVER
       : "";
-  const imageSource = props.imageID
-    ? baseUrl + "/image/" + props.imageID + "/thumbnail"
-    : props.coverImg;
+
+  // When image change is detected, update the state
+  useEffect(() => {
+    if (props.imageID)
+      setImageSource(baseUrl + "/image/" + props.imageID + "/thumbnail");
+    else setImageSource(props.coverImg);
+  }, [props.imageID, props.coverImg, baseUrl]);
 
   const imageButtonDisabled = imageLoading || !props.imagesAvailable;
   const coverButtonDisabled =
-    imageSource === props.coverImg || imageButtonDisabled;
+    imageSource === props.coverImg || !props.imagesAvailable;
 
   return (
     <div className={styles["profile"]}>
@@ -162,7 +167,7 @@ const PlayerProfile = (props: PlayerProfileProps) => {
         <button
           type="button"
           className="btn btn-primary"
-          onClick={handleCoverReset}
+          onClick={() => props.clickSelectHandler(props.position)}
         >
           {props.name}
         </button>
@@ -171,7 +176,7 @@ const PlayerProfile = (props: PlayerProfileProps) => {
         <button
           className="btn btn-secondary"
           disabled={coverButtonDisabled}
-          onClick={() => console.log("change")}
+          onClick={handleCoverReset}
           type="button"
         >
           <span className="sr-only">Reset to {props.name}'s cover image</span>
