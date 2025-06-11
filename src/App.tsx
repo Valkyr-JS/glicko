@@ -5,17 +5,16 @@ import {
   type OperationVariables,
   type QueryResult,
 } from "@apollo/client";
-import { ZodError } from "zod/v4";
 import {
   GET_ALL_PERFORMERS_BY_PAGE,
   GET_MATCH_PERFORMERS,
   GET_PERFORMER_IMAGE,
   GET_SPECIFIC_MATCH_PERFORMERS,
+  GET_STASH_CONFIGURATION,
   GET_STASH_VERSION,
 } from "./apollo/queries";
 import {
-  StashFindPerformersResultSchema,
-  StashVersionSchema,
+  type StashConfigResult,
   type StashFindImagesResult,
   type StashFindPerformersResult,
   type StashImage,
@@ -41,23 +40,19 @@ function App() {
   const [processing, setProcessing] = useState(false);
   const [results, setResults] = useState<GlickoMatchResult[]>([]);
 
+  console.log(performerFilters);
+
   /* ---------------------------------------- Stash queries --------------------------------------- */
 
   const queryStashVersionResult: QueryResult<
     StashVersionResult,
     OperationVariables
   > = useQuery(GET_STASH_VERSION);
-  try {
-    StashVersionSchema.parse(queryStashVersionResult);
-  } catch (error) {
-    if (error instanceof ZodError) {
-      setGameError({
-        name: error.name,
-        message: error.message,
-        details: error,
-      });
-    }
-  }
+
+  const queryStashConfiguration: QueryResult<
+    StashConfigResult,
+    OperationVariables
+  > = useQuery(GET_STASH_CONFIGURATION);
 
   const [queryAllStashPerformers] = useLazyQuery<StashFindPerformersResult>(
     GET_ALL_PERFORMERS_BY_PAGE
@@ -89,16 +84,9 @@ function App() {
           variables: performerFilters,
         });
 
-    try {
-      StashFindPerformersResultSchema.safeParse(matchResponse);
-    } catch (error) {
-      if (error instanceof ZodError) {
-        setGameError({
-          name: error.name,
-          message: error.message,
-          details: error,
-        });
-      }
+    if (matchResponse.error) {
+      setGameError({ ...matchResponse.error, details: matchResponse.error });
+      return null;
     }
 
     if (!matchResponse.data) {
@@ -106,7 +94,6 @@ function App() {
         name: "Performer data could not be found.",
         message: "Performer data could not be retrieved from Stash.",
       });
-      setGameLoading(false);
       return null;
     }
 
@@ -116,7 +103,6 @@ function App() {
         message:
           "Less than two performers were found using your current filters. Update your filters to allow more performers.",
       });
-      setGameLoading(false);
       return null;
     }
 
@@ -230,6 +216,12 @@ function App() {
 
     // Create a match
     const resolvedPlayers = await createMatch();
+
+    if (resolvedPlayers === null) {
+      setGameLoading(false);
+      setActivePage("HOME");
+      return;
+    }
 
     // Update the state
     setCurrentMatch(resolvedPlayers);
@@ -398,26 +390,41 @@ function App() {
           filters={performerFilters}
           saveFiltersHandler={handleSaveFilters}
           setActivePage={setActivePage}
+          stashConfig={queryStashConfiguration.data?.configuration}
         />
       );
 
     case "GAME":
-      return (
-        <GamePage
-          changeImageHandler={handleChangeImage}
-          gameError={gameError}
-          match={currentMatch}
-          matchIndex={results.length}
-          processingResults={processing}
-          results={results}
-          setActivePage={setActivePage}
-          setDrawHandler={handleSetDraw}
-          setWinnerHandler={handleSetWinner}
-          submitHandler={handleSubmitResults}
-          undoMatchHandler={handleUndoMatch}
-          wipeResultsHandler={handleWipeResults}
-        />
-      );
+      if (currentMatch)
+        return (
+          <GamePage
+            changeImageHandler={handleChangeImage}
+            gameError={gameError}
+            match={currentMatch}
+            matchIndex={results.length}
+            processingResults={processing}
+            results={results}
+            setActivePage={setActivePage}
+            setDrawHandler={handleSetDraw}
+            setWinnerHandler={handleSetWinner}
+            submitHandler={handleSubmitResults}
+            undoMatchHandler={handleUndoMatch}
+            wipeResultsHandler={handleWipeResults}
+          />
+        );
+      else
+        return (
+          <HomePage
+            clearGameError={handleClearGameError}
+            gameError={gameError}
+            gameLoading={gameLoading}
+            setActivePage={setActivePage}
+            startGameHandler={handleStartGame}
+            versionData={queryStashVersionResult.data ?? null}
+            versionError={queryStashVersionResult.error}
+            versionLoading={queryStashVersionResult.loading}
+          />
+        );
   }
 }
 

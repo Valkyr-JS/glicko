@@ -18,7 +18,7 @@ type Decorator =
 
 /** Storybook decorator which wraps the story in a form with a submit button.
  * The form response value is displayed in a code block beneath it. */
-export const FormSubmissionDecorator: Decorator = (Story) => {
+export const WithFormSubmission: Decorator = (Story) => {
   const [response, setResponse] = useState<{
     [k: string]: FormDataEntryValue;
   }>({});

@@ -1,5 +1,12 @@
 import { z } from "zod/v4";
 
+export const StashBoxSchema = z.object({
+  endpoint: z.string(),
+  name: z.string(),
+});
+
+export type StashBox = z.infer<typeof StashBoxSchema>;
+
 export const StashGlickoCustomFields = z.object({
   glicko_deviation: z.number().positive().optional(),
   glicko_rating: z.number().positive().optional(),
@@ -40,6 +47,20 @@ export const StashVersionSchema = z
   .partial();
 
 export type StashVersionResult = z.infer<typeof StashVersionSchema>;
+
+export const StashConfigResultSchema = z.object({
+  configuration: z.object({
+    general: z.object({
+      stashBoxes: z.array(
+        z.object({
+          ...StashBoxSchema.shape,
+        })
+      ),
+    }),
+  }),
+});
+
+export type StashConfigResult = z.infer<typeof StashConfigResultSchema>;
 
 export const StashFindImagesSchema = z.object({
   findImages: z.object({
