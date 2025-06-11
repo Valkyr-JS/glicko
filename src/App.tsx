@@ -40,8 +40,6 @@ function App() {
   const [processing, setProcessing] = useState(false);
   const [results, setResults] = useState<GlickoMatchResult[]>([]);
 
-  console.log(performerFilters);
-
   /* ---------------------------------------- Stash queries --------------------------------------- */
 
   const queryStashVersionResult: QueryResult<
@@ -331,7 +329,6 @@ function App() {
 
     // Update the tournament
     tournament.updateRatings(matches);
-    console.log(tournament.getPlayers());
 
     // TODO - Update Stash performer data with results
 
