@@ -4,7 +4,7 @@ import formStyles from "../forms.module.scss";
 
 interface RadioGroupProps extends React.PropsWithChildren {
   /** The unique group ID. */
-  radios: Omit<RadioProps, "onChangeHandler" | "name">[];
+  radios: Omit<RadioProps, "name" | "onChangeHandler">[];
   /** The name of the radio group as it will appear in the submitted data. */
   name: string;
   /** The title for the group. */
@@ -13,18 +13,20 @@ interface RadioGroupProps extends React.PropsWithChildren {
 
 const RadioGroup: React.FC<RadioGroupProps> = (props) => {
   const headingClasses = cx("form-label", "col-form-label", formStyles.heading);
-  const [checked, setChecked] = useState("");
+  const [checked, setChecked] = useState<string | null>(
+    props.radios.find((r) => r.isChecked)?.value ?? null
+  );
 
   return (
     <div className="form-group">
       <div className={headingClasses}>{props.title}</div>
-      {props.radios.map((c, i) => (
+      {props.radios.map((r, i) => (
         <Radio
           key={i}
-          {...c}
-          isChecked={checked === c.value}
+          {...r}
+          isChecked={checked === r.value}
           name={props.name}
-          onChangeHandler={() => setChecked(c.value)}
+          onChangeHandler={() => setChecked(r.value)}
         />
       ))}
       {props.children}

@@ -6,6 +6,7 @@ import CheckboxGroup from "./RadioGroup";
 const meta = {
   title: "Components/Forms/RadioGroup",
   component: CheckboxGroup,
+  decorators: [WithFormSubmission],
   args: {
     title: "Radio group",
     name: "yesOrNo",
@@ -32,8 +33,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
-  decorators: [WithFormSubmission],
+export const Unchecked: Story = {
   play: async ({ canvasElement, step }) => {
     const canvas = within(canvasElement);
     const submit = canvas.getByRole<HTMLButtonElement>("button", {
@@ -57,5 +57,32 @@ export const Default: Story = {
         })
       );
     });
+  },
+};
+
+export const DefaultValue: Story = {
+  args: {
+    radios: [
+      {
+        isChecked: false,
+        id: "yes",
+        label: "Yes",
+        value: "yes",
+      },
+      {
+        isChecked: true,
+        id: "no",
+        label: "No",
+        value: "no",
+      },
+    ],
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const checkbox = canvas.getByRole("radio", {
+      name: "No",
+    });
+
+    expect(checkbox).toBeChecked();
   },
 };
