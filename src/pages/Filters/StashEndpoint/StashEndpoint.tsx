@@ -1,7 +1,7 @@
+import React from "react";
 import RadioGroup from "@/components/forms/RadioGroup/RadioGroup";
 import { faSpinnerThird } from "@fortawesome/pro-solid-svg-icons/faSpinnerThird";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React from "react";
 
 interface StashEndpointFilterProps {
   endpointFilter: StashIDCriterionInput | undefined;

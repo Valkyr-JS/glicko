@@ -1,10 +1,10 @@
 import React, { useRef, useState } from "react";
 import { faHand } from "@fortawesome/pro-solid-svg-icons/faHand";
 import { default as cx } from "classnames";
-import CheckboxGroup from "@/components/forms/CheckboxGroup/CheckboxGroup";
 import Modal from "@/components/Modal/Modal";
 import styles from "./Filters.module.scss";
 import StashEndpointFilter from "./StashEndpoint/StashEndpoint";
+import GenderFilter from "./Genders/Genders";
 
 interface FiltersPageProps extends PageProps {
   /** The current performer filters. */
@@ -83,57 +83,7 @@ const FiltersPage: React.FC<FiltersPageProps> = (props) => {
           onChange={onFormChange}
         >
           <h1>Performer filters</h1>
-          <CheckboxGroup
-            title="Genders"
-            checkboxes={[
-              {
-                isChecked: props.filters.genders.includes("MALE") ?? false,
-                id: "genderMale",
-                label: "Male",
-                name: "gender-male",
-              },
-              {
-                isChecked: props.filters.genders.includes("FEMALE") ?? false,
-                id: "genderFemale",
-                label: "Female",
-                name: "gender-female",
-              },
-              {
-                isChecked:
-                  props.filters.genders.includes("TRANSGENDER_MALE") ?? false,
-                id: "genderTransgenderMale",
-                label: "Transgender male",
-                name: "gender-transgender_male",
-              },
-              {
-                isChecked:
-                  props.filters.genders.includes("TRANSGENDER_FEMALE") ?? false,
-                id: "genderTransgenderFemale",
-                label: "Transgender Female",
-                name: "gender-transgender_female",
-              },
-              {
-                isChecked: props.filters.genders.includes("INTERSEX") ?? false,
-                id: "genderIntersex",
-                label: "Intersex",
-                name: "gender-intersex",
-              },
-              {
-                isChecked:
-                  props.filters.genders.includes("NON_BINARY") ?? false,
-                id: "genderNonBinary",
-                label: "Non-Binary",
-                name: "gender-non_binary",
-              },
-            ]}
-          >
-            <small>
-              <p className="mt-2">
-                Select all the genders that qualify for the game. Selecting none
-                will qualify any gender.
-              </p>
-            </small>
-          </CheckboxGroup>
+          <GenderFilter genderFilter={props.filters.genders} />
           <StashEndpointFilter
             endpointFilter={props.filters.endpoint}
             stashConfig={props.stashConfig}
