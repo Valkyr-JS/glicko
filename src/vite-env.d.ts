@@ -93,7 +93,7 @@ interface PerformerFilters {
   /** All specified genders will qualify for the game. All genders qualify if
    * the array is empty.. */
   genders: Gender[];
-  stash_id_endpoint?: StashIDCriterionInput;
+  endpoint?: StashIDCriterionInput;
 }
 
 interface StashConfigResult {

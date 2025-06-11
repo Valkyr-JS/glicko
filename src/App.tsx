@@ -5,7 +5,6 @@ import {
   type OperationVariables,
   type QueryResult,
 } from "@apollo/client";
-import { ZodError } from "zod/v4";
 import {
   GET_ALL_PERFORMERS_BY_PAGE,
   GET_MATCH_PERFORMERS,
@@ -15,7 +14,6 @@ import {
   GET_STASH_VERSION,
 } from "./apollo/queries";
 import {
-  StashFindPerformersResultSchema,
   type StashConfigResult,
   type StashFindImagesResult,
   type StashFindPerformersResult,
@@ -41,6 +39,8 @@ function App() {
   });
   const [processing, setProcessing] = useState(false);
   const [results, setResults] = useState<GlickoMatchResult[]>([]);
+
+  console.log(performerFilters);
 
   /* ---------------------------------------- Stash queries --------------------------------------- */
 
@@ -84,16 +84,9 @@ function App() {
           variables: performerFilters,
         });
 
-    try {
-      StashFindPerformersResultSchema.safeParse(matchResponse);
-    } catch (error) {
-      if (error instanceof ZodError) {
-        setGameError({
-          name: error.name,
-          message: error.message,
-          details: error,
-        });
-      }
+    if (matchResponse.error) {
+      setGameError({ ...matchResponse.error, details: matchResponse.error });
+      return null;
     }
 
     if (!matchResponse.data) {
@@ -104,6 +97,8 @@ function App() {
       setGameLoading(false);
       return null;
     }
+
+    console.log(matchResponse);
 
     if (matchResponse.data.findPerformers.count < 2) {
       setGameError({

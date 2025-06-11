@@ -36,28 +36,17 @@ export const GET_PERFORMER_IMAGE = gql`
   }
 `;
 
-export const GET_PERFORMERS = gql`
-  query GetPerformers($genders: [GenderEnum!], $limit: Int) {
-    findPerformers(
-      filter: { per_page: $limit, sort: "random" }
-      performer_filter: { gender: { value_list: $genders, modifier: INCLUDES } }
-    ) {
-      count
-      performers {
-        custom_fields
-        id
-        image_path
-        name
-      }
-    }
-  }
-`;
-
 export const GET_MATCH_PERFORMERS = gql`
-  query GetPerformers($genders: [GenderEnum!]) {
+  query GetPerformers(
+    $genders: [GenderEnum!]
+    $endpoint: StashIDCriterionInput
+  ) {
     findPerformers(
       filter: { per_page: 2, sort: "random" }
-      performer_filter: { gender: { value_list: $genders, modifier: INCLUDES } }
+      performer_filter: {
+        gender: { value_list: $genders, modifier: INCLUDES }
+        stash_id_endpoint: $endpoint
+      }
     ) {
       count
       performers {

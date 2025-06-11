@@ -134,7 +134,10 @@ const FiltersPage: React.FC<FiltersPageProps> = (props) => {
               </p>
             </small>
           </CheckboxGroup>
-          <StashEndpointFilter stashConfig={props.stashConfig} />
+          <StashEndpointFilter
+            endpointFilter={props.filters.endpoint}
+            stashConfig={props.stashConfig}
+          />
           <div className={styles["button-container"]}>
             <button
               type="button"
@@ -201,19 +204,19 @@ const convertFormDataToPerformerFilters = (
     .filter((p) => p.match("gender-"))
     .map((p) => p.split("gender-")[1].toUpperCase());
 
-  // Stash endpoints
-  let stash_id_endpoint: PerformerFilters["stash_id_endpoint"] = undefined;
+  // Stash box endpoints
+  let endpoint: PerformerFilters["endpoint"] = undefined;
   switch (formJson.endpoint) {
     case "IS_NULL":
-      stash_id_endpoint = { modifier: "IS_NULL" };
+      endpoint = { modifier: "IS_NULL" };
       break;
     case "NOT_NULL":
-      stash_id_endpoint = { modifier: "NOT_NULL" };
+      endpoint = { modifier: "NOT_NULL" };
       break;
     case "undefined":
       break;
     default:
-      stash_id_endpoint = {
+      endpoint = {
         modifier: "INCLUDES",
         endpoint: formJson.endpoint.toString(),
       };
@@ -223,7 +226,7 @@ const convertFormDataToPerformerFilters = (
 
   const updatedFilters: PerformerFilters = {
     genders: genders as PerformerFilters["genders"],
-    stash_id_endpoint,
+    endpoint,
   };
 
   return updatedFilters;
@@ -239,6 +242,12 @@ const comparePerformerFilters = (
   const setBGenders = JSON.stringify(setB.genders.sort());
 
   if (setAGenders !== setBGenders) return false;
+
+  // Stash box endpoints
+  const setAEndpoint = JSON.stringify(setA.endpoint);
+  const setBEndpoint = JSON.stringify(setB.endpoint);
+
+  if (setAEndpoint !== setBEndpoint) return false;
 
   return true;
 };

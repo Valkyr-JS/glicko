@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 
 interface StashEndpointFilterProps {
+  endpointFilter: StashIDCriterionInput | undefined;
   stashConfig?: StashConfigResult;
 }
 
@@ -17,8 +18,6 @@ const StashEndpointFilter: React.FC<StashEndpointFilterProps> = (props) => {
     );
   }
 
-  const name = "endpoints";
-
   return (
     <RadioGroup
       title="Stashbox endpoints"
@@ -27,31 +26,27 @@ const StashEndpointFilter: React.FC<StashEndpointFilterProps> = (props) => {
         ...props.stashConfig.general.stashBoxes.map((box) => {
           return {
             id: "endpoint" + box.name,
-            isChecked: false,
+            isChecked: props.endpointFilter?.endpoint === box.endpoint,
             label: box.name,
-            name,
             value: box.endpoint,
           };
         }),
         {
-          id: "endpointNone",
-          isChecked: false,
-          label: "No endpoint",
-          name,
-          value: "IS_NULL",
-        },
-        {
           id: "endpointAny",
-          isChecked: false,
+          isChecked: props.endpointFilter?.modifier === "NOT_NULL",
           label: "Any endpoint",
-          name,
           value: "NOT_NULL",
         },
         {
+          id: "endpointNone",
+          isChecked: props.endpointFilter?.modifier === "IS_NULL",
+          label: "No endpoint",
+          value: "IS_NULL",
+        },
+        {
           id: "endpointNoCheck",
-          isChecked: true,
+          isChecked: props.endpointFilter === undefined,
           label: "Don't check",
-          name,
           value: "undefined",
         },
       ]}
