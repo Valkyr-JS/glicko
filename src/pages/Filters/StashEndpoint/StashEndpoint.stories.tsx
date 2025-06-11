@@ -8,6 +8,7 @@ const meta = {
   component: StashEndpointFilter,
   decorators: [WithFormSubmission],
   args: {
+    endpointFilter: undefined,
     stashConfig: {
       general: {
         stashBoxes: [
@@ -39,7 +40,7 @@ export const Loading: Story = {
   },
 };
 
-export const CheckboxForEachOption: Story = {
+export const RadioForEachOption: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const stashDBCheck = canvas.getByRole("radio", {
@@ -54,7 +55,7 @@ export const CheckboxForEachOption: Story = {
   },
 };
 
-export const CheckboxForNone: Story = {
+export const RadioForNone: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const noneCheck = canvas.getByRole("radio", {
@@ -65,7 +66,7 @@ export const CheckboxForNone: Story = {
   },
 };
 
-export const CheckboxForAny: Story = {
+export const RadioForAny: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const noneCheck = canvas.getByRole("radio", {
@@ -76,7 +77,7 @@ export const CheckboxForAny: Story = {
   },
 };
 
-export const CheckboxForNoCheck: Story = {
+export const RadioForNoCheck: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const noneCheck = canvas.getByRole("radio", {
@@ -84,5 +85,19 @@ export const CheckboxForNoCheck: Story = {
     });
 
     expect(noneCheck).toBeInTheDocument();
+  },
+};
+
+export const PreSelected: Story = {
+  args: {
+    endpointFilter: { modifier: "IS_NULL" },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const noneCheck = canvas.getByRole("radio", {
+      name: "No endpoint",
+    });
+
+    expect(noneCheck).toBeChecked();
   },
 };
