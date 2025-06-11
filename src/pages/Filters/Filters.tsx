@@ -218,7 +218,7 @@ const convertFormDataToPerformerFilters = (
     default:
       endpoint = {
         modifier: "INCLUDES",
-        endpoint: formJson.endpoint.toString(),
+        endpoint: formJson.endpoint?.toString(),
       };
       break;
   }
