@@ -94,11 +94,8 @@ function App() {
         name: "Performer data could not be found.",
         message: "Performer data could not be retrieved from Stash.",
       });
-      setGameLoading(false);
       return null;
     }
-
-    console.log(matchResponse);
 
     if (matchResponse.data.findPerformers.count < 2) {
       setGameError({
@@ -106,7 +103,6 @@ function App() {
         message:
           "Less than two performers were found using your current filters. Update your filters to allow more performers.",
       });
-      setGameLoading(false);
       return null;
     }
 
@@ -220,6 +216,12 @@ function App() {
 
     // Create a match
     const resolvedPlayers = await createMatch();
+
+    if (resolvedPlayers === null) {
+      setGameLoading(false);
+      setActivePage("HOME");
+      return;
+    }
 
     // Update the state
     setCurrentMatch(resolvedPlayers);
@@ -393,22 +395,36 @@ function App() {
       );
 
     case "GAME":
-      return (
-        <GamePage
-          changeImageHandler={handleChangeImage}
-          gameError={gameError}
-          match={currentMatch}
-          matchIndex={results.length}
-          processingResults={processing}
-          results={results}
-          setActivePage={setActivePage}
-          setDrawHandler={handleSetDraw}
-          setWinnerHandler={handleSetWinner}
-          submitHandler={handleSubmitResults}
-          undoMatchHandler={handleUndoMatch}
-          wipeResultsHandler={handleWipeResults}
-        />
-      );
+      if (currentMatch)
+        return (
+          <GamePage
+            changeImageHandler={handleChangeImage}
+            gameError={gameError}
+            match={currentMatch}
+            matchIndex={results.length}
+            processingResults={processing}
+            results={results}
+            setActivePage={setActivePage}
+            setDrawHandler={handleSetDraw}
+            setWinnerHandler={handleSetWinner}
+            submitHandler={handleSubmitResults}
+            undoMatchHandler={handleUndoMatch}
+            wipeResultsHandler={handleWipeResults}
+          />
+        );
+      else
+        return (
+          <HomePage
+            clearGameError={handleClearGameError}
+            gameError={gameError}
+            gameLoading={gameLoading}
+            setActivePage={setActivePage}
+            startGameHandler={handleStartGame}
+            versionData={queryStashVersionResult.data ?? null}
+            versionError={queryStashVersionResult.error}
+            versionLoading={queryStashVersionResult.loading}
+          />
+        );
   }
 }
 

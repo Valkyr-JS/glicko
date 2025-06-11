@@ -31,12 +31,10 @@ interface MatchBoardProps {
   /** The zero-based index of the match in the current game session. */
   matchIndex: number;
   /** The players in the current match. */
-  match: Match | null;
+  match: Match;
 }
 
 const MatchBoard: React.FC<MatchBoardProps> = (props) => {
-  if (!props.match) return null;
-
   return (
     <section className={styles["one-vs-one-board"]}>
       <h2>Round {props.matchIndex + 1}</h2>

@@ -24,7 +24,7 @@ interface GamePageProps extends PageProps {
   /** Any kind of game error that stop the user from playing. */
   gameError: GameError | null;
   /** The data for the players involved in the match. */
-  match: Match | null;
+  match: Match;
   /** The zero-based index of the current match in the match list. */
   matchIndex: number;
   /** Dictates whether the results of the session are currently being processed. */
@@ -58,8 +58,6 @@ const GamePage: React.FC<GamePageProps> = (props) => {
 
   /** Handler for clicking the change player image button. */
   const changeImageHandler = (performerID: StashPerformer["id"]) => {
-    if (!props.match) return undefined;
-
     const playerA = props.match[0];
     const playerB = props.match[1];
     const player = +playerA.id === performerID ? playerA : playerB;
