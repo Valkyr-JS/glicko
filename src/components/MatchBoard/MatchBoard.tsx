@@ -3,13 +3,14 @@ import type { OperationVariables, QueryResult } from "@apollo/client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faForwardStep } from "@fortawesome/pro-solid-svg-icons/faForwardStep";
 import { faImage } from "@fortawesome/pro-solid-svg-icons/faImage";
+import { faImagePortrait } from "@fortawesome/pro-solid-svg-icons/faImagePortrait";
 import { faRotateLeft } from "@fortawesome/pro-solid-svg-icons/faRotateLeft";
+import { faSend } from "@fortawesome/pro-solid-svg-icons/faSend";
 import { faSpinnerThird } from "@fortawesome/pro-solid-svg-icons/faSpinnerThird";
 import { faStop } from "@fortawesome/pro-solid-svg-icons/faStop";
 import { faTrophy } from "@fortawesome/pro-solid-svg-icons/faTrophy";
 import type { StashFindImagesResult, StashPerformer } from "@/apollo/schema";
 import styles from "./MatchBoard.module.scss";
-import { faSend } from "@fortawesome/pro-solid-svg-icons";
 
 interface MatchBoardProps {
   /** Handler for clicking the change player image button. */
@@ -111,9 +112,16 @@ interface PlayerProfileProps extends MatchPerformer {
 
 const PlayerProfile = (props: PlayerProfileProps) => {
   const [imageLoading, setImageLoading] = useState(false);
+
+  /** Handler for changing the image for the performer */
   const handleImageChange = async () => {
     setImageLoading(true);
     await props.changeImageHandler(+props.id);
+  };
+
+  /** Handler for resetting the performer's image back to their cover image. */
+  const handleCoverReset = () => {
+    console.log("change");
   };
 
   const imageRef = useRef<HTMLImageElement>(null);
@@ -132,6 +140,8 @@ const PlayerProfile = (props: PlayerProfileProps) => {
     : props.coverImg;
 
   const imageButtonDisabled = imageLoading || !props.imagesAvailable;
+  const coverButtonDisabled =
+    imageSource === props.coverImg || imageButtonDisabled;
 
   return (
     <div className={styles["profile"]}>
@@ -148,30 +158,43 @@ const PlayerProfile = (props: PlayerProfileProps) => {
         <span className="sr-only">{props.name}'s rating: </span>
         {Math.round(props.initialRating)}
       </span>
-      <button
-        type="button"
-        className="btn btn-primary"
-        onClick={() => props.clickSelectHandler(props.position)}
-      >
-        {props.name}
-      </button>
-      <button
-        className="btn btn-secondary"
-        disabled={imageButtonDisabled}
-        onClick={handleImageChange}
-        type="button"
-      >
-        <span className="sr-only">
-          {imageButtonDisabled
-            ? `No alternative images available for ${props.name}`
-            : `Change image for ${props.name}`}
-        </span>
-        {imageLoading ? (
-          <FontAwesomeIcon icon={faSpinnerThird} spin />
-        ) : (
-          <FontAwesomeIcon icon={faImage} />
-        )}
-      </button>
+      <div className={styles["rating-button"]}>
+        <button
+          type="button"
+          className="btn btn-primary"
+          onClick={handleCoverReset}
+        >
+          {props.name}
+        </button>
+      </div>
+      <div className={styles["image-buttons"]}>
+        <button
+          className="btn btn-secondary"
+          disabled={coverButtonDisabled}
+          onClick={() => console.log("change")}
+          type="button"
+        >
+          <span className="sr-only">Reset to {props.name}'s cover image</span>
+          <FontAwesomeIcon icon={faImagePortrait} />
+        </button>
+        <button
+          className="btn btn-secondary"
+          disabled={imageButtonDisabled}
+          onClick={handleImageChange}
+          type="button"
+        >
+          <span className="sr-only">
+            {imageButtonDisabled
+              ? `No alternative images available for ${props.name}`
+              : `Change image for ${props.name}`}
+          </span>
+          {imageLoading ? (
+            <FontAwesomeIcon icon={faSpinnerThird} spin />
+          ) : (
+            <FontAwesomeIcon icon={faImage} />
+          )}
+        </button>
+      </div>
     </div>
   );
 };
