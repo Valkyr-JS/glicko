@@ -111,15 +111,24 @@
     }
   }
 
-  button {
-    @include buttons.minimum-size;
-    &:first-of-type {
-      grid-row: select-button-top/select-button-bottom;
-    }
+  .rating-button {
+    grid-row: select-button-top/select-button-bottom;
 
-    &:nth-of-type(2) {
-      grid-row: image-button-top/image-button-bottom;
-      justify-self: center;
+    button {
+      width: 100%;
+    }
+  }
+
+  .image-buttons {
+    grid-row: image-button-top/image-button-bottom;
+    justify-self: center;
+
+    button {
+      @include buttons.minimum-size;
+
+      &:not(:last-child) {
+        margin-right: spacing.$small;
+      }
     }
   }
 }
