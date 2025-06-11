@@ -1,4 +1,4 @@
-import CheckboxGroup from "@/components/forms/CheckboxGroup/CheckboxGroup";
+import RadioGroup from "@/components/forms/RadioGroup/RadioGroup";
 import { faSpinnerThird } from "@fortawesome/pro-solid-svg-icons/faSpinnerThird";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
@@ -17,34 +17,56 @@ const StashEndpointFilter: React.FC<StashEndpointFilterProps> = (props) => {
     );
   }
 
+  const name = "endpoints";
+
   return (
-    <CheckboxGroup
+    <RadioGroup
       title="Stashbox endpoints"
-      checkboxes={[
+      name="endpoint"
+      radios={[
+        {
+          id: "endpointNoCheck",
+          isChecked: true,
+          label: "Don't check",
+          name,
+          value: "undefined",
+        },
         ...props.stashConfig.general.stashBoxes.map((box) => {
           return {
             id: "endpoint" + box.name,
             isChecked: false,
             label: box.name,
-            name: box.endpoint,
+            name,
+            value: box.name,
           };
         }),
         {
           id: "endpointNone",
           isChecked: false,
           label: "No endpoint",
-          name: "None",
+          name,
+          value: "IS_NULL",
+        },
+        {
+          id: "endpointAny",
+          isChecked: false,
+          label: "Any endpoint",
+          name,
+          value: "NOT_NULL",
         },
       ]}
     >
       <small>
         <p className="mt-2">
-          Select the Stash box endpoints that performers must have an ID for.
-          Selecting none will qualify performers whether they have an endpoint
-          ID or not.
+          Select the Stash box endpoint that performers must have an ID for.
+        </p>
+        <p>
+          Select "No endpoint" for performers that don't have any endpoint IDs,
+          or "Any endpoint" for performers who have at least one endpoint ID of
+          any kind. Select "Don't check" if you don't want to use this filter.
         </p>
       </small>
-    </CheckboxGroup>
+    </RadioGroup>
   );
 };
 

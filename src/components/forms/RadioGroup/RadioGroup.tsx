@@ -37,7 +37,7 @@ const RadioGroup: React.FC<RadioGroupProps> = (props) => {
 export default RadioGroup;
 
 /* ---------------------------------------------------------------------------------------------- */
-/*                                       Checkbox component                                       */
+/*                                     Radio button component                                     */
 /* ---------------------------------------------------------------------------------------------- */
 
 interface RadioProps {

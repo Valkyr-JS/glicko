@@ -42,10 +42,10 @@ export const Loading: Story = {
 export const CheckboxForEachOption: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const stashDBCheck = canvas.getByRole("checkbox", {
+    const stashDBCheck = canvas.getByRole("radio", {
       name: "StashDB",
     });
-    const fansDBCheck = canvas.getByRole("checkbox", {
+    const fansDBCheck = canvas.getByRole("radio", {
       name: "FansDB",
     });
 
@@ -54,11 +54,33 @@ export const CheckboxForEachOption: Story = {
   },
 };
 
-export const CheckboxForEachNone: Story = {
+export const CheckboxForNone: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const noneCheck = canvas.getByRole("checkbox", {
+    const noneCheck = canvas.getByRole("radio", {
       name: "No endpoint",
+    });
+
+    expect(noneCheck).toBeInTheDocument();
+  },
+};
+
+export const CheckboxForAny: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const noneCheck = canvas.getByRole("radio", {
+      name: "Any endpoint",
+    });
+
+    expect(noneCheck).toBeInTheDocument();
+  },
+};
+
+export const CheckboxForNoCheck: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const noneCheck = canvas.getByRole("radio", {
+      name: "Don't check",
     });
 
     expect(noneCheck).toBeInTheDocument();
