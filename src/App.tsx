@@ -40,7 +40,7 @@ function App() {
   const [processing, setProcessing] = useState(false);
   const [results, setResults] = useState<GlickoMatchResult[]>([]);
 
-  console.log(performerFilters);
+  console.log(results);
 
   /* ---------------------------------------- Stash queries --------------------------------------- */
 
