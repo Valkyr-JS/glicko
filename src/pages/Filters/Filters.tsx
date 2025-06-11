@@ -4,6 +4,7 @@ import { default as cx } from "classnames";
 import CheckboxGroup from "@/components/forms/CheckboxGroup/CheckboxGroup";
 import Modal from "@/components/Modal/Modal";
 import styles from "./Filters.module.scss";
+import StashEndpointFilter from "./StashEndpoint/StashEndpoint";
 
 interface FiltersPageProps extends PageProps {
   /** The current performer filters. */
@@ -20,16 +21,14 @@ const FiltersPage: React.FC<FiltersPageProps> = (props) => {
 
   const classes = cx("container", styles.Filters);
 
-  console.log(props.stashConfig);
-
   /* --------------------------------------- General changes -------------------------------------- */
 
   const onFormChange: React.FormEventHandler<HTMLFormElement> = () => {
     if (!formRef.current) return props.setActivePage("HOME");
 
     const formData = new FormData(formRef.current);
-    const currentFilters = convertFormDataToPlayerFilters(formData);
-    const filtersHaveChanged = !comparePlayerFilters(
+    const currentFilters = convertFormDataToPerformerFilters(formData);
+    const filtersHaveChanged = !comparePerformerFilters(
       props.filters,
       currentFilters
     );
@@ -54,7 +53,7 @@ const FiltersPage: React.FC<FiltersPageProps> = (props) => {
   const handleSaveToControl = () => {
     if (formRef.current) {
       // Process the form values
-      const updatedFilters = convertFormDataToPlayerFilters(
+      const updatedFilters = convertFormDataToPerformerFilters(
         new FormData(formRef.current)
       );
 
@@ -135,6 +134,7 @@ const FiltersPage: React.FC<FiltersPageProps> = (props) => {
               </p>
             </small>
           </CheckboxGroup>
+          <StashEndpointFilter stashConfig={props.stashConfig} />
           <div className={styles["button-container"]}>
             <button
               type="button"
@@ -189,23 +189,48 @@ export default FiltersPage;
 /*                                            Functions                                           */
 /* ---------------------------------------------------------------------------------------------- */
 
-/** Convert data from the settings form into PlayerFilters data. */
-const convertFormDataToPlayerFilters = (data: FormData): PerformerFilters => {
+/** Convert data from the settings form into PerformerFilters data. */
+const convertFormDataToPerformerFilters = (
+  data: FormData
+): PerformerFilters => {
   const formJson = Object.fromEntries(data.entries());
+  const formKeys = Object.keys(formJson);
 
-  const genders = Object.keys(formJson)
+  // Genders
+  const genders = formKeys
     .filter((p) => p.match("gender-"))
     .map((p) => p.split("gender-")[1].toUpperCase());
 
+  // Stash endpoints
+  let stash_id_endpoint: PerformerFilters["stash_id_endpoint"] = undefined;
+  switch (formJson.endpoint) {
+    case "IS_NULL":
+      stash_id_endpoint = { modifier: "IS_NULL" };
+      break;
+    case "NOT_NULL":
+      stash_id_endpoint = { modifier: "NOT_NULL" };
+      break;
+    case "undefined":
+      break;
+    default:
+      stash_id_endpoint = {
+        modifier: "INCLUDES",
+        endpoint: formJson.endpoint.toString(),
+      };
+      break;
+  }
+  console.log(formJson.endpoint);
+
   const updatedFilters: PerformerFilters = {
     genders: genders as PerformerFilters["genders"],
+    stash_id_endpoint,
   };
 
   return updatedFilters;
 };
 
 /** Compares two sets of player filters for equality. */
-const comparePlayerFilters = (
+const comparePerformerFilters = (
   setA: PerformerFilters,
   setB: PerformerFilters
 ): boolean => {

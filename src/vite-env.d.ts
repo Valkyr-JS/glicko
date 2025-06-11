@@ -2,21 +2,26 @@
 
 declare const __APP_VERSION__: string;
 
-interface GameError {
-  /** A short description of the error. */
-  message: string;
-  /** The name of the error. */
-  name: string;
-  /** The error code, if provided. */
-  code?: string;
-  /** Full details of the error, if provided. */
-  details?: unknown;
+enum CriterionModifierEnum {
+  EQUALS = "EQUALS",
+  NOT_EQUALS = "NOT_EQUALS",
+  GREATER_THAN = "GREATER_THAN",
+  LESS_THAN = "LESS_THAN",
+  IS_NULL = "IS_NULL",
+  NOT_NULL = "NOT_NULL",
+  INCLUDES_ALL = "INCLUDES_ALL",
+  INCLUDES = "INCLUDES",
+  EXCLUDES = "EXCLUDES",
+  MATCHES_REGEX = "MATCHES_REGEX",
+  NOT_MATCHES_REGEX = "NOT_MATCHES_REGEX",
+  BETWEEN = "BETWEEN",
+  NOT_BETWEEN = "NOT_BETWEEN",
 }
+type CriterionModifier = `${CriterionModifierEnum}`;
 
 enum GameModeEnum {
   INFINITE = "Infinite",
 }
-
 type GameMode = `${GameModeEnum}`;
 
 enum GendersEnum {
@@ -27,8 +32,18 @@ enum GendersEnum {
   INTERSEX = "INTERSEX",
   NON_BINARY = "NON_BINARY",
 }
-
 type Gender = `${GendersEnum}`;
+
+interface GameError {
+  /** A short description of the error. */
+  message: string;
+  /** The name of the error. */
+  name: string;
+  /** The error code, if provided. */
+  code?: string;
+  /** Full details of the error, if provided. */
+  details?: unknown;
+}
 
 /** A match that has not yet been completed. An array containing the Stash IDs
  * of the two performers. */
@@ -78,6 +93,7 @@ interface PerformerFilters {
   /** All specified genders will qualify for the game. All genders qualify if
    * the array is empty.. */
   genders: Gender[];
+  stash_id_endpoint?: StashIDCriterionInput;
 }
 
 interface StashConfigResult {
@@ -90,3 +106,9 @@ interface StashBox {
   endpoint: string;
   name: string;
 }
+
+type StashIDCriterionInput = {
+  modifier: CriterionModifier;
+  endpoint?: string;
+  stash_id?: string;
+};

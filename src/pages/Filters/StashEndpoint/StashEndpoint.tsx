@@ -24,20 +24,13 @@ const StashEndpointFilter: React.FC<StashEndpointFilterProps> = (props) => {
       title="Stashbox endpoints"
       name="endpoint"
       radios={[
-        {
-          id: "endpointNoCheck",
-          isChecked: true,
-          label: "Don't check",
-          name,
-          value: "undefined",
-        },
         ...props.stashConfig.general.stashBoxes.map((box) => {
           return {
             id: "endpoint" + box.name,
             isChecked: false,
             label: box.name,
             name,
-            value: box.name,
+            value: box.endpoint,
           };
         }),
         {
@@ -53,6 +46,13 @@ const StashEndpointFilter: React.FC<StashEndpointFilterProps> = (props) => {
           label: "Any endpoint",
           name,
           value: "NOT_NULL",
+        },
+        {
+          id: "endpointNoCheck",
+          isChecked: true,
+          label: "Don't check",
+          name,
+          value: "undefined",
         },
       ]}
     >
