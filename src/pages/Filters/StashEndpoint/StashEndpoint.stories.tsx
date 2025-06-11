@@ -26,6 +26,17 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+export const Loading: Story = {
+  args: {
+    stashConfig: undefined,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const loading = canvas.getByText("Loading...");
+    expect(loading).toBeInTheDocument();
+  },
+};
+
 export const CheckboxForEachOption: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
