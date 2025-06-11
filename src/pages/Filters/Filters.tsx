@@ -172,7 +172,6 @@ const convertFormDataToPerformerFilters = (
       };
       break;
   }
-  console.log(formJson.endpoint);
 
   const updatedFilters: PerformerFilters = {
     genders: genders as PerformerFilters["genders"],
