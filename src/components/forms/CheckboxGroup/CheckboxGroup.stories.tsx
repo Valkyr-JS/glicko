@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, userEvent, within } from "storybook/test";
-import { FormSubmissionDecorator } from "../../../../.storybook/decorators";
+import { WithFormSubmission } from "../../../../.storybook/decorators";
 import CheckboxGroup from "./CheckboxGroup";
 
 const meta = {
@@ -32,7 +32,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  decorators: [FormSubmissionDecorator],
+  decorators: [WithFormSubmission],
   play: async ({ args, canvasElement, step }) => {
     const canvas = within(canvasElement);
     const submit = canvas.getByRole<HTMLButtonElement>("button", {

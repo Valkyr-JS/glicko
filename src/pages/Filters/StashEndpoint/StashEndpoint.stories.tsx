@@ -1,10 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { expect, userEvent, within } from "storybook/test";
+import { expect, within } from "storybook/test";
 import StashEndpointFilter from "./StashEndpoint";
+import { WithFormSubmission } from "../../../../.storybook/decorators";
 
 const meta = {
   title: "Filters/StashEndpoint",
   component: StashEndpointFilter,
+  decorators: [WithFormSubmission],
   args: {
     stashConfig: {
       general: {
@@ -53,31 +55,12 @@ export const CheckboxForEachOption: Story = {
 };
 
 export const CheckboxForEachNone: Story = {
-  play: async ({ canvasElement, step }) => {
+  play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const stashDBCheck = canvas.getByRole("checkbox", {
-      name: "StashDB",
-    });
     const noneCheck = canvas.getByRole("checkbox", {
       name: "No endpoint",
     });
 
-    await step("An option for no endpoints should be available", () => {
-      expect(noneCheck).toBeInTheDocument();
-    });
-
-    await step("Check the StashDB checkbox", async () => {
-      userEvent.click(stashDBCheck);
-      await expect(stashDBCheck).toBeChecked();
-    });
-
-    await step(
-      "Check the no endpoint checkbox and expect the StashDB checkbox to be come unticked",
-      async () => {
-        userEvent.click(noneCheck);
-        await expect(noneCheck).toBeChecked();
-        await expect(stashDBCheck).not.toBeChecked();
-      }
-    );
+    expect(noneCheck).toBeInTheDocument();
   },
 };

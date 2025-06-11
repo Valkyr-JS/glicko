@@ -8,8 +8,6 @@ interface StashEndpointFilterProps {
 }
 
 const StashEndpointFilter: React.FC<StashEndpointFilterProps> = (props) => {
-  console.log(props.stashConfig);
-
   if (!props.stashConfig) {
     return (
       <div>
@@ -22,14 +20,22 @@ const StashEndpointFilter: React.FC<StashEndpointFilterProps> = (props) => {
   return (
     <CheckboxGroup
       title="Stashbox endpoints"
-      checkboxes={props.stashConfig.general.stashBoxes.map((box) => {
-        return {
-          id: "endpoint" + box.name,
+      checkboxes={[
+        ...props.stashConfig.general.stashBoxes.map((box) => {
+          return {
+            id: "endpoint" + box.name,
+            isChecked: false,
+            label: box.name,
+            name: box.endpoint,
+          };
+        }),
+        {
+          id: "endpointNone",
           isChecked: false,
-          label: box.name,
-          name: box.endpoint,
-        };
-      })}
+          label: "No endpoint",
+          name: "None",
+        },
+      ]}
     >
       <small>
         <p className="mt-2">
