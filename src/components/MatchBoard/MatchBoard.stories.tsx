@@ -86,10 +86,31 @@ export const ResetCoverImage: Story = {
     const canvas = within(canvasElement);
     const image = canvas.getByAltText<HTMLImageElement>("Danielle");
     const resetBtn = canvas.getByRole<HTMLButtonElement>("button", {
-      name: "Reset to cover image",
+      name: "Reset to Danielle's cover image",
     });
 
     await userEvent.click(resetBtn);
     await expect(image.src).toBe(match[0].coverImg);
+  },
+};
+
+export const ResetCoverImageDisabled: Story = {
+  args: {
+    match: [
+      { ...match[0], imagesAvailable: false },
+      { ...match[1], imagesAvailable: true, imageID: undefined },
+    ],
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const resetBtnA = canvas.getByRole<HTMLButtonElement>("button", {
+      name: "Reset to Danielle's cover image",
+    });
+    const resetBtnB = canvas.getByRole<HTMLButtonElement>("button", {
+      name: "Reset to Lily's cover image",
+    });
+
+    expect(resetBtnA).toBeDisabled();
+    expect(resetBtnB).toBeDisabled();
   },
 };
