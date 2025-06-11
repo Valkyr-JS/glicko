@@ -334,6 +334,9 @@ function App() {
 
     // Update the processing state
     setProcessing(false);
+
+    // Go to the home page
+    setActivePage("HOME");
   };
 
   /** Handle undoing the previous match result */
