@@ -1,0 +1,17 @@
+@use "@/scss/pages";
+@use "@/scss/spacing";
+
+.Settings {
+  @include pages.layout;
+
+  .button-container {
+    display: flex;
+    margin-top: spacing.$large;
+
+    button {
+      &:not(:last-child) {
+        margin-right: spacing.$small;
+      }
+    }
+  }
+}

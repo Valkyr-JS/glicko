@@ -85,7 +85,7 @@ enum PagesEnum {
   HOME = "HOME",
   FILTERS = "FILTERS",
   GAME = "GAME",
-  RESULTS = "RESULTS",
+  SETTINGS = "SETTINGS",
 }
 
 type Pages = `${PagesEnum}`;
@@ -100,6 +100,14 @@ interface PerformerFilters {
    * the array is empty.. */
   genders: Gender[];
   endpoint?: StashIDCriterionInput;
+}
+
+/** The user's game settings. */
+interface UserSettings {
+  /** If `true`, performer results will not be saved to the associated performer
+   * custom fields in the Stash database. Plugin settings and filters will still
+   * be saved to the config. */
+  readOnly?: boolean;
 }
 
 interface StashConfigResult {
