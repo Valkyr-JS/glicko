@@ -82,6 +82,7 @@ export const GET_STASH_CONFIGURATION = gql`
           name
         }
       }
+      plugins
     }
   }
 `;

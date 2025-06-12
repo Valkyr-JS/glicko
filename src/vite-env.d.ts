@@ -54,6 +54,12 @@ type GlickoMatch = [p1ID: number, p2ID: number, p1Outcome: 0 | 1 | 0.5];
  * `1` is a win, and `0.5` is a draw. */
 type GlickoMatchResult = [p1ID: number, p2ID: number, p1Outcome: 0 | 1 | 0.5];
 
+/** The Glicko plugin configuration object found in the Stash config. */
+interface GlickoPluginConfig {
+  /** The stringified PerformerFilters */
+  performerFilters?: string;
+}
+
 /** The data for the two performers in the current match. */
 type Match = [MatchPerformer, MatchPerformer];
 
@@ -99,6 +105,9 @@ interface PerformerFilters {
 interface StashConfigResult {
   general: {
     stashBoxes: StashBox[];
+  };
+  plugins: {
+    glicko?: GlickoPluginConfig;
   };
 }
 
