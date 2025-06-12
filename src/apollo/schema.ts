@@ -61,6 +61,7 @@ export const StashConfigResultSchema = z.object({
       glicko: z
         .object({
           performerFilters: z.string().optional(),
+          userSettings: z.string().optional(),
         })
         .optional(),
     }),

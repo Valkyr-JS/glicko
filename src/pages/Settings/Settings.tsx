@@ -23,7 +23,8 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
     if (!formRef.current) return props.setActivePage("HOME");
 
     const formData = new FormData(formRef.current);
-    console.log(formData);
+    const formJson = Object.fromEntries(formData.entries());
+    console.log(formJson);
   };
 
   /* --------------------------------------- Cancel changes --------------------------------------- */

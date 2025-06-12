@@ -69,18 +69,37 @@ const HomePage: React.FC<HomePageProps> = (props) => {
 
   /* -------------------------------------- Performer filters ------------------------------------- */
 
-  /** Handle clicking the change settings button */
-  const handleChangeSettings: React.MouseEventHandler<HTMLButtonElement> = () =>
-    props.setActivePage("FILTERS");
+  /** Handle clicking the performer filters button */
+  const handleOpenPerformerFilters: React.MouseEventHandler<
+    HTMLButtonElement
+  > = () => props.setActivePage("FILTERS");
 
   const filtersButton = (
     <button
       type="button"
       className="btn btn-secondary"
       disabled={props.versionLoading || !!props.versionError}
-      onClick={handleChangeSettings}
+      onClick={handleOpenPerformerFilters}
     >
       Performer filters
+    </button>
+  );
+
+  /* ---------------------------------------- User settings --------------------------------------- */
+
+  /** Handle clicking the change settings button */
+  const handleOpenUserSettings: React.MouseEventHandler<
+    HTMLButtonElement
+  > = () => props.setActivePage("SETTINGS");
+
+  const settingsButton = (
+    <button
+      type="button"
+      className="btn btn-secondary"
+      disabled={props.versionLoading || !!props.versionError}
+      onClick={handleOpenUserSettings}
+    >
+      Settings
     </button>
   );
 
@@ -104,6 +123,7 @@ const HomePage: React.FC<HomePageProps> = (props) => {
           <ul>
             <li>{startButton}</li>
             <li>{filtersButton}</li>
+            <li>{settingsButton}</li>
             <li>
               <button type="button" className="btn btn-secondary" disabled>
                 Leaderboard

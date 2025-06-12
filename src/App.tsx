@@ -29,6 +29,7 @@ import HomePage from "./pages/Home/Home";
 import { GLICKO } from "./constants";
 import { Glicko2, Player } from "glicko2";
 import { SET_PLUGIN_CONFIG } from "./apollo/mutations";
+import SettingsPage from "./pages/Settings/Settings";
 
 function App() {
   /* -------------------------------------- State management -------------------------------------- */
@@ -42,6 +43,7 @@ function App() {
   });
   const [processing, setProcessing] = useState(false);
   const [results, setResults] = useState<GlickoMatchResult[]>([]);
+  const [userSettings, setUserSettings] = useState<UserSettings>({});
 
   /* ---------------------------------------- Stash queries --------------------------------------- */
 
@@ -65,9 +67,10 @@ function App() {
   const [queryStashPerformerImage] =
     useLazyQuery<StashFindImagesResult>(GET_PERFORMER_IMAGE);
 
-  // Update the performer filters with the data from the Stash plugin config,
-  // if there is any.
+  // Update the performer filters and user settings with the data from the Stash
+  // plugin config, if there is any.
   useEffect(() => {
+    // Check performer filters
     if (
       queryStashConfiguration.data?.configuration.plugins.glicko
         ?.performerFilters
@@ -99,6 +102,40 @@ function App() {
             details: res.error,
           });
         } else setPerformerFilters(userPerformerFilters as PerformerFilters);
+      });
+    }
+
+    // Check user settings
+    if (
+      queryStashConfiguration.data?.configuration.plugins.glicko?.userSettings
+    ) {
+      const configUserSettings =
+        queryStashConfiguration.data?.configuration.plugins.glicko
+          ?.userSettings;
+
+      let userSettings: unknown;
+      try {
+        userSettings = JSON.parse(configUserSettings);
+      } catch (e) {
+        setGameError({
+          name: "Plugin config error",
+          message:
+            "There was an issue with your Glicko plugin config in your Stash config.yml file. Using default settings instead.",
+          details: e + "",
+        });
+      }
+
+      // Ensure the received data is valid before updating the state
+      StashPluginConfigParsed.safeParseAsync({
+        userSettings,
+      }).then((res) => {
+        if (res.error) {
+          setGameError({
+            name: res.error.name,
+            message: res.error.message,
+            details: res.error,
+          });
+        } else setUserSettings(userSettings as UserSettings);
       });
     }
   }, [queryStashConfiguration]);
@@ -486,6 +523,14 @@ function App() {
             versionLoading={queryStashVersionResult.loading}
           />
         );
+    case "SETTINGS":
+      return (
+        <SettingsPage
+          saveSettingsHandler={async () => console.log("save")}
+          setActivePage={setActivePage}
+          settings={userSettings}
+        />
+      );
   }
 }
 

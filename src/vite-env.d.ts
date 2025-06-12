@@ -58,6 +58,8 @@ type GlickoMatchResult = [p1ID: number, p2ID: number, p1Outcome: 0 | 1 | 0.5];
 interface GlickoPluginConfig {
   /** The stringified PerformerFilters */
   performerFilters?: string;
+  /** The stringified UserSettings */
+  userSettings?: string;
 }
 
 /** The data for the two performers in the current match. */
