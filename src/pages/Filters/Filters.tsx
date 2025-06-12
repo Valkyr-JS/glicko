@@ -10,12 +10,15 @@ interface FiltersPageProps extends PageProps {
   /** The current performer filters. */
   filters: PerformerFilters;
   /** The handler for updating the performer filters. */
-  saveFiltersHandler: (updatedFilters: PerformerFilters) => void;
+  saveFiltersToConfigHandler: (updatedFilters: PerformerFilters) => void;
+  /** The handler for updating the performer filters. */
+  saveFiltersStateHandler: (updatedFilters: PerformerFilters) => void;
   /** The user's Stash config data */
   stashConfig?: StashConfigResult;
 }
 
 const FiltersPage: React.FC<FiltersPageProps> = (props) => {
+  const [localFilter, setLocalFilter] = useState(props.filters);
   const [filtersChanged, setFiltersChanged] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -33,6 +36,7 @@ const FiltersPage: React.FC<FiltersPageProps> = (props) => {
       currentFilters
     );
 
+    setLocalFilter(currentFilters);
     setFiltersChanged(filtersHaveChanged);
   };
 
@@ -58,7 +62,7 @@ const FiltersPage: React.FC<FiltersPageProps> = (props) => {
       );
 
       // Save settings to the App control state
-      props.saveFiltersHandler(updatedFilters);
+      props.saveFiltersStateHandler(updatedFilters);
     }
   };
 
@@ -68,6 +72,13 @@ const FiltersPage: React.FC<FiltersPageProps> = (props) => {
 
     // Save, then redirect to the homepage
     handleSaveToControl();
+    props.setActivePage("HOME");
+  };
+
+  const handleSaveAsDefault: React.MouseEventHandler<
+    HTMLButtonElement
+  > = () => {
+    props.saveFiltersToConfigHandler(localFilter);
     props.setActivePage("HOME");
   };
 
@@ -95,6 +106,14 @@ const FiltersPage: React.FC<FiltersPageProps> = (props) => {
               onClick={handleCancel}
             >
               Cancel
+            </button>
+            <button
+              type="submit"
+              className="btn btn-secondary"
+              disabled={!filtersChanged}
+              onClick={handleSaveAsDefault}
+            >
+              Save as default
             </button>
             <button
               type="submit"

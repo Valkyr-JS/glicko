@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   useLazyQuery,
+  useMutation,
   useQuery,
   type OperationVariables,
   type QueryResult,
@@ -27,6 +28,7 @@ import GamePage from "./pages/Game/Game";
 import HomePage from "./pages/Home/Home";
 import { GLICKO } from "./constants";
 import { Glicko2, Player } from "glicko2";
+import { SET_PLUGIN_CONFIG } from "./apollo/mutations";
 
 function App() {
   /* -------------------------------------- State management -------------------------------------- */
@@ -100,6 +102,11 @@ function App() {
       });
     }
   }, [queryStashConfiguration]);
+
+  /* --------------------------------------- Stash mutations -------------------------------------- */
+
+  const [mutateStashPluginConfig] =
+    useMutation<StashConfigResult>(SET_PLUGIN_CONFIG);
 
   /* ------------------------------------------ Handlers ------------------------------------------ */
 
@@ -191,9 +198,32 @@ function App() {
   /** Handle resetting the error state */
   const handleClearGameError = () => setGameError(null);
 
-  /** Handler for saving changing to the performer filters. */
-  const handleSaveFilters = (updatedFilters: PerformerFilters) =>
+  /** Handler for updating the performer filters state. */
+  const handleSaveFilters = (updatedFilters: PerformerFilters) => {
     setPerformerFilters(updatedFilters);
+  };
+
+  /** Handler for updating the plugin config with performer filters. */
+  const handleSaveFiltersToConfig = async (
+    updatedFilters: PerformerFilters
+  ) => {
+    // Refetch the config data to ensure it's the latest
+    const configData = await queryStashConfiguration.refetch();
+
+    // Create the updated data
+    const updatedPluginConfig = {
+      ...configData.data.configuration.plugins.glicko,
+      performerFilters: JSON.stringify(updatedFilters),
+    };
+
+    // Update the config
+    await mutateStashPluginConfig({
+      variables: { input: updatedPluginConfig },
+    });
+
+    // Update the state
+    setPerformerFilters(updatedFilters);
+  };
 
   /** Handler for scoring the match as a draw. */
   const handleSetDraw = async () => {
@@ -427,7 +457,8 @@ function App() {
       return (
         <FiltersPage
           filters={performerFilters}
-          saveFiltersHandler={handleSaveFilters}
+          saveFiltersStateHandler={handleSaveFilters}
+          saveFiltersToConfigHandler={handleSaveFiltersToConfig}
           setActivePage={setActivePage}
           stashConfig={queryStashConfiguration.data?.configuration}
         />
