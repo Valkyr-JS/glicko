@@ -3,6 +3,7 @@ import { faHand } from "@fortawesome/pro-solid-svg-icons/faHand";
 import { default as cx } from "classnames";
 import Modal from "@/components/Modal/Modal";
 import styles from "./Settings.module.scss";
+import ReadOnlyMode from "./options/ReadOnlyMode";
 
 interface SettingsPageProps extends PageProps {
   /** The user's game settings. */
@@ -55,7 +56,8 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
           ref={formRef}
           onChange={onFormChange}
         >
-          <h1>Performer filters</h1>
+          <h1>Settings</h1>
+          <ReadOnlyMode enabled={props.settings.readOnly} />
           <div className={styles["button-container"]}>
             <button
               type="button"

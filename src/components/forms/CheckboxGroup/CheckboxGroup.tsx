@@ -6,7 +6,7 @@ interface CheckboxGroupProps extends React.PropsWithChildren {
   /** The unique group ID. */
   checkboxes: CheckboxProps[];
   /** The title for the group. */
-  title: string;
+  title?: string;
 }
 
 const CheckboxGroup: React.FC<CheckboxGroupProps> = (props) => {
@@ -14,7 +14,7 @@ const CheckboxGroup: React.FC<CheckboxGroupProps> = (props) => {
 
   return (
     <div className="form-group">
-      <div className={headingClasses}>{props.title}</div>
+      {props.title ? <div className={headingClasses}>{props.title}</div> : null}
       {props.checkboxes.map((c, i) => (
         <Checkbox key={i} {...c} />
       ))}
