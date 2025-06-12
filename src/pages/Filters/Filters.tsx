@@ -10,7 +10,7 @@ interface FiltersPageProps extends PageProps {
   /** The current performer filters. */
   filters: PerformerFilters;
   /** The handler for updating the performer filters. */
-  saveFiltersHandler: (updatedFilters: PerformerFilters) => void;
+  saveFiltersHandler: (updatedFilters: PerformerFilters) => Promise<void>;
   /** The user's Stash config data */
   stashConfig?: StashConfigResult;
 }

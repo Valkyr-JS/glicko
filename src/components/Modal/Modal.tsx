@@ -123,7 +123,7 @@ export const GameErrorModal: React.FC<GameErrorModalProps> = (props) => {
         error, please raise an issue on GitHub using the button below.
       </p>
       {props.gameError?.details ? (
-        <code>{JSON.stringify(props.gameError?.details) ?? "No error"}</code>
+        <code>{props.gameError?.details + ""}</code>
       ) : null}
     </Modal>
   );
