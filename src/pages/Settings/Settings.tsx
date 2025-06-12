@@ -32,9 +32,8 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
   const [showCancelModal, setShowCancelModal] = useState(false);
 
   /** Handler for clicking the cancel button at the bottom of the page. */
-  const handleCancel: React.MouseEventHandler = () => {
-    console.log("cancel");
-  };
+  const handleCancel: React.MouseEventHandler = () =>
+    props.setActivePage("HOME");
 
   /* ---------------------------------------- Save settings --------------------------------------- */
 
