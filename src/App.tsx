@@ -14,6 +14,7 @@ import {
   GET_STASH_VERSION,
 } from "./apollo/queries";
 import {
+  StashPluginConfigParsed,
   type StashConfigResult,
   type StashFindImagesResult,
   type StashFindPerformersResult,
@@ -73,7 +74,7 @@ function App() {
         queryStashConfiguration.data?.configuration.plugins.glicko
           ?.performerFilters;
 
-      let userPerformerFilters;
+      let userPerformerFilters: unknown;
       try {
         userPerformerFilters = JSON.parse(configPerformerFilters);
       } catch (e) {
@@ -85,7 +86,18 @@ function App() {
         });
       }
 
-      setPerformerFilters(userPerformerFilters);
+      // Ensure the received data is valid before updating the state
+      StashPluginConfigParsed.safeParseAsync({
+        performerFilters: userPerformerFilters,
+      }).then((res) => {
+        if (res.error) {
+          setGameError({
+            name: res.error.name,
+            message: res.error.message,
+            details: res.error,
+          });
+        } else setPerformerFilters(userPerformerFilters as PerformerFilters);
+      });
     }
   }, [queryStashConfiguration]);
 

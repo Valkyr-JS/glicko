@@ -88,3 +88,18 @@ export const StashFindPerformersResultSchema = z.object({
 export type StashFindPerformersResult = z.infer<
   typeof StashFindPerformersResultSchema
 >;
+
+export const StashPluginConfigParsed = z.object({
+  performerFilters: z.object({
+    genders: z.array(
+      z.enum([
+        "MALE",
+        "FEMALE",
+        "TRANSGENDER_MALE",
+        "TRANSGENDER_FEMALE",
+        "INTERSEX",
+        "NON_BINARY",
+      ])
+    ),
+  }),
+});
