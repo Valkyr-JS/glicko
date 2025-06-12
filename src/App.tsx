@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   useLazyQuery,
   useQuery,
@@ -61,6 +61,33 @@ function App() {
     useLazyQuery<StashFindPerformersResult>(GET_SPECIFIC_MATCH_PERFORMERS);
   const [queryStashPerformerImage] =
     useLazyQuery<StashFindImagesResult>(GET_PERFORMER_IMAGE);
+
+  // Update the performer filters with the data from the Stash plugin config,
+  // if there is any.
+  useEffect(() => {
+    if (
+      queryStashConfiguration.data?.configuration.plugins.glicko
+        ?.performerFilters
+    ) {
+      const configPerformerFilters =
+        queryStashConfiguration.data?.configuration.plugins.glicko
+          ?.performerFilters;
+
+      let userPerformerFilters;
+      try {
+        userPerformerFilters = JSON.parse(configPerformerFilters);
+      } catch (e) {
+        setGameError({
+          name: "Plugin config error",
+          message:
+            "There was an issue with your Glicko plugin config in your Stash config.yml file. Using default settings instead.",
+          details: e + "",
+        });
+      }
+
+      setPerformerFilters(userPerformerFilters);
+    }
+  }, [queryStashConfiguration]);
 
   /* ------------------------------------------ Handlers ------------------------------------------ */
 
