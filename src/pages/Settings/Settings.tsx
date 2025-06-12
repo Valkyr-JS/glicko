@@ -13,6 +13,7 @@ interface SettingsPageProps extends PageProps {
 }
 
 const SettingsPage: React.FC<SettingsPageProps> = (props) => {
+  const [settingsChanged, setSettingsChanged] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
 
   const classes = cx("container", styles.Settings);
@@ -23,8 +24,12 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
     if (!formRef.current) return props.setActivePage("HOME");
 
     const formData = new FormData(formRef.current);
-    const formJson = Object.fromEntries(formData.entries());
-    console.log(formJson);
+    const currentSettings = convertFormDataToUserSettings(formData);
+    const settingsHaveChanged = !compareSettings(
+      props.settings,
+      currentSettings
+    );
+    setSettingsChanged(settingsHaveChanged);
   };
 
   /* --------------------------------------- Cancel changes --------------------------------------- */
@@ -32,8 +37,11 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
   const [showCancelModal, setShowCancelModal] = useState(false);
 
   /** Handler for clicking the cancel button at the bottom of the page. */
-  const handleCancel: React.MouseEventHandler = () =>
-    props.setActivePage("HOME");
+  const handleCancel: React.MouseEventHandler = () => {
+    if (!formRef.current) return props.setActivePage("HOME");
+    if (settingsChanged) setShowCancelModal(true);
+    else props.setActivePage("HOME");
+  };
 
   /* ---------------------------------------- Save settings --------------------------------------- */
 
@@ -103,3 +111,24 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
 };
 
 export default SettingsPage;
+
+const convertFormDataToUserSettings = (data: FormData): UserSettings => {
+  const formJson = Object.fromEntries(data.entries());
+  const formKeys = Object.keys(formJson);
+
+  // Read-only mode
+  const readOnly = !!formKeys.find((k) => k === "read-only");
+
+  const updatedSettings: UserSettings = {
+    readOnly,
+  };
+
+  return updatedSettings;
+};
+
+/** Compares two sets of user settings for equality. */
+const compareSettings = (setA: UserSettings, setB: UserSettings): boolean => {
+  if (setA.readOnly !== setB.readOnly) return false;
+
+  return true;
+};
