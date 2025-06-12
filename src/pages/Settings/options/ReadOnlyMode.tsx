@@ -10,7 +10,7 @@ const ReadOnlyMode: React.FC<ReadOnlyModeProps> = (props) => {
     <CheckboxGroup
       checkboxes={[
         {
-          isChecked: props.enabled ?? false,
+          isChecked: !!props.enabled,
           id: "readOnly",
           label: 'Enable "read-only" mode',
           name: "read-only",
