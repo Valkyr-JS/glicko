@@ -19,6 +19,7 @@ const meta = {
           },
         ],
       },
+      plugins: {},
     },
   },
   parameters: {
