@@ -197,16 +197,8 @@ function App() {
 
   /** Handle resetting the error state */
   const handleClearGameError = () => setGameError(null);
-
-  /** Handler for updating the performer filters state. */
+  /** Handler for updating the performer filters. */
   const handleSaveFilters = async (updatedFilters: PerformerFilters) => {
-    setPerformerFilters(updatedFilters);
-  };
-
-  /** Handler for updating the plugin config with performer filters. */
-  const handleSaveFiltersToConfig = async (
-    updatedFilters: PerformerFilters
-  ) => {
     // Refetch the config data to ensure it's the latest
     const configData = await queryStashConfiguration.refetch();
 
@@ -457,8 +449,7 @@ function App() {
       return (
         <FiltersPage
           filters={performerFilters}
-          saveFiltersStateHandler={handleSaveFilters}
-          saveFiltersToConfigHandler={handleSaveFiltersToConfig}
+          saveFiltersHandler={handleSaveFilters}
           setActivePage={setActivePage}
           stashConfig={queryStashConfiguration.data?.configuration}
         />

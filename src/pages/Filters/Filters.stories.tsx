@@ -11,8 +11,7 @@ const meta = {
   component: Filters,
   args: {
     filters: defaultFilters,
-    saveFiltersToConfigHandler: fn(),
-    saveFiltersStateHandler: fn(),
+    saveFiltersHandler: fn(),
     setActivePage: fn(),
   },
 } satisfies Meta<typeof Filters>;
