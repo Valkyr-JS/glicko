@@ -199,7 +199,7 @@ function App() {
   const handleClearGameError = () => setGameError(null);
 
   /** Handler for updating the performer filters state. */
-  const handleSaveFilters = (updatedFilters: PerformerFilters) => {
+  const handleSaveFilters = async (updatedFilters: PerformerFilters) => {
     setPerformerFilters(updatedFilters);
   };
 

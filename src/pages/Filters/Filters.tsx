@@ -10,7 +10,9 @@ interface FiltersPageProps extends PageProps {
   /** The current performer filters. */
   filters: PerformerFilters;
   /** The handler for updating the performer filters. */
-  saveFiltersToConfigHandler: (updatedFilters: PerformerFilters) => void;
+  saveFiltersToConfigHandler: (
+    updatedFilters: PerformerFilters
+  ) => Promise<void>;
   /** The handler for updating the performer filters. */
   saveFiltersStateHandler: (updatedFilters: PerformerFilters) => void;
   /** The user's Stash config data */
@@ -78,8 +80,9 @@ const FiltersPage: React.FC<FiltersPageProps> = (props) => {
   const handleSaveAsDefault: React.MouseEventHandler<
     HTMLButtonElement
   > = () => {
-    props.saveFiltersToConfigHandler(localFilter);
-    props.setActivePage("HOME");
+    props
+      .saveFiltersToConfigHandler(localFilter)
+      .then(() => props.setActivePage("HOME"));
   };
 
   /* ------------------------------------------ Component ----------------------------------------- */
