@@ -163,6 +163,14 @@ function App() {
   const createMatch = async (
     ids?: [StashPerformer["id"], StashPerformer["id"]]
   ): Promise<Match | null> => {
+    // Exclude one of the performers in the previous match from appearing in
+    // this match.
+    const excludeIndex = Math.round(Math.random()) as 0 | 1;
+    const excludedName = currentMatch?.length
+      ? slimPerformerData.find((s) => s.id === currentMatch[excludeIndex].id)
+          ?.name ?? ""
+      : "";
+
     // Use the appropriate query depending on whether specific IDs have been
     // passed.
     const matchResponse: QueryResult<
@@ -173,7 +181,7 @@ function App() {
           variables: { ids },
         })
       : await queryStashPerformerMatch({
-          variables: performerFilters,
+          variables: { ...performerFilters, exclude: excludedName },
         });
 
     if (matchResponse.error) {
