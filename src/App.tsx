@@ -222,7 +222,7 @@ function App() {
     const additionalSlimData: StashSlimPerformerData[] = [];
 
     resolvedPlayers.forEach((p) => {
-      const exists = slimPerformerData.findIndex((s) => s.id === p.id) === -1;
+      const exists = slimPerformerData.findIndex((s) => s.id === p.id) !== -1;
       if (!exists) {
         additionalSlimData.push({
           id: p.id,
