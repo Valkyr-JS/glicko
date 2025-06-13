@@ -48,6 +48,9 @@ function App() {
   );
   const [processing, setProcessing] = useState(false);
   const [results, setResults] = useState<GlickoMatchResult[]>([]);
+  const [slimPerformerData, setSlimPerformerData] = useState<
+    StashSlimPerformerData[]
+  >([]);
   const [userSettings, setUserSettings] = useState<UserSettings>(
     DEFAULT_USER_SEETTINGS
   );
@@ -213,6 +216,24 @@ function App() {
       });
 
     const resolvedPlayers = (await Promise.all(matchPerformers)) as Match;
+
+    // Add a slimmed version of the data for use in other components, unless
+    // they have already been added to it.
+    const additionalSlimData: StashSlimPerformerData[] = [];
+
+    resolvedPlayers.forEach((p) => {
+      const exists = slimPerformerData.findIndex((s) => s.id === p.id) !== -1;
+      if (!exists) {
+        additionalSlimData.push({
+          id: p.id,
+          name: p.name,
+        });
+      }
+    });
+
+    if (additionalSlimData.length)
+      setSlimPerformerData([...slimPerformerData, ...additionalSlimData]);
+
     return resolvedPlayers;
   };
 
@@ -552,6 +573,7 @@ function App() {
             gameError={gameError}
             match={currentMatch}
             matchIndex={results.length}
+            performerData={slimPerformerData}
             processingResults={processing}
             results={results}
             setActivePage={setActivePage}
@@ -559,6 +581,7 @@ function App() {
             setWinnerHandler={handleSetWinner}
             submitHandler={handleSubmitResults}
             undoMatchHandler={handleUndoMatch}
+            userSettings={userSettings}
             wipeResultsHandler={handleWipeResults}
           />
         );

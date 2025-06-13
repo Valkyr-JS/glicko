@@ -19,4 +19,8 @@ export const DEFAULT_PERFORMER_FILTERS: PerformerFilters = {
   genders: [],
 };
 
-export const DEFAULT_USER_SEETTINGS: UserSettings = {};
+export const DEFAULT_MAX_PROGRESS_BOARD_ROWS = 5;
+
+export const DEFAULT_USER_SEETTINGS: UserSettings = {
+  progressMaxRows: DEFAULT_MAX_PROGRESS_BOARD_ROWS,
+};

@@ -14,6 +14,7 @@ import { RECOMMENDED_MINIMUM_MATCHES } from "@/constants";
 import styles from "./Game.module.scss";
 import { faSpinnerThird } from "@fortawesome/pro-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import ProgressBoard from "@/components/ProgressBoard";
 
 interface GamePageProps extends PageProps {
   /** Handler for setting a new performer image */
@@ -27,6 +28,8 @@ interface GamePageProps extends PageProps {
   match: Match;
   /** The zero-based index of the current match in the match list. */
   matchIndex: number;
+  /** Minimal performer data used for getting names from the IDs in the results. */
+  performerData: StashSlimPerformerData[];
   /** Dictates whether the results of the session are currently being processed. */
   processingResults: boolean;
   /** The list of match results, including scores. */
@@ -39,6 +42,8 @@ interface GamePageProps extends PageProps {
   submitHandler: () => void;
   /** Handler for reloading the previous match. */
   undoMatchHandler: () => void;
+  /** The user's game settings. */
+  userSettings: UserSettings;
   /** Handler for clearing all session data. */
   wipeResultsHandler: () => void;
 }
@@ -123,6 +128,14 @@ const GamePage: React.FC<GamePageProps> = (props) => {
           clickUndoHandler={props.undoMatchHandler}
           matchIndex={props.matchIndex}
           match={props.match}
+        />
+        <ProgressBoard
+          columnTitles={["Choice A", "Choice B"]}
+          maxRows={props.userSettings.progressMaxRows}
+          performerData={props.performerData}
+          results={props.results}
+          reverse
+          title="Previous matches"
         />
       </main>
       <GameErrorModal

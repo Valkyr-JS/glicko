@@ -4,6 +4,7 @@ import { default as cx } from "classnames";
 import Modal from "@/components/Modal/Modal";
 import styles from "./Settings.module.scss";
 import ReadOnlyMode from "./options/ReadOnlyMode";
+import ProgressMaxRows from "./options/ProgressMaxRows";
 
 interface SettingsPageProps extends PageProps {
   /** The user's game settings. */
@@ -75,7 +76,14 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
           onChange={onFormChange}
         >
           <h1>Settings</h1>
-          <ReadOnlyMode enabled={props.settings.readOnly} />
+          <div className="row">
+            <div className="col-12">
+              <ReadOnlyMode enabled={props.settings.readOnly} />
+            </div>
+            <div className="col-12 col-md-6 col-lg-4">
+              <ProgressMaxRows userMaxRows={props.settings.progressMaxRows} />
+            </div>
+          </div>
           <div className={styles["button-container"]}>
             <button
               type="button"
@@ -133,7 +141,11 @@ const convertFormDataToUserSettings = (data: FormData): UserSettings => {
   // Read-only mode
   const readOnly = !!formKeys.find((k) => k === "read-only");
 
+  // Progress max rows
+  const progressMaxRows = +formJson["progress-max-rows"];
+
   const updatedSettings: UserSettings = {
+    progressMaxRows,
     readOnly,
   };
 
@@ -143,6 +155,7 @@ const convertFormDataToUserSettings = (data: FormData): UserSettings => {
 /** Compares two sets of user settings for equality. */
 const compareSettings = (setA: UserSettings, setB: UserSettings): boolean => {
   if (setA.readOnly !== setB.readOnly) return false;
+  if (setA.progressMaxRows !== setB.progressMaxRows) return false;
 
   return true;
 };
