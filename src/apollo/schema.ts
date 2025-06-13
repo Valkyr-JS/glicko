@@ -125,7 +125,8 @@ export const StashPluginPerformerFiltersParsed = z.object({
 });
 
 export const StashPluginUserSettingsParsed = z.object({
-  readOnly: z.boolean(),
+  progressMaxRows: z.number().optional(),
+  readOnly: z.boolean().optional(),
 });
 
 export const StashPluginConfigParsed = z.object({
