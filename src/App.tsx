@@ -366,8 +366,8 @@ function App() {
     // Update the processing state
     setProcessing(true);
 
-    // Create a tournament
-    const tournament = new Glicko2();
+    // Create a session
+    const session = new Glicko2();
 
     // Get ALL performers from Stash
     let page = 1;
@@ -437,11 +437,11 @@ function App() {
 
       return {
         ...p,
-        glicko: tournament.makePlayer(rating, deviation, volatility),
+        glicko: session.makePlayer(rating, deviation, volatility),
       };
     });
 
-    // Loop through results and create tournament matches using the IDs
+    // Loop through results and create session matches using the IDs
     const matches = results.map((r) => {
       // Get players
       const player1 = allGlickoPerformers.find((p) => p.id === r[0]);
@@ -454,8 +454,8 @@ function App() {
       ];
     });
 
-    // Update the tournament
-    tournament.updateRatings(matches);
+    // Update the session
+    session.updateRatings(matches);
 
     // Update Stash performer data with results unless the user is in read-only
     // mode
@@ -477,6 +477,10 @@ function App() {
         });
       });
     }
+
+    // Clear the state of session progress
+    setResults([]);
+    setCurrentMatch(null);
 
     // Update the processing state
     setProcessing(false);
