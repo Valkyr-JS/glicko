@@ -131,6 +131,7 @@ const GamePage: React.FC<GamePageProps> = (props) => {
           columnTitles={["Choice A", "Choice B"]}
           performerData={props.performerData}
           results={props.results}
+          reverse
           title="Recent progress"
         />
       </main>
