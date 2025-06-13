@@ -111,7 +111,10 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
           </div>
         </form>
       </main>
-      <WipePerformerDataModal show={showWipeDataModal} />
+      <WipePerformerDataModal
+        closeHandler={() => setShowWipeDataModal(false)}
+        show={showWipeDataModal}
+      />
       <Modal
         buttons={[
           {

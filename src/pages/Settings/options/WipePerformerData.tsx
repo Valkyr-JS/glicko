@@ -25,6 +25,8 @@ export default WipePerformerData;
 /* ---------------------------------------------------------------------------------------------- */
 
 interface WipePerformerDataModalProps {
+  /** Handler for closing the modal. */
+  closeHandler: React.MouseEventHandler;
   /** Whether the modal is currently being rendered. */
   show: boolean;
 }
@@ -34,7 +36,15 @@ export const WipePerformerDataModal: React.FC<WipePerformerDataModalProps> = (
 ) => {
   return (
     <Modal
-      buttons={[]}
+      buttons={[
+        {
+          element: "button",
+          children: "No",
+          className: "btn btn-primary",
+          onClick: props.closeHandler,
+          type: "button",
+        },
+      ]}
       icon={faExclamationCircle}
       show={props.show}
       title="Wipe performer data"
