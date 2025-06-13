@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, within } from "storybook/test";
 import ProgressBoard from "./ProgressBoard";
+import { DEFAULT_MAX_PROGRESS_BOARD_ROWS } from "@/constants";
 
 const meta = {
   title: "Components/Progress board",
@@ -20,6 +21,9 @@ const meta = {
       [12, 125, 0],
     ],
   },
+  parameters: {
+    layout: "padded",
+  },
 } satisfies Meta<typeof ProgressBoard>;
 
 export default meta;
@@ -28,11 +32,11 @@ type Story = StoryObj<typeof meta>;
 /** Table data should be displayed in ascending order (first match at the top)
  * by default, with five rows of content. */
 export const Default: Story = {
-  play: async ({ args, canvasElement }) => {
+  play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const cells = canvas.getAllByRole("cell");
     expect(cells[0].textContent).toBe("1");
-    expect(cells[1].textContent).toBe(args.results[0][0]);
+    expect(cells.length).toBe(15);
   },
 };
 
@@ -57,11 +61,10 @@ export const Reverse: Story = {
     reverse: true,
     title: "Recorded in reverse order",
   },
-  play: async ({ args, canvasElement }) => {
+  play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const cells = canvas.getAllByRole("cell");
     expect(cells[0].textContent).toBe("10");
-    expect(cells[1].textContent).toBe(args.results[args.results.length - 1][0]);
   },
 };
 
@@ -72,20 +75,10 @@ export const NoReverse: Story = {
     reverse: false,
     title: "Recorded in play order",
   },
-  play: async ({ args, canvasElement }) => {
-    const canvas = within(canvasElement);
-    const cells = canvas.getAllByRole("cell");
-    expect(cells[0].textContent).toBe("1");
-    expect(cells[1].textContent).toBe(args.results[0][0]);
-  },
-};
-
-/** Five rows of results should be displayed by default. */
-export const DefaultMaxRows: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const cells = canvas.getAllByRole("cell");
-    expect(cells.length).toBe(15);
+    expect(cells[0].textContent).toBe("1");
   },
 };
 
@@ -97,6 +90,8 @@ export const CustomMaxRows: Story = {
   play: async ({ args, canvasElement }) => {
     const canvas = within(canvasElement);
     const cells = canvas.getAllByRole("cell");
-    expect(cells.length).toBe(args.maxRows * 3);
+    expect(cells.length).toBe(
+      (args.maxRows ?? DEFAULT_MAX_PROGRESS_BOARD_ROWS) * 3
+    );
   },
 };

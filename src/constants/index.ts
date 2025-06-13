@@ -20,3 +20,5 @@ export const DEFAULT_PERFORMER_FILTERS: PerformerFilters = {
 };
 
 export const DEFAULT_USER_SEETTINGS: UserSettings = {};
+
+export const DEFAULT_MAX_PROGRESS_BOARD_ROWS = 5;

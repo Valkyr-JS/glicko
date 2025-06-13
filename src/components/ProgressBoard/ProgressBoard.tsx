@@ -1,15 +1,18 @@
 import React from "react";
 import { default as cx } from "classnames";
 import styles from "./ProgressBoard.module.scss";
+import { DEFAULT_MAX_PROGRESS_BOARD_ROWS } from "@/constants";
 
 interface ProgressBoardProps {
   /** The column titles. */
   columnTitles: [columnA: string, columnB: string];
+  /** The column data, and the index of the winner. */
+  results: GlickoMatchResult[];
+  /** The maximum number of rows to be displayed as set by the user. */
+  maxRows?: number;
   /** Whether to display the progress in reverse order, i.e. latest > oldest
    * instead of oldest > latest. */
   reverse?: boolean;
-  /** The column data, and the index of the winner. */
-  tableData: [optionA: string, optionB: string, winner: 0 | 0.5 | 1][];
   /** The progress board title. */
   title?: string;
 }
@@ -17,8 +20,8 @@ interface ProgressBoardProps {
 /** A component displaying the results of an in-progress tournament. */
 const ProgressBoard: React.FC<ProgressBoardProps> = (props) => {
   const tableData = props.reverse
-    ? [...props.tableData].reverse()
-    : props.tableData;
+    ? [...props.results].reverse()
+    : props.results;
 
   const noDataRow = (
     <tr>
@@ -43,20 +46,22 @@ const ProgressBoard: React.FC<ProgressBoardProps> = (props) => {
           {tableData.length === 0
             ? noDataRow
             : tableData.map((rowData, i) => {
-                const round = props.reverse ? tableData.length - i : i + 1;
-                const cell1Classes = cx({
-                  [styles["winner"]]: rowData[2] === 1,
-                });
-                const cell2Classes = cx({
-                  [styles["winner"]]: rowData[2] === 0,
-                });
-                return (
-                  <tr key={round}>
-                    <td>{round}</td>
-                    <td className={cell1Classes}>{rowData[0]}</td>
-                    <td className={cell2Classes}>{rowData[1]}</td>
-                  </tr>
-                );
+                if (i < (props.maxRows ?? DEFAULT_MAX_PROGRESS_BOARD_ROWS)) {
+                  const round = props.reverse ? tableData.length - i : i + 1;
+                  const cell1Classes = cx({
+                    [styles["winner"]]: rowData[2] === 1,
+                  });
+                  const cell2Classes = cx({
+                    [styles["winner"]]: rowData[2] === 0,
+                  });
+                  return (
+                    <tr key={round}>
+                      <td>{round}</td>
+                      <td className={cell1Classes}>{rowData[0]}</td>
+                      <td className={cell2Classes}>{rowData[1]}</td>
+                    </tr>
+                  );
+                } else return null;
               })}
         </tbody>
       </table>
