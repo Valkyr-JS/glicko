@@ -454,7 +454,8 @@ function App() {
     // Update the tournament
     tournament.updateRatings(matches);
 
-    // TODO - Update Stash performer data with results
+    // TODO - Update Stash performer data with results unless the user is in
+    // read-only mode
 
     // Update the processing state
     setProcessing(false);
