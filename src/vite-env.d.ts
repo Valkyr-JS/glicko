@@ -58,6 +58,8 @@ type GlickoMatchResult = [p1ID: number, p2ID: number, p1Outcome: 0 | 1 | 0.5];
 interface GlickoPluginConfig {
   /** The stringified PerformerFilters */
   performerFilters?: string;
+  /** The stringified UserSettings */
+  userSettings?: string;
 }
 
 /** The data for the two performers in the current match. */
@@ -85,7 +87,7 @@ enum PagesEnum {
   HOME = "HOME",
   FILTERS = "FILTERS",
   GAME = "GAME",
-  RESULTS = "RESULTS",
+  SETTINGS = "SETTINGS",
 }
 
 type Pages = `${PagesEnum}`;
@@ -100,6 +102,14 @@ interface PerformerFilters {
    * the array is empty.. */
   genders: Gender[];
   endpoint?: StashIDCriterionInput;
+}
+
+/** The user's game settings. */
+interface UserSettings {
+  /** If `true`, performer results will not be saved to the associated performer
+   * custom fields in the Stash database. Plugin settings and filters will still
+   * be saved to the config. */
+  readOnly?: boolean;
 }
 
 interface StashConfigResult {

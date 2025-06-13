@@ -2,24 +2,21 @@ import React, { useRef, useState } from "react";
 import { faHand } from "@fortawesome/pro-solid-svg-icons/faHand";
 import { default as cx } from "classnames";
 import Modal from "@/components/Modal/Modal";
-import styles from "./Filters.module.scss";
-import StashEndpointFilter from "./StashEndpoint/StashEndpoint";
-import GenderFilter from "./Genders/Genders";
+import styles from "./Settings.module.scss";
+import ReadOnlyMode from "./options/ReadOnlyMode";
 
-interface FiltersPageProps extends PageProps {
-  /** The current performer filters. */
-  filters: PerformerFilters;
-  /** The handler for updating the performer filters. */
-  saveFiltersHandler: (updatedFilters: PerformerFilters) => Promise<void>;
-  /** The user's Stash config data */
-  stashConfig?: StashConfigResult;
+interface SettingsPageProps extends PageProps {
+  /** The user's game settings. */
+  settings: UserSettings;
+  /** The handler for updating the user settings. */
+  saveSettingsHandler: (updatedSettings: UserSettings) => Promise<void>;
 }
 
-const FiltersPage: React.FC<FiltersPageProps> = (props) => {
-  const [filtersChanged, setFiltersChanged] = useState(false);
+const SettingsPage: React.FC<SettingsPageProps> = (props) => {
+  const [settingsChanged, setSettingsChanged] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
 
-  const classes = cx("container", styles.Filters);
+  const classes = cx("container", styles.Settings);
 
   /* --------------------------------------- General changes -------------------------------------- */
 
@@ -27,13 +24,12 @@ const FiltersPage: React.FC<FiltersPageProps> = (props) => {
     if (!formRef.current) return props.setActivePage("HOME");
 
     const formData = new FormData(formRef.current);
-    const currentFilters = convertFormDataToPerformerFilters(formData);
-    const filtersHaveChanged = !comparePerformerFilters(
-      props.filters,
-      currentFilters
+    const currentSettings = convertFormDataToUserSettings(formData);
+    const settingsHaveChanged = !compareSettings(
+      props.settings,
+      currentSettings
     );
-
-    setFiltersChanged(filtersHaveChanged);
+    setSettingsChanged(settingsHaveChanged);
   };
 
   /* --------------------------------------- Cancel changes --------------------------------------- */
@@ -43,7 +39,7 @@ const FiltersPage: React.FC<FiltersPageProps> = (props) => {
   /** Handler for clicking the cancel button at the bottom of the page. */
   const handleCancel: React.MouseEventHandler = () => {
     if (!formRef.current) return props.setActivePage("HOME");
-    if (filtersChanged) setShowCancelModal(true);
+    if (settingsChanged) setShowCancelModal(true);
     else props.setActivePage("HOME");
   };
 
@@ -56,12 +52,12 @@ const FiltersPage: React.FC<FiltersPageProps> = (props) => {
     // Save, then redirect to the homepage
     if (formRef.current) {
       // Process the form values
-      const updatedFilters = convertFormDataToPerformerFilters(
+      const updatedFilters = convertFormDataToUserSettings(
         new FormData(formRef.current)
       );
 
       // Save settings to the App control state
-      props.saveFiltersHandler(updatedFilters);
+      props.saveSettingsHandler(updatedFilters);
     }
 
     props.setActivePage("HOME");
@@ -78,12 +74,8 @@ const FiltersPage: React.FC<FiltersPageProps> = (props) => {
           ref={formRef}
           onChange={onFormChange}
         >
-          <h1>Performer filters</h1>
-          <GenderFilter genderFilter={props.filters.genders} />
-          <StashEndpointFilter
-            endpointFilter={props.filters.endpoint}
-            stashConfig={props.stashConfig}
-          />
+          <h1>Settings</h1>
+          <ReadOnlyMode enabled={props.settings.readOnly} />
           <div className={styles["button-container"]}>
             <button
               type="button"
@@ -95,7 +87,7 @@ const FiltersPage: React.FC<FiltersPageProps> = (props) => {
             <button
               type="submit"
               className="btn btn-primary"
-              disabled={!filtersChanged}
+              disabled={!settingsChanged}
             >
               Save
             </button>
@@ -132,67 +124,25 @@ const FiltersPage: React.FC<FiltersPageProps> = (props) => {
   );
 };
 
-export default FiltersPage;
+export default SettingsPage;
 
-/* ---------------------------------------------------------------------------------------------- */
-/*                                            Functions                                           */
-/* ---------------------------------------------------------------------------------------------- */
-
-/** Convert data from the settings form into PerformerFilters data. */
-const convertFormDataToPerformerFilters = (
-  data: FormData
-): PerformerFilters => {
+const convertFormDataToUserSettings = (data: FormData): UserSettings => {
   const formJson = Object.fromEntries(data.entries());
   const formKeys = Object.keys(formJson);
 
-  // Genders
-  const genders = formKeys
-    .filter((p) => p.match("gender-"))
-    .map((p) => p.split("gender-")[1].toUpperCase());
+  // Read-only mode
+  const readOnly = !!formKeys.find((k) => k === "read-only");
 
-  // Stash box endpoints
-  let endpoint: PerformerFilters["endpoint"] = undefined;
-  switch (formJson.endpoint) {
-    case "IS_NULL":
-      endpoint = { modifier: "IS_NULL" };
-      break;
-    case "NOT_NULL":
-      endpoint = { modifier: "NOT_NULL" };
-      break;
-    case "undefined":
-      break;
-    default:
-      endpoint = {
-        modifier: "INCLUDES",
-        endpoint: formJson.endpoint?.toString(),
-      };
-      break;
-  }
-
-  const updatedFilters: PerformerFilters = {
-    genders: genders as PerformerFilters["genders"],
-    endpoint,
+  const updatedSettings: UserSettings = {
+    readOnly,
   };
 
-  return updatedFilters;
+  return updatedSettings;
 };
 
-/** Compares two sets of player filters for equality. */
-const comparePerformerFilters = (
-  setA: PerformerFilters,
-  setB: PerformerFilters
-): boolean => {
-  // Genders
-  const setAGenders = JSON.stringify(setA.genders.sort());
-  const setBGenders = JSON.stringify(setB.genders.sort());
-
-  if (setAGenders !== setBGenders) return false;
-
-  // Stash box endpoints
-  const setAEndpoint = JSON.stringify(setA.endpoint);
-  const setBEndpoint = JSON.stringify(setB.endpoint);
-
-  if (setAEndpoint !== setBEndpoint) return false;
+/** Compares two sets of user settings for equality. */
+const compareSettings = (setA: UserSettings, setB: UserSettings): boolean => {
+  if (setA.readOnly !== setB.readOnly) return false;
 
   return true;
 };

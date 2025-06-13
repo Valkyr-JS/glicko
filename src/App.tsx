@@ -15,7 +15,8 @@ import {
   GET_STASH_VERSION,
 } from "./apollo/queries";
 import {
-  StashPluginConfigParsed,
+  StashPluginPerformerFiltersParsed,
+  StashPluginUserSettingsParsed,
   type StashConfigResult,
   type StashFindImagesResult,
   type StashFindPerformersResult,
@@ -26,9 +27,14 @@ import {
 import FiltersPage from "./pages/Filters/Filters";
 import GamePage from "./pages/Game/Game";
 import HomePage from "./pages/Home/Home";
-import { GLICKO } from "./constants";
+import {
+  DEFAULT_PERFORMER_FILTERS,
+  DEFAULT_USER_SEETTINGS,
+  GLICKO,
+} from "./constants";
 import { Glicko2, Player } from "glicko2";
 import { SET_PLUGIN_CONFIG } from "./apollo/mutations";
+import SettingsPage from "./pages/Settings/Settings";
 
 function App() {
   /* -------------------------------------- State management -------------------------------------- */
@@ -37,11 +43,14 @@ function App() {
   const [currentMatch, setCurrentMatch] = useState<Match | null>(null);
   const [gameError, setGameError] = useState<GameError | null>(null);
   const [gameLoading, setGameLoading] = useState(false);
-  const [performerFilters, setPerformerFilters] = useState<PerformerFilters>({
-    genders: [],
-  });
+  const [performerFilters, setPerformerFilters] = useState<PerformerFilters>(
+    DEFAULT_PERFORMER_FILTERS
+  );
   const [processing, setProcessing] = useState(false);
   const [results, setResults] = useState<GlickoMatchResult[]>([]);
+  const [userSettings, setUserSettings] = useState<UserSettings>(
+    DEFAULT_USER_SEETTINGS
+  );
 
   /* ---------------------------------------- Stash queries --------------------------------------- */
 
@@ -65,9 +74,10 @@ function App() {
   const [queryStashPerformerImage] =
     useLazyQuery<StashFindImagesResult>(GET_PERFORMER_IMAGE);
 
-  // Update the performer filters with the data from the Stash plugin config,
-  // if there is any.
+  // Update the performer filters and user settings with the data from the Stash
+  // plugin config, if there is any.
   useEffect(() => {
+    // Check performer filters
     if (
       queryStashConfiguration.data?.configuration.plugins.glicko
         ?.performerFilters
@@ -89,9 +99,9 @@ function App() {
       }
 
       // Ensure the received data is valid before updating the state
-      StashPluginConfigParsed.safeParseAsync({
-        performerFilters: userPerformerFilters,
-      }).then((res) => {
+      StashPluginPerformerFiltersParsed.safeParseAsync(
+        userPerformerFilters
+      ).then((res) => {
         if (res.error) {
           setGameError({
             name: res.error.name,
@@ -99,6 +109,38 @@ function App() {
             details: res.error,
           });
         } else setPerformerFilters(userPerformerFilters as PerformerFilters);
+      });
+    }
+
+    // Check user settings
+    if (
+      queryStashConfiguration.data?.configuration.plugins.glicko?.userSettings
+    ) {
+      const configUserSettings =
+        queryStashConfiguration.data?.configuration.plugins.glicko
+          ?.userSettings;
+
+      let userSettings: unknown;
+      try {
+        userSettings = JSON.parse(configUserSettings);
+      } catch (e) {
+        setGameError({
+          name: "Plugin config error",
+          message:
+            "There was an issue with your Glicko plugin config in your Stash config.yml file. Using default settings instead.",
+          details: e + "",
+        });
+      }
+
+      // Ensure the received data is valid before updating the state
+      StashPluginUserSettingsParsed.safeParseAsync(userSettings).then((res) => {
+        if (res.error) {
+          setGameError({
+            name: res.error.name,
+            message: res.error.message,
+            details: res.error,
+          });
+        } else setUserSettings(userSettings as UserSettings);
       });
     }
   }, [queryStashConfiguration]);
@@ -197,6 +239,7 @@ function App() {
 
   /** Handle resetting the error state */
   const handleClearGameError = () => setGameError(null);
+
   /** Handler for updating the performer filters. */
   const handleSaveFilters = async (updatedFilters: PerformerFilters) => {
     // Refetch the config data to ensure it's the latest
@@ -215,6 +258,26 @@ function App() {
 
     // Update the state
     setPerformerFilters(updatedFilters);
+  };
+
+  /** Handler for updating the user settings. */
+  const handleSaveSettings = async (updatedSettings: UserSettings) => {
+    // Refetch the config data to ensure it's the latest
+    const configData = await queryStashConfiguration.refetch();
+
+    // Create the updated data
+    const updatedPluginConfig = {
+      ...configData.data.configuration.plugins.glicko,
+      userSettings: JSON.stringify(updatedSettings),
+    };
+
+    // Update the config
+    await mutateStashPluginConfig({
+      variables: { input: updatedPluginConfig },
+    });
+
+    // Update the state
+    setUserSettings(updatedSettings);
   };
 
   /** Handler for scoring the match as a draw. */
@@ -391,7 +454,8 @@ function App() {
     // Update the tournament
     tournament.updateRatings(matches);
 
-    // TODO - Update Stash performer data with results
+    // TODO - Update Stash performer data with results unless the user is in
+    // read-only mode
 
     // Update the processing state
     setProcessing(false);
@@ -486,6 +550,14 @@ function App() {
             versionLoading={queryStashVersionResult.loading}
           />
         );
+    case "SETTINGS":
+      return (
+        <SettingsPage
+          saveSettingsHandler={handleSaveSettings}
+          setActivePage={setActivePage}
+          settings={userSettings}
+        />
+      );
   }
 }
 
