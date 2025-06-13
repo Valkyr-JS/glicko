@@ -81,7 +81,7 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
               <ReadOnlyMode enabled={props.settings.readOnly} />
             </div>
             <div className="col-12 col-md-6 col-lg-4">
-              <ProgressMaxRows />
+              <ProgressMaxRows userMaxRows={props.settings.progressMaxRows} />
             </div>
           </div>
           <div className={styles["button-container"]}>
@@ -141,7 +141,11 @@ const convertFormDataToUserSettings = (data: FormData): UserSettings => {
   // Read-only mode
   const readOnly = !!formKeys.find((k) => k === "read-only");
 
+  // Progress max rows
+  const progressMaxRows = +formJson["progress-max-rows"];
+
   const updatedSettings: UserSettings = {
+    progressMaxRows,
     readOnly,
   };
 
@@ -151,6 +155,7 @@ const convertFormDataToUserSettings = (data: FormData): UserSettings => {
 /** Compares two sets of user settings for equality. */
 const compareSettings = (setA: UserSettings, setB: UserSettings): boolean => {
   if (setA.readOnly !== setB.readOnly) return false;
+  if (setA.progressMaxRows !== setB.progressMaxRows) return false;
 
   return true;
 };
