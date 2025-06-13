@@ -62,6 +62,41 @@ export const CancelUnchangedSettings: Story = {
   },
 };
 
+export const SaveChangedSettings: Story = {
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+    const saveBtn = canvas.getByRole<HTMLButtonElement>("button", {
+      name: "Save",
+    });
+    const input = canvas.getByRole<HTMLInputElement>("checkbox", {
+      name: 'Enable "read-only" mode',
+    });
+
+    await step("Check the initial state of the female gender checkbox.", () => {
+      expect(input).not.toBeChecked();
+    });
+
+    await step("Click the checkbox.", async () => {
+      await userEvent.click(input);
+      expect(input).toBeChecked();
+    });
+
+    await step("Check the button is no longer disabled.", () => {
+      expect(saveBtn).not.toBeDisabled();
+    });
+  },
+};
+
+export const SaveUnchangedSettings: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const btn = canvas.getByRole<HTMLButtonElement>("button", {
+      name: "Save",
+    });
+    expect(btn).toBeDisabled();
+  },
+};
+
 export const ReadOnlyDefault: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);

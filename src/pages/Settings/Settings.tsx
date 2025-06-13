@@ -74,7 +74,11 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
             >
               Cancel
             </button>
-            <button type="submit" className="btn btn-primary">
+            <button
+              type="submit"
+              className="btn btn-primary"
+              disabled={!settingsChanged}
+            >
               Save
             </button>
           </div>
