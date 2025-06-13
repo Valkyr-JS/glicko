@@ -14,3 +14,9 @@ export const PATH = {
 } as const;
 
 export const RECOMMENDED_MINIMUM_MATCHES = 15 as const;
+
+export const DEFAULT_PERFORMER_FILTERS: PerformerFilters = {
+  genders: [],
+};
+
+export const DEFAULT_USER_SEETTINGS: UserSettings = {};
