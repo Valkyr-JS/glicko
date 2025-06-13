@@ -40,12 +40,14 @@ export const GET_MATCH_PERFORMERS = gql`
   query GetPerformers(
     $genders: [GenderEnum!]
     $endpoint: StashIDCriterionInput
+    $exclude: String!
   ) {
     findPerformers(
       filter: { per_page: 2, sort: "random" }
       performer_filter: {
         gender: { value_list: $genders, modifier: INCLUDES }
         stash_id_endpoint: $endpoint
+        NOT: { name: { value: $exclude, modifier: EQUALS } }
       }
     ) {
       count
