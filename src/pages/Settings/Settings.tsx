@@ -113,6 +113,7 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
       </main>
       <WipePerformerDataModal
         closeHandler={() => setShowWipeDataModal(false)}
+        confirmHandler={() => console.log("WIPE")}
         show={showWipeDataModal}
       />
       <Modal
