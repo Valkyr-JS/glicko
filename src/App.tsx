@@ -33,7 +33,7 @@ import {
   GLICKO,
 } from "./constants";
 import { Glicko2, Player } from "glicko2";
-import { SET_PLUGIN_CONFIG } from "./apollo/mutations";
+import { SET_PERFORMER_DATA, SET_PLUGIN_CONFIG } from "./apollo/mutations";
 import SettingsPage from "./pages/Settings/Settings";
 
 function App() {
@@ -149,6 +149,9 @@ function App() {
 
   const [mutateStashPluginConfig] =
     useMutation<StashConfigResult>(SET_PLUGIN_CONFIG);
+
+  const [mutateStashPerformer] =
+    useMutation<StashPerformer>(SET_PERFORMER_DATA);
 
   /* ------------------------------------------ Handlers ------------------------------------------ */
 
@@ -363,8 +366,8 @@ function App() {
     // Update the processing state
     setProcessing(true);
 
-    // Create a tournament
-    const tournament = new Glicko2();
+    // Create a session
+    const session = new Glicko2();
 
     // Get ALL performers from Stash
     let page = 1;
@@ -434,11 +437,11 @@ function App() {
 
       return {
         ...p,
-        glicko: tournament.makePlayer(rating, deviation, volatility),
+        glicko: session.makePlayer(rating, deviation, volatility),
       };
     });
 
-    // Loop through results and create tournament matches using the IDs
+    // Loop through results and create session matches using the IDs
     const matches = results.map((r) => {
       // Get players
       const player1 = allGlickoPerformers.find((p) => p.id === r[0]);
@@ -451,11 +454,33 @@ function App() {
       ];
     });
 
-    // Update the tournament
-    tournament.updateRatings(matches);
+    // Update the session
+    session.updateRatings(matches);
 
-    // TODO - Update Stash performer data with results unless the user is in
-    // read-only mode
+    // Update Stash performer data with results unless the user is in read-only
+    // mode
+    if (!userSettings.readOnly) {
+      allGlickoPerformers.forEach((p) => {
+        mutateStashPerformer({
+          variables: {
+            input: {
+              id: p.id,
+              custom_fields: {
+                partial: {
+                  glicko_deviation: p.glicko.getRd(),
+                  glicko_rating: p.glicko.getRating(),
+                  glicko_volatility: p.glicko.getVol(),
+                },
+              },
+            },
+          },
+        });
+      });
+    }
+
+    // Clear the state of session progress
+    setResults([]);
+    setCurrentMatch(null);
 
     // Update the processing state
     setProcessing(false);
