@@ -7,11 +7,19 @@ export const StashBoxSchema = z.object({
 
 export type StashBox = z.infer<typeof StashBoxSchema>;
 
-export const StashGlickoCustomFields = z.object({
+export const StashGlickoCustomFieldsSchema = z.object({
   glicko_deviation: z.number().positive().optional(),
   glicko_rating: z.number().positive().optional(),
   glicko_volatility: z.number().positive().optional(),
+  /** A stringified array of performer match records. */
+  glicko_match_history: z.string().optional(),
+  /** A stringified array of performer session records. */
+  glicko_session_history: z.string().optional(),
 });
+
+export type StashGlickoCustomFields = z.infer<
+  typeof StashGlickoCustomFieldsSchema
+>;
 
 export const StashImageSchema = z.object({
   id: z.coerce.number(),
@@ -25,7 +33,7 @@ export type StashImage = z.infer<typeof StashImageSchema>;
 
 export const StashPerformerSchema = z.object({
   custom_fields: z.object({
-    ...StashGlickoCustomFields.shape,
+    ...StashGlickoCustomFieldsSchema.shape,
   }),
   id: z.coerce.number(),
   image_path: z.string(),
@@ -33,6 +41,19 @@ export const StashPerformerSchema = z.object({
 });
 
 export type StashPerformer = z.infer<typeof StashPerformerSchema>;
+
+export const StashPerformerUpdateInputSchema = z.object({
+  id: z.coerce.number(),
+  custom_fields: z
+    .object({
+      ...StashGlickoCustomFieldsSchema.shape,
+    })
+    .optional(),
+});
+
+export type StashPerformerUpdateInput = z.infer<
+  typeof StashPerformerUpdateInputSchema
+>;
 
 export const StashVersionSchema = z
   .object({

@@ -104,6 +104,32 @@ interface PerformerFilters {
   endpoint?: StashIDCriterionInput;
 }
 
+/** A record of a performer's past match. May need refinement. Keys are kept
+ * short for storing as a string in custom fields. */
+interface PerformerMatchRecord {
+  /** The ISO datetime of the match. */
+  d: string;
+  /** The Stash ID of the opposing performer. */
+  id: number;
+  /** The outcome of the match for the performer, where 1 is a win, 0 is a loss,
+   * and 0.5 is a draw. */
+  r: 0 | 1 | 0.5;
+  /** The datetime of the session that the match was part of. Used as an ID for
+   * matching matches to sessions. */
+  s: string;
+}
+
+/** A record of a performer's past sessions. May need refinement. Keys are kept
+ * short for storing as a string in custom fields. */
+interface PerformerSessionRecord {
+  /** The ISO datetime of the session. */
+  d: string;
+  /** The Glicko rating of the performer at the end of the session. */
+  g: number;
+  /** The rank of the performer at the end of the session. */
+  r: number;
+}
+
 /** The user's game settings. */
 interface UserSettings {
   /** If `true`, performer results will not be saved to the associated performer
