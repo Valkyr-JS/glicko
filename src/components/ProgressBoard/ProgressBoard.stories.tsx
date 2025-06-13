@@ -8,6 +8,64 @@ const meta = {
   component: ProgressBoard,
   args: {
     columnTitles: ["A", "B"],
+    performerData: [
+      {
+        id: 28,
+        name: "Sophie",
+      },
+      {
+        id: 38,
+        name: "Danielle",
+      },
+      {
+        id: 7,
+        name: "Lily",
+      },
+      {
+        id: 76,
+        name: "Mia",
+      },
+      {
+        id: 5,
+        name: "Sophia",
+      },
+      {
+        id: 6,
+        name: "Kelly",
+      },
+      {
+        id: 2,
+        name: "Hannah",
+      },
+      {
+        id: 71,
+        name: "Tilly",
+      },
+      {
+        id: 88,
+        name: "Claire",
+      },
+      {
+        id: 4,
+        name: "Susan",
+      },
+      {
+        id: 59,
+        name: "Molly",
+      },
+      {
+        id: 83,
+        name: "Giselle",
+      },
+      {
+        id: 100,
+        name: "Aubrey",
+      },
+      {
+        id: 77,
+        name: "Kate",
+      },
+    ],
     results: [
       [28, 38, 0],
       [7, 76, 1],
@@ -16,9 +74,6 @@ const meta = {
       [88, 4, 1],
       [59, 83, 0.5],
       [100, 77, 0],
-      [70, 19, 0],
-      [108, 13, 1],
-      [12, 125, 0],
     ],
   },
   parameters: {

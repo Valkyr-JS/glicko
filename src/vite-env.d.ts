@@ -157,3 +157,9 @@ type StashIDCriterionInput = {
   endpoint?: string;
   stash_id?: string;
 };
+
+/** Only the essential performer data that needs to be saved in memory. */
+interface StashSlimPerformerData {
+  id: MatchPerformer["id"];
+  name: MatchPerformer["name"];
+}

@@ -6,6 +6,8 @@ import { DEFAULT_MAX_PROGRESS_BOARD_ROWS } from "@/constants";
 interface ProgressBoardProps {
   /** The column titles. */
   columnTitles: [columnA: string, columnB: string];
+  /** Minimal performer data used for getting names from the IDs in the results. */
+  performerData: StashSlimPerformerData[];
   /** The column data, and the index of the winner. */
   results: GlickoMatchResult[];
   /** The maximum number of rows to be displayed as set by the user. */
@@ -19,9 +21,20 @@ interface ProgressBoardProps {
 
 /** A component displaying the results of an in-progress tournament. */
 const ProgressBoard: React.FC<ProgressBoardProps> = (props) => {
+  /** Get the performer's name from their ID */
+  const getNameFromID = (id: number) =>
+    props.performerData.find((p) => p.id === id)?.name ?? "<Name not found>";
+
+  /** Convert match results to show performer names */
+  const nameMatches = (m: GlickoMatchResult) => {
+    const p1 = getNameFromID(m[0]);
+    const p2 = getNameFromID(m[1]);
+    return [p1, p2, m[2]];
+  };
+
   const tableData = props.reverse
-    ? [...props.results].reverse()
-    : props.results;
+    ? [...props.results.map(nameMatches)].reverse()
+    : [...props.results.map(nameMatches)];
 
   const noDataRow = (
     <tr>
