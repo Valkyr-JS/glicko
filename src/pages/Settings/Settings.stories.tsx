@@ -47,6 +47,21 @@ export const CancelChangedSettings: Story = {
   },
 };
 
+export const CancelUnchangedSettings: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const cancelBtn = canvas.getByRole<HTMLButtonElement>("button", {
+      name: "Cancel",
+    });
+
+    await userEvent.click(cancelBtn);
+    const modal = canvas.queryByRole("dialog", {
+      name: "Changes will not be saved",
+    });
+    await expect(modal).not.toBeInTheDocument();
+  },
+};
+
 export const ReadOnlyDefault: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
