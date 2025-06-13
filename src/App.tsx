@@ -33,7 +33,7 @@ import {
   GLICKO,
 } from "./constants";
 import { Glicko2, Player } from "glicko2";
-import { SET_PLUGIN_CONFIG } from "./apollo/mutations";
+import { SET_PERFORMER_DATA, SET_PLUGIN_CONFIG } from "./apollo/mutations";
 import SettingsPage from "./pages/Settings/Settings";
 
 function App() {
@@ -149,6 +149,9 @@ function App() {
 
   const [mutateStashPluginConfig] =
     useMutation<StashConfigResult>(SET_PLUGIN_CONFIG);
+
+  const [mutateStashPerformer] =
+    useMutation<StashPerformer>(SET_PERFORMER_DATA);
 
   /* ------------------------------------------ Handlers ------------------------------------------ */
 
@@ -454,8 +457,26 @@ function App() {
     // Update the tournament
     tournament.updateRatings(matches);
 
-    // TODO - Update Stash performer data with results unless the user is in
-    // read-only mode
+    // Update Stash performer data with results unless the user is in read-only
+    // mode
+    if (!userSettings.readOnly) {
+      allGlickoPerformers.forEach((p) => {
+        mutateStashPerformer({
+          variables: {
+            input: {
+              id: p.id,
+              custom_fields: {
+                partial: {
+                  glicko_deviation: p.glicko.getRd(),
+                  glicko_rating: p.glicko.getRating(),
+                  glicko_volatility: p.glicko.getVol(),
+                },
+              },
+            },
+          },
+        });
+      });
+    }
 
     // Update the processing state
     setProcessing(false);
