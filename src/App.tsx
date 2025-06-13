@@ -581,6 +581,7 @@ function App() {
             setWinnerHandler={handleSetWinner}
             submitHandler={handleSubmitResults}
             undoMatchHandler={handleUndoMatch}
+            userSettings={userSettings}
             wipeResultsHandler={handleWipeResults}
           />
         );

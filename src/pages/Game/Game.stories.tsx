@@ -80,6 +80,7 @@ const meta = {
     setWinnerHandler: fn(),
     submitHandler: fn(),
     undoMatchHandler: fn(),
+    userSettings: {},
     wipeResultsHandler: fn(),
   },
 } satisfies Meta<typeof GamePage>;

@@ -42,6 +42,8 @@ interface GamePageProps extends PageProps {
   submitHandler: () => void;
   /** Handler for reloading the previous match. */
   undoMatchHandler: () => void;
+  /** The user's game settings. */
+  userSettings: UserSettings;
   /** Handler for clearing all session data. */
   wipeResultsHandler: () => void;
 }
@@ -129,6 +131,7 @@ const GamePage: React.FC<GamePageProps> = (props) => {
         />
         <ProgressBoard
           columnTitles={["Choice A", "Choice B"]}
+          maxRows={props.userSettings.progressMaxRows}
           performerData={props.performerData}
           results={props.results}
           reverse
