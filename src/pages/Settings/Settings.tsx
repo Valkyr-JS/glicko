@@ -9,7 +9,7 @@ interface SettingsPageProps extends PageProps {
   /** The user's game settings. */
   settings: UserSettings;
   /** The handler for updating the user settings. */
-  saveSettingsHandler: (updatedFilters: PerformerFilters) => Promise<void>;
+  saveSettingsHandler: (updatedSettings: UserSettings) => Promise<void>;
 }
 
 const SettingsPage: React.FC<SettingsPageProps> = (props) => {
@@ -50,7 +50,17 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
     e.preventDefault();
 
     // Save, then redirect to the homepage
-    console.log("save");
+    if (formRef.current) {
+      // Process the form values
+      const updatedFilters = convertFormDataToUserSettings(
+        new FormData(formRef.current)
+      );
+
+      // Save settings to the App control state
+      props.saveSettingsHandler(updatedFilters);
+    }
+
+    props.setActivePage("HOME");
   };
 
   /* ------------------------------------------ Component ----------------------------------------- */

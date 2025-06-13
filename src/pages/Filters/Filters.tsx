@@ -49,8 +49,11 @@ const FiltersPage: React.FC<FiltersPageProps> = (props) => {
 
   /* ---------------------------------------- Save settings --------------------------------------- */
 
-  /** Save settings to the App control state. */
-  const handleSaveToControl = () => {
+  /** Handler for clicking the form 'Save settings' button */
+  const handleSaveSettings: React.FormEventHandler<HTMLFormElement> = (e) => {
+    e.preventDefault();
+
+    // Save, then redirect to the homepage
     if (formRef.current) {
       // Process the form values
       const updatedFilters = convertFormDataToPerformerFilters(
@@ -60,14 +63,7 @@ const FiltersPage: React.FC<FiltersPageProps> = (props) => {
       // Save settings to the App control state
       props.saveFiltersHandler(updatedFilters);
     }
-  };
 
-  /** Handler for clicking the form 'Save settings' button */
-  const handleSaveSettings: React.FormEventHandler<HTMLFormElement> = (e) => {
-    e.preventDefault();
-
-    // Save, then redirect to the homepage
-    handleSaveToControl();
     props.setActivePage("HOME");
   };
 
