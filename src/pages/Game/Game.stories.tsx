@@ -4,6 +4,49 @@ import GamePage from "./Game";
 import { getStashContent } from "../../../.storybook/tools";
 import { RECOMMENDED_MINIMUM_MATCHES } from "@/constants";
 
+const slimData: StashSlimPerformerData[] = [
+  {
+    id: 59,
+    name: "Alyssia",
+  },
+  {
+    id: 100,
+    name: "Kayla",
+  },
+  {
+    id: 11,
+    name: "Lissy",
+  },
+  {
+    id: 27,
+    name: "Von",
+  },
+  {
+    id: 26,
+    name: "Kym",
+  },
+  {
+    id: 33,
+    name: "Ryana",
+  },
+  {
+    id: 103,
+    name: "Valentina",
+  },
+  {
+    id: 88,
+    name: "Lelu",
+  },
+  {
+    id: 81,
+    name: "Sophia",
+  },
+  {
+    id: 28,
+    name: "Sophie",
+  },
+];
+
 const match: [MatchPerformer, MatchPerformer] = [
   {
     coverImg: getStashContent("/performer/12/image"),
@@ -29,6 +72,7 @@ const meta = {
     gameError: undefined,
     match,
     matchIndex: 0,
+    performerData: slimData,
     processingResults: false,
     results: [],
     setActivePage: fn(),

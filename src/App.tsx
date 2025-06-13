@@ -573,6 +573,7 @@ function App() {
             gameError={gameError}
             match={currentMatch}
             matchIndex={results.length}
+            performerData={slimPerformerData}
             processingResults={processing}
             results={results}
             setActivePage={setActivePage}
