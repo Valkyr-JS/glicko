@@ -135,7 +135,7 @@ const GamePage: React.FC<GamePageProps> = (props) => {
           performerData={props.performerData}
           results={props.results}
           reverse
-          title="Recent progress"
+          title="Previous matches"
         />
       </main>
       <GameErrorModal
