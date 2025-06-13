@@ -7,17 +7,17 @@ const meta = {
   component: ProgressBoard,
   args: {
     columnTitles: ["A", "B"],
-    tableData: [
-      ["Mia", "Monique", 0],
-      ["Jo", "Alyx", 1],
-      ["Poppy", "Lotti", 1],
-      ["Jay", "Sammy", 0],
-      ["Anna", "Serena", 1],
-      ["Danni", "Maddy", 0],
-      ["Melody", "Kelly", 0],
-      ["Danielle", "Ryana", 0],
-      ["Lizz", "Sophie", 1],
-      ["Sammi", "Ginebra", 0],
+    results: [
+      [28, 38, 0],
+      [7, 76, 1],
+      [5, 6, 1],
+      [2, 71, 0],
+      [88, 4, 1],
+      [59, 83, 0.5],
+      [100, 77, 0],
+      [70, 19, 0],
+      [108, 13, 1],
+      [12, 125, 0],
     ],
   },
 } satisfies Meta<typeof ProgressBoard>;
@@ -26,20 +26,20 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 /** Table data should be displayed in ascending order (first match at the top)
- * by default. */
+ * by default, with five rows of content. */
 export const Default: Story = {
   play: async ({ args, canvasElement }) => {
     const canvas = within(canvasElement);
     const cells = canvas.getAllByRole("cell");
     expect(cells[0].textContent).toBe("1");
-    expect(cells[1].textContent).toBe(args.tableData[0][0]);
+    expect(cells[1].textContent).toBe(args.results[0][0]);
   },
 };
 
 /** If no table data is passed, render a warning. */
 export const NoData: Story = {
   args: {
-    tableData: [],
+    results: [],
     title: "No table data",
   },
   play: async ({ canvasElement }) => {
@@ -61,9 +61,7 @@ export const Reverse: Story = {
     const canvas = within(canvasElement);
     const cells = canvas.getAllByRole("cell");
     expect(cells[0].textContent).toBe("10");
-    expect(cells[1].textContent).toBe(
-      args.tableData[args.tableData.length - 1][0]
-    );
+    expect(cells[1].textContent).toBe(args.results[args.results.length - 1][0]);
   },
 };
 
@@ -78,6 +76,27 @@ export const NoReverse: Story = {
     const canvas = within(canvasElement);
     const cells = canvas.getAllByRole("cell");
     expect(cells[0].textContent).toBe("1");
-    expect(cells[1].textContent).toBe(args.tableData[0][0]);
+    expect(cells[1].textContent).toBe(args.results[0][0]);
+  },
+};
+
+/** Five rows of results should be displayed by default. */
+export const DefaultMaxRows: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const cells = canvas.getAllByRole("cell");
+    expect(cells.length).toBe(15);
+  },
+};
+
+/** Up to the maximum number of rows should be displayed if set by the user. */
+export const CustomMaxRows: Story = {
+  args: {
+    maxRows: 3,
+  },
+  play: async ({ args, canvasElement }) => {
+    const canvas = within(canvasElement);
+    const cells = canvas.getAllByRole("cell");
+    expect(cells.length).toBe(args.maxRows * 3);
   },
 };
