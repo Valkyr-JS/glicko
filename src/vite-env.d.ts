@@ -132,6 +132,9 @@ interface PerformerSessionRecord {
 
 /** The user's game settings. */
 interface UserSettings {
+  /** The maximum number of rows to display in the progress board shown
+   * underneath the match board. */
+  progressMaxRows?: number;
   /** If `true`, performer results will not be saved to the associated performer
    * custom fields in the Stash database. Plugin settings and filters will still
    * be saved to the config. */
