@@ -536,6 +536,106 @@ function App() {
     stashPerformerMatchResponse.refetch();
   };
 
+  /** Handle wiping all Glicko data from all Stash performers */
+  const handleWipePerformerData = async () => {
+    // Fetch data for all performers to get all performers from Stash
+    // Get ALL performers from Stash
+    let page = 1;
+    const perPage = 25;
+
+    // Get the first page of performers
+    const firstPage = await queryAllStashPerformers({
+      variables: { page, perPage },
+    });
+
+    if (!firstPage.data || firstPage.error) {
+      // Throw an error
+      setGameError({
+        name: "Processing error",
+        message:
+          "There was an error in fetching performer data while wiping your performer data.",
+        details: firstPage.error,
+      });
+
+      // Update the processing state
+      setProcessing(false);
+      return;
+    }
+
+    let allStashPerformers = firstPage.data.findPerformers.performers;
+
+    const pageLimit = Math.ceil(firstPage.data.findPerformers.count / perPage);
+    page++;
+
+    const getRemainingPages = async () => {
+      while (page <= pageLimit) {
+        const nextPage = await queryAllStashPerformers({
+          variables: { page, perPage },
+        });
+
+        if (!nextPage.data || nextPage.error) {
+          // Throw an error
+          setGameError({
+            name: "Processing error",
+            message:
+              "There was an error in fetching performer data while wiping your performer data.",
+            details: nextPage.error,
+          });
+
+          // Update the processing state
+          setProcessing(false);
+          return;
+        }
+
+        allStashPerformers = [
+          ...allStashPerformers,
+          ...nextPage.data.findPerformers.performers,
+        ];
+        page++;
+      }
+    };
+
+    await getRemainingPages();
+
+    const disallowedKeys = [
+      "glicko_deviation",
+      "glicko_rating",
+      "glicko_volatility",
+      "glicko_match_history",
+      "glicko_session_history",
+    ];
+
+    // Loop through each performer
+    allStashPerformers.forEach((p) => {
+      // Get the performer's custom fields, filtering out any Glicko-related
+      // fields.
+      const validKeys = Object.keys(p.custom_fields).filter(
+        (k) => !disallowedKeys.includes(k)
+      );
+      const custom_fields = validKeys.reduce(
+        (obj, key) => ({
+          ...obj,
+          [key]: (p.custom_fields as { [key: string]: unknown })[key],
+        }),
+        {}
+      );
+
+      // Update the performer's custom fields with the filtered data
+      mutateStashPerformer({
+        variables: {
+          input: {
+            id: p.id,
+            custom_fields: {
+              full: {
+                ...custom_fields,
+              },
+            },
+          },
+        },
+      });
+    });
+  };
+
   /** Handle clearing all results */
   const handleWipeResults = () => {
     // Clear the state
@@ -612,6 +712,7 @@ function App() {
           saveSettingsHandler={handleSaveSettings}
           setActivePage={setActivePage}
           settings={userSettings}
+          wipeDataHandler={handleWipePerformerData}
         />
       );
   }

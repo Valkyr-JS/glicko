@@ -14,6 +14,8 @@ interface SettingsPageProps extends PageProps {
   settings: UserSettings;
   /** The handler for updating the user settings. */
   saveSettingsHandler: (updatedSettings: UserSettings) => Promise<void>;
+  /** The handler for wiping all Glicko data from all Stash performers */
+  wipeDataHandler: () => Promise<void>;
 }
 
 const SettingsPage: React.FC<SettingsPageProps> = (props) => {
@@ -113,7 +115,7 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
       </main>
       <WipePerformerDataModal
         closeHandler={() => setShowWipeDataModal(false)}
-        confirmHandler={() => console.log("WIPE")}
+        confirmHandler={props.wipeDataHandler}
         show={showWipeDataModal}
       />
       <Modal
