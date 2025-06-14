@@ -1,6 +1,8 @@
 import Modal from "@/components/Modal/Modal";
 import { faExclamationCircle } from "@fortawesome/pro-solid-svg-icons/faExclamationCircle";
-import React from "react";
+import { faSpinnerThird } from "@fortawesome/pro-solid-svg-icons/faSpinnerThird";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { useState } from "react";
 
 interface WipePerformerDataProps {
   onClickHandler: React.MouseEventHandler<HTMLButtonElement>;
@@ -26,9 +28,9 @@ export default WipePerformerData;
 
 interface WipePerformerDataModalProps {
   /** Handler for closing the modal. */
-  closeHandler: React.MouseEventHandler;
+  closeHandler: () => void;
   /** Handler for confirming the wipe action. */
-  confirmHandler: React.MouseEventHandler;
+  confirmHandler: () => Promise<void>;
   /** Whether the modal is currently being rendered. */
   show: boolean;
 }
@@ -36,6 +38,23 @@ interface WipePerformerDataModalProps {
 export const WipePerformerDataModal: React.FC<WipePerformerDataModalProps> = (
   props
 ) => {
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  /** Handle clicking the Yes button */
+  const handleConfirm = async () => {
+    setIsProcessing(true);
+    await props.confirmHandler();
+    setIsProcessing(false);
+    props.closeHandler();
+  };
+
+  // Show a spinner while data is being wiped.
+  const yesContent = isProcessing ? (
+    <FontAwesomeIcon icon={faSpinnerThird} spin />
+  ) : (
+    "Yes"
+  );
+
   return (
     <Modal
       buttons={[
@@ -43,14 +62,16 @@ export const WipePerformerDataModal: React.FC<WipePerformerDataModalProps> = (
           element: "button",
           children: "No",
           className: "btn btn-secondary",
+          disabled: isProcessing,
           onClick: props.closeHandler,
           type: "button",
         },
         {
           element: "button",
+          children: yesContent,
           className: "btn btn-danger",
-          children: "Yes",
-          onClick: props.confirmHandler,
+          disabled: isProcessing,
+          onClick: handleConfirm,
           type: "button",
         },
       ]}
