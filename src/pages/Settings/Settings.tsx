@@ -5,16 +5,22 @@ import Modal from "@/components/Modal/Modal";
 import styles from "./Settings.module.scss";
 import ReadOnlyMode from "./options/ReadOnlyMode";
 import ProgressMaxRows from "./options/ProgressMaxRows";
+import WipePerformerData, {
+  WipePerformerDataModal,
+} from "./options/WipePerformerData";
 
 interface SettingsPageProps extends PageProps {
   /** The user's game settings. */
   settings: UserSettings;
   /** The handler for updating the user settings. */
   saveSettingsHandler: (updatedSettings: UserSettings) => Promise<void>;
+  /** The handler for wiping all Glicko data from all Stash performers */
+  wipeDataHandler: () => Promise<void>;
 }
 
 const SettingsPage: React.FC<SettingsPageProps> = (props) => {
   const [settingsChanged, setSettingsChanged] = useState(false);
+  const [showWipeDataModal, setShowWipeDataModal] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
 
   const classes = cx("container", styles.Settings);
@@ -77,11 +83,18 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
         >
           <h1>Settings</h1>
           <div className="row">
-            <div className="col-12">
+            <div className="col-12 mt-3">
               <ReadOnlyMode enabled={props.settings.readOnly} />
             </div>
-            <div className="col-12 col-md-6 col-lg-4">
+            <div className="col-12 col-md-6 col-lg-4 mt-3">
               <ProgressMaxRows userMaxRows={props.settings.progressMaxRows} />
+            </div>
+          </div>
+          <div className="row mt-3">
+            <div className="col-12 col-md-6 col-xl-4">
+              <WipePerformerData
+                onClickHandler={() => setShowWipeDataModal(true)}
+              />
             </div>
           </div>
           <div className={styles["button-container"]}>
@@ -102,6 +115,11 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
           </div>
         </form>
       </main>
+      <WipePerformerDataModal
+        closeHandler={() => setShowWipeDataModal(false)}
+        confirmHandler={props.wipeDataHandler}
+        show={showWipeDataModal}
+      />
       <Modal
         buttons={[
           {
