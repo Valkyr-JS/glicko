@@ -13,6 +13,7 @@ const ReadOnlyMode: React.FC<ReadOnlyModeProps> = (props) => {
           isChecked: !!props.enabled,
           id: "readOnly",
           label: 'Enable "read-only" mode',
+          labelAsHeading: true,
           name: "read-only",
         },
       ]}

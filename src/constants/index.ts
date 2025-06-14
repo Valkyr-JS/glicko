@@ -19,10 +19,12 @@ export const DEFAULT_PERFORMER_FILTERS: PerformerFilters = {
   genders: [],
 };
 
-export const DEFAULT_MAX_PROGRESS_BOARD_ROWS = 5;
+export const DEFAULT_ALLOW_ARROW_KEYS = true;
 export const DEFAULT_IMAGE_QUALITY = "thumbnail";
+export const DEFAULT_MAX_PROGRESS_BOARD_ROWS = 5;
 
 export const DEFAULT_USER_SEETTINGS: UserSettings = {
+  arrowKeys: DEFAULT_ALLOW_ARROW_KEYS,
   imageQuality: DEFAULT_IMAGE_QUALITY,
   progressMaxRows: DEFAULT_MAX_PROGRESS_BOARD_ROWS,
 };

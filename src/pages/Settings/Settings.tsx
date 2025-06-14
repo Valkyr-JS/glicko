@@ -9,6 +9,7 @@ import WipePerformerData, {
   WipePerformerDataModal,
 } from "./options/WipePerformerData";
 import ImageQuality from "./options/ImageQuality";
+import ArrowKeys from "./options/ArrowKeys";
 
 interface SettingsPageProps extends PageProps {
   /** The user's game settings. */
@@ -88,10 +89,13 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
               <ReadOnlyMode enabled={props.settings.readOnly} />
             </div>
             <div className="col-12 col-lg-6 mt-3">
-              <ProgressMaxRows userMaxRows={props.settings.progressMaxRows} />
+              <ImageQuality imageQuality={props.settings.imageQuality} />
             </div>
             <div className="col-12 col-lg-6 mt-3">
-              <ImageQuality imageQuality={props.settings.imageQuality} />
+              <ArrowKeys enabled={props.settings.arrowKeys} />
+            </div>
+            <div className="col-12 col-lg-6 mt-3">
+              <ProgressMaxRows userMaxRows={props.settings.progressMaxRows} />
             </div>
           </div>
           <div className="row mt-3">
@@ -163,20 +167,22 @@ const convertFormDataToUserSettings = (data: FormData): UserSettings => {
   // Read-only mode
   const readOnly = !!formKeys.find((k) => k === "read-only");
 
-  // Progress max rows
-  const progressMaxRows = +formJson["progress-max-rows"];
-
   // Image quality
   const imageQuality =
     formJson["image-quality"] === "original" ? "original" : "thumbnail";
 
+  // Progress max rows
+  const progressMaxRows = +formJson["progress-max-rows"];
+
+  // Arrow-keys mode
+  const arrowKeys = !!formKeys.find((k) => k === "arrow-keys");
+
   const updatedSettings: UserSettings = {
+    arrowKeys,
     imageQuality,
     progressMaxRows,
     readOnly,
   };
-
-  console.log(updatedSettings);
 
   return updatedSettings;
 };
@@ -184,8 +190,9 @@ const convertFormDataToUserSettings = (data: FormData): UserSettings => {
 /** Compares two sets of user settings for equality. */
 const compareSettings = (setA: UserSettings, setB: UserSettings): boolean => {
   if (setA.readOnly !== setB.readOnly) return false;
-  if (setA.progressMaxRows !== setB.progressMaxRows) return false;
   if (setA.imageQuality !== setB.imageQuality) return false;
+  if (setA.arrowKeys !== setB.arrowKeys) return false;
+  if (setA.progressMaxRows !== setB.progressMaxRows) return false;
 
   return true;
 };
