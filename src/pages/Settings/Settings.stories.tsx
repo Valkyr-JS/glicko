@@ -9,6 +9,7 @@ const meta = {
     saveSettingsHandler: fn(),
     setActivePage: fn(),
     settings: {},
+    wipeDataHandler: fn(),
   },
 } satisfies Meta<typeof Settings>;
 
