@@ -77,6 +77,7 @@ const MatchBoard: React.FC<MatchBoardProps> = (props) => {
         </button>
         <button
           className="btn btn-danger"
+          disabled={loading}
           onClick={props.clickStopHandler}
           type="button"
         >
@@ -96,7 +97,7 @@ const MatchBoard: React.FC<MatchBoardProps> = (props) => {
       <div className={styles["submit"]}>
         <button
           className="btn btn-primary"
-          disabled={props.matchIndex === 0}
+          disabled={loading || props.matchIndex === 0}
           onClick={props.clickSubmitHandler}
           type="button"
         >
