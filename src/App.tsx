@@ -615,6 +615,9 @@ function App() {
 
     // Loop through each performer
     allStashPerformers.forEach((p) => {
+      // If the performer doesn't have any custom fields in the first place, skip
+      if (!Object.keys(p.custom_fields).length) return;
+
       // Get the performer's custom fields, filtering out any Glicko-related
       // fields.
       const validKeys = Object.keys(p.custom_fields).filter(
