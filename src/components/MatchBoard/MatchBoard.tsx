@@ -9,6 +9,7 @@ import { faSend } from "@fortawesome/pro-solid-svg-icons/faSend";
 import { faSpinnerThird } from "@fortawesome/pro-solid-svg-icons/faSpinnerThird";
 import { faStop } from "@fortawesome/pro-solid-svg-icons/faStop";
 import { faTrophy } from "@fortawesome/pro-solid-svg-icons/faTrophy";
+import { default as cx } from "classnames";
 import type { StashFindImagesResult, StashPerformer } from "@/apollo/schema";
 import styles from "./MatchBoard.module.scss";
 
@@ -131,6 +132,12 @@ interface PlayerProfileProps extends MatchPerformer {
 const PlayerProfile = (props: PlayerProfileProps) => {
   const [imageSource, setImageSource] = useState(props.coverImg);
   const [imageLoading, setImageLoading] = useState(false);
+  const [coverLoading, setCoverLoading] = useState(false);
+
+  // When the performer changes, mark the cover image as loading.
+  useEffect(() => {
+    setCoverLoading(true);
+  }, [props.id]);
 
   /** Handler for changing the image for the performer */
   const handleImageChange = async () => {
@@ -171,13 +178,23 @@ const PlayerProfile = (props: PlayerProfileProps) => {
     props.clickSelectHandler(props.position);
   };
 
+  /** Handle callback when an image has been loaded. */
+  const handleImageLoaded: React.ReactEventHandler<HTMLImageElement> = () => {
+    setImageLoading(false);
+    setCoverLoading(false);
+  };
+
+  const profileImageClasses = cx(styles["profile-image"], {
+    [styles.loading]: coverLoading,
+  });
+
   return (
     <div className={styles["profile"]}>
-      <div className={styles["profile-image"]}>
+      <div className={profileImageClasses}>
         <img
           src={imageSource}
           alt={props.name}
-          onLoad={() => setImageLoading(false)}
+          onLoad={handleImageLoaded}
           ref={imageRef}
         />
       </div>
