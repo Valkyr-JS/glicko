@@ -9,6 +9,7 @@ import { faSend } from "@fortawesome/pro-solid-svg-icons/faSend";
 import { faSpinnerThird } from "@fortawesome/pro-solid-svg-icons/faSpinnerThird";
 import { faStop } from "@fortawesome/pro-solid-svg-icons/faStop";
 import { faTrophy } from "@fortawesome/pro-solid-svg-icons/faTrophy";
+import { default as cx } from "classnames";
 import type { StashFindImagesResult, StashPerformer } from "@/apollo/schema";
 import styles from "./MatchBoard.module.scss";
 
@@ -20,15 +21,15 @@ interface MatchBoardProps {
     | Promise<QueryResult<StashFindImagesResult, OperationVariables>>
     | undefined;
   /** Executes when the user selects the winning player. */
-  clickSelectHandler: (winner: 0 | 1) => void;
+  clickSelectHandler: (winner: 0 | 1) => Promise<void>;
   /** Handler for clicking the skip button. */
-  clickSkipHandler: React.MouseEventHandler<HTMLButtonElement>;
+  clickSkipHandler: () => Promise<void>;
   /** Handler for clicking the stop button. */
   clickStopHandler: React.MouseEventHandler<HTMLButtonElement>;
   /** Handler for clicking the submit button. */
   clickSubmitHandler: React.MouseEventHandler<HTMLButtonElement>;
   /** Handler for clicking the undo button. */
-  clickUndoHandler: React.MouseEventHandler<HTMLButtonElement>;
+  clickUndoHandler: () => Promise<void>;
   /** The zero-based index of the match in the current game session. */
   matchIndex: number;
   /** The players in the current match. */
@@ -36,6 +37,14 @@ interface MatchBoardProps {
 }
 
 const MatchBoard: React.FC<MatchBoardProps> = (props) => {
+  /** Whether a match is currently being loaded. */
+  const [loading, setLoading] = useState(false);
+
+  // When a new match has been loaded, mark loading as complete.
+  useEffect(() => {
+    setLoading(false);
+  }, [props.match]);
+
   return (
     <section className={styles["one-vs-one-board"]}>
       <h2>Round {props.matchIndex + 1}</h2>
@@ -44,19 +53,23 @@ const MatchBoard: React.FC<MatchBoardProps> = (props) => {
           {...props.match[0]}
           changeImageHandler={props.changeImageHandler}
           clickSelectHandler={props.clickSelectHandler}
+          loading={loading}
           position={0}
+          setLoading={setLoading}
         />
         <PlayerProfile
           {...props.match[1]}
           changeImageHandler={props.changeImageHandler}
           clickSelectHandler={props.clickSelectHandler}
+          loading={loading}
           position={1}
+          setLoading={setLoading}
         />
       </div>
       <div className={styles["tools"]}>
         <button
           className="btn btn-secondary"
-          disabled={props.matchIndex === 0}
+          disabled={loading || props.matchIndex === 0}
           onClick={props.clickUndoHandler}
           type="button"
         >
@@ -65,6 +78,7 @@ const MatchBoard: React.FC<MatchBoardProps> = (props) => {
         </button>
         <button
           className="btn btn-danger"
+          disabled={loading}
           onClick={props.clickStopHandler}
           type="button"
         >
@@ -73,6 +87,7 @@ const MatchBoard: React.FC<MatchBoardProps> = (props) => {
         </button>
         <button
           className="btn btn-secondary"
+          disabled={loading}
           onClick={props.clickSkipHandler}
           type="button"
         >
@@ -83,7 +98,7 @@ const MatchBoard: React.FC<MatchBoardProps> = (props) => {
       <div className={styles["submit"]}>
         <button
           className="btn btn-primary"
-          disabled={props.matchIndex === 0}
+          disabled={loading || props.matchIndex === 0}
           onClick={props.clickSubmitHandler}
           type="button"
         >
@@ -106,13 +121,23 @@ interface PlayerProfileProps extends MatchPerformer {
     | undefined;
   /** Executes when the user selects the winning player. */
   clickSelectHandler: (winner: 0 | 1) => void;
+  /** Whether a match is currently being loaded. */
+  loading: boolean;
   /** Whether the profile is on the left, i.e. `0`, or right, i.e. `1` */
   position: 0 | 1;
+  /** Updates the parent component loading state */
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const PlayerProfile = (props: PlayerProfileProps) => {
   const [imageSource, setImageSource] = useState(props.coverImg);
   const [imageLoading, setImageLoading] = useState(false);
+  const [coverLoading, setCoverLoading] = useState(false);
+
+  // When the performer changes, mark the cover image as loading.
+  useEffect(() => {
+    setCoverLoading(true);
+  }, [props.id]);
 
   /** Handler for changing the image for the performer */
   const handleImageChange = async () => {
@@ -148,13 +173,28 @@ const PlayerProfile = (props: PlayerProfileProps) => {
   const coverButtonDisabled =
     imageSource === props.coverImg || !props.imagesAvailable;
 
+  const handleClickSelect = () => {
+    props.setLoading(true);
+    props.clickSelectHandler(props.position);
+  };
+
+  /** Handle callback when an image has been loaded. */
+  const handleImageLoaded: React.ReactEventHandler<HTMLImageElement> = () => {
+    setImageLoading(false);
+    setCoverLoading(false);
+  };
+
+  const profileImageClasses = cx(styles["profile-image"], {
+    [styles.loading]: coverLoading,
+  });
+
   return (
     <div className={styles["profile"]}>
-      <div className={styles["profile-image"]}>
+      <div className={profileImageClasses}>
         <img
           src={imageSource}
           alt={props.name}
-          onLoad={() => setImageLoading(false)}
+          onLoad={handleImageLoaded}
           ref={imageRef}
         />
       </div>
@@ -167,8 +207,12 @@ const PlayerProfile = (props: PlayerProfileProps) => {
         <button
           type="button"
           className="btn btn-primary"
-          onClick={() => props.clickSelectHandler(props.position)}
+          disabled={props.loading}
+          onClick={handleClickSelect}
         >
+          {props.loading ? (
+            <FontAwesomeIcon icon={faSpinnerThird} spin className="mr-2" />
+          ) : null}
           {props.name}
         </button>
       </div>
@@ -184,7 +228,7 @@ const PlayerProfile = (props: PlayerProfileProps) => {
         </button>
         <button
           className="btn btn-secondary"
-          disabled={imageButtonDisabled}
+          disabled={imageButtonDisabled || props.loading}
           onClick={handleImageChange}
           type="button"
         >

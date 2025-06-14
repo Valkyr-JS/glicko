@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { expect, fn, userEvent, within } from "storybook/test";
+import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 import GamePage from "./Game";
 import { getStashContent } from "../../../.storybook/tools";
 import { RECOMMENDED_MINIMUM_MATCHES } from "@/constants";
@@ -103,11 +103,13 @@ export const AltImagesAvailable: Story = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const imgButton = canvas.getByRole<HTMLButtonElement>("button", {
-      name: "Change image for Danielle",
-    });
+    waitFor(() => {
+      const imgButton = canvas.getByRole<HTMLButtonElement>("button", {
+        name: "Change image for Danielle",
+      });
 
-    expect(imgButton).not.toBeDisabled();
+      expect(imgButton).not.toBeDisabled();
+    });
   },
 };
 

@@ -108,6 +108,13 @@
       left: 0;
       width: 100%;
       height: 100%;
+      transition: filter 0.1s ease-in-out;
+    }
+
+    &.loading {
+      img {
+        filter: blur(15px);
+      }
     }
   }
 
