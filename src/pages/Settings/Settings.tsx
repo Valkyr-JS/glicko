@@ -9,6 +9,7 @@ import WipePerformerData, {
   WipePerformerDataModal,
 } from "./options/WipePerformerData";
 import ImageQuality from "./options/ImageQuality";
+import ArrowKeys from "./options/ArrowKeys";
 
 interface SettingsPageProps extends PageProps {
   /** The user's game settings. */
@@ -88,10 +89,13 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
               <ReadOnlyMode enabled={props.settings.readOnly} />
             </div>
             <div className="col-12 col-lg-6 mt-3">
-              <ProgressMaxRows userMaxRows={props.settings.progressMaxRows} />
+              <ImageQuality imageQuality={props.settings.imageQuality} />
             </div>
             <div className="col-12 col-lg-6 mt-3">
-              <ImageQuality imageQuality={props.settings.imageQuality} />
+              <ArrowKeys enabled={props.settings.arrowKeys} />
+            </div>
+            <div className="col-12 col-lg-6 mt-3">
+              <ProgressMaxRows userMaxRows={props.settings.progressMaxRows} />
             </div>
           </div>
           <div className="row mt-3">
