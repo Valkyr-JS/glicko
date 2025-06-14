@@ -68,7 +68,7 @@ const MatchBoard: React.FC<MatchBoardProps> = (props) => {
       <div className={styles["tools"]}>
         <button
           className="btn btn-secondary"
-          disabled={props.matchIndex === 0}
+          disabled={loading || props.matchIndex === 0}
           onClick={props.clickUndoHandler}
           type="button"
         >
@@ -85,6 +85,7 @@ const MatchBoard: React.FC<MatchBoardProps> = (props) => {
         </button>
         <button
           className="btn btn-secondary"
+          disabled={loading}
           onClick={props.clickSkipHandler}
           type="button"
         >
