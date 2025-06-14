@@ -67,8 +67,16 @@ function App() {
     OperationVariables
   > = useQuery(GET_STASH_CONFIGURATION);
 
+  // Don't cache all performer data in case it changes between fetches. Caching
+  // would run the risk of losing data if a user opened Glicko, added a new
+  // custom field to a performer, then wiped their performer data via the button
+  // in settings. The new data wouldn't be cached, so would be lost. It's an
+  // unlikely occurance, but better to be safe.
   const [queryAllStashPerformers] = useLazyQuery<StashFindPerformersResult>(
-    GET_ALL_PERFORMERS_BY_PAGE
+    GET_ALL_PERFORMERS_BY_PAGE,
+    {
+      fetchPolicy: "no-cache",
+    }
   );
   const [queryStashPerformerMatch, stashPerformerMatchResponse] =
     useLazyQuery<StashFindPerformersResult>(GET_MATCH_PERFORMERS);
