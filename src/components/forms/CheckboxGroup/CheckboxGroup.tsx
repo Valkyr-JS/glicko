@@ -38,10 +38,18 @@ interface CheckboxProps {
   label: string;
   /** The property name for the input which appears in the response. */
   name: string;
+  /** Dictates whether the checkbox label should be displayed with heading
+   * styles. Typically for a solo checkbox with no title. */
+  labelAsHeading?: boolean;
 }
 
 const Checkbox: React.FC<CheckboxProps> = (props) => {
   const [checked, toggleChecked] = useState(props.isChecked);
+
+  const labelClasses = cx("form-check-label", "col-form-label", {
+    [formStyles.heading]: props.labelAsHeading,
+  });
+
   return (
     <div className="form-check form-check-inline">
       <input
@@ -53,7 +61,7 @@ const Checkbox: React.FC<CheckboxProps> = (props) => {
         onChange={() => toggleChecked(!checked)}
         value={checked + ""}
       />
-      <label className="form-check-label" htmlFor={props.id}>
+      <label className={labelClasses} htmlFor={props.id}>
         {props.label}
       </label>
     </div>

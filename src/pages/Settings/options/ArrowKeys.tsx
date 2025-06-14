@@ -17,6 +17,7 @@ const ArrowKeys: React.FC<ArrowKeysProps> = (props) => {
               : props.enabled,
           id: "arrowKeys",
           label: "Enable arrow keys",
+          labelAsHeading: true,
           name: "arrow-keys",
         },
       ]}
