@@ -167,20 +167,22 @@ const convertFormDataToUserSettings = (data: FormData): UserSettings => {
   // Read-only mode
   const readOnly = !!formKeys.find((k) => k === "read-only");
 
-  // Progress max rows
-  const progressMaxRows = +formJson["progress-max-rows"];
-
   // Image quality
   const imageQuality =
     formJson["image-quality"] === "original" ? "original" : "thumbnail";
 
+  // Progress max rows
+  const progressMaxRows = +formJson["progress-max-rows"];
+
+  // Arrow-keys mode
+  const arrowKeys = !!formKeys.find((k) => k === "arrow-keys");
+
   const updatedSettings: UserSettings = {
+    arrowKeys,
     imageQuality,
     progressMaxRows,
     readOnly,
   };
-
-  console.log(updatedSettings);
 
   return updatedSettings;
 };
@@ -188,8 +190,9 @@ const convertFormDataToUserSettings = (data: FormData): UserSettings => {
 /** Compares two sets of user settings for equality. */
 const compareSettings = (setA: UserSettings, setB: UserSettings): boolean => {
   if (setA.readOnly !== setB.readOnly) return false;
-  if (setA.progressMaxRows !== setB.progressMaxRows) return false;
   if (setA.imageQuality !== setB.imageQuality) return false;
+  if (setA.arrowKeys !== setB.arrowKeys) return false;
+  if (setA.progressMaxRows !== setB.progressMaxRows) return false;
 
   return true;
 };
