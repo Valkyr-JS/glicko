@@ -35,13 +35,13 @@ interface GamePageProps extends PageProps {
   /** The list of match results, including scores. */
   results: GlickoMatchResult[];
   /** Handler for declaring a match a draw. */
-  setDrawHandler: () => void;
+  setDrawHandler: () => Promise<void>;
   /** Handler for selecting the winner of a match. */
-  setWinnerHandler: (winnerIndex: 0 | 1) => void;
+  setWinnerHandler: (winnerIndex: 0 | 1) => Promise<void>;
   /** Handle for submitting the match results. */
   submitHandler: () => void;
   /** Handler for reloading the previous match. */
-  undoMatchHandler: () => void;
+  undoMatchHandler: () => Promise<void>;
   /** The user's game settings. */
   userSettings: UserSettings;
   /** Handler for clearing all session data. */
