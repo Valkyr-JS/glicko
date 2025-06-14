@@ -89,7 +89,9 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
             <div className="col-12 col-md-6 col-lg-4 mt-3">
               <ProgressMaxRows userMaxRows={props.settings.progressMaxRows} />
             </div>
-            <div className="col-12 mt-3">
+          </div>
+          <div className="row mt-3">
+            <div className="col-12 col-md-6 col-xl-4">
               <WipePerformerData
                 onClickHandler={() => setShowWipeDataModal(true)}
               />

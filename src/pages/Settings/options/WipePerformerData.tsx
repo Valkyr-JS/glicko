@@ -12,7 +12,7 @@ const WipePerformerData: React.FC<WipePerformerDataProps> = (props) => {
   return (
     <button
       type="button"
-      className="btn btn-danger"
+      className="btn btn-danger w-100"
       onClick={props.onClickHandler}
     >
       Wipe performer data
