@@ -107,3 +107,17 @@ export const ReadOnlyDefault: Story = {
     expect(input).not.toBeChecked();
   },
 };
+
+export const ImageQualityDefault: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const originalInput = canvas.getByRole<HTMLInputElement>("checkbox", {
+      name: "Original",
+    });
+    const thumbnailInput = canvas.getByRole<HTMLInputElement>("checkbox", {
+      name: "Thumbnail",
+    });
+    expect(originalInput).not.toBeChecked();
+    expect(thumbnailInput).toBeChecked();
+  },
+};

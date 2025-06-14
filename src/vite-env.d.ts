@@ -159,7 +159,7 @@ interface StashSlimPerformerData {
 /** The user's game settings. */
 interface UserSettings {
   /** The quality of the image taken from Stash. */
-  imageQuality?: "image" | "thumbnail";
+  imageQuality?: "original" | "thumbnail";
   /** The maximum number of rows to display in the progress board shown
    * underneath the match board. */
   progressMaxRows?: number;

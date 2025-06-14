@@ -20,7 +20,7 @@ export const DEFAULT_PERFORMER_FILTERS: PerformerFilters = {
 };
 
 export const DEFAULT_MAX_PROGRESS_BOARD_ROWS = 5;
-export const DEFAULT_IMAGE_QUALITY: UserSettings["imageQuality"] = "thumbnail";
+export const DEFAULT_IMAGE_QUALITY = "thumbnail";
 
 export const DEFAULT_USER_SEETTINGS: UserSettings = {
   imageQuality: DEFAULT_IMAGE_QUALITY,

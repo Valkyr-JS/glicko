@@ -125,7 +125,7 @@ export const StashPluginPerformerFiltersParsed = z.object({
 });
 
 export const StashPluginUserSettingsParsed = z.object({
-  imageQuality: z.literal(["image", "thumbnail"]).optional(),
+  imageQuality: z.literal(["original", "thumbnail"]).optional(),
   progressMaxRows: z.number().optional(),
   readOnly: z.boolean().optional(),
 });
