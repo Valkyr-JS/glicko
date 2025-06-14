@@ -12,6 +12,7 @@ import { faTrophy } from "@fortawesome/pro-solid-svg-icons/faTrophy";
 import { default as cx } from "classnames";
 import type { StashFindImagesResult, StashPerformer } from "@/apollo/schema";
 import styles from "./MatchBoard.module.scss";
+import { DEFAULT_IMAGE_QUALITY } from "@/constants";
 
 interface MatchBoardProps {
   /** Handler for clicking the change player image button. */
@@ -30,6 +31,8 @@ interface MatchBoardProps {
   clickSubmitHandler: React.MouseEventHandler<HTMLButtonElement>;
   /** Handler for clicking the undo button. */
   clickUndoHandler: () => Promise<void>;
+  /** The quality of the performer images as set by the user. */
+  imageQuality: UserSettings["imageQuality"];
   /** The zero-based index of the match in the current game session. */
   matchIndex: number;
   /** The players in the current match. */
@@ -53,6 +56,7 @@ const MatchBoard: React.FC<MatchBoardProps> = (props) => {
           {...props.match[0]}
           changeImageHandler={props.changeImageHandler}
           clickSelectHandler={props.clickSelectHandler}
+          imageQuality={props.imageQuality}
           loading={loading}
           position={0}
           setLoading={setLoading}
@@ -61,6 +65,7 @@ const MatchBoard: React.FC<MatchBoardProps> = (props) => {
           {...props.match[1]}
           changeImageHandler={props.changeImageHandler}
           clickSelectHandler={props.clickSelectHandler}
+          imageQuality={props.imageQuality}
           loading={loading}
           position={1}
           setLoading={setLoading}
@@ -121,6 +126,8 @@ interface PlayerProfileProps extends MatchPerformer {
     | undefined;
   /** Executes when the user selects the winning player. */
   clickSelectHandler: (winner: 0 | 1) => void;
+  /** The quality of the performer images as set by the user. */
+  imageQuality: UserSettings["imageQuality"];
   /** Whether a match is currently being loaded. */
   loading: boolean;
   /** Whether the profile is on the left, i.e. `0`, or right, i.e. `1` */
@@ -164,10 +171,12 @@ const PlayerProfile = (props: PlayerProfileProps) => {
 
   // When image change is detected, update the state
   useEffect(() => {
+    const imgQuality =
+      props.imageQuality === "original" ? "image" : DEFAULT_IMAGE_QUALITY;
     if (props.imageID)
-      setImageSource(baseUrl + "/image/" + props.imageID + "/thumbnail");
+      setImageSource(baseUrl + "/image/" + props.imageID + "/" + imgQuality);
     else setImageSource(props.coverImg);
-  }, [props.imageID, props.coverImg, baseUrl]);
+  }, [baseUrl, props.coverImg, props.imageID, props.imageQuality]);
 
   const imageButtonDisabled = imageLoading || !props.imagesAvailable;
   const coverButtonDisabled =

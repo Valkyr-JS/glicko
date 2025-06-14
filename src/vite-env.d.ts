@@ -130,17 +130,6 @@ interface PerformerSessionRecord {
   r: number;
 }
 
-/** The user's game settings. */
-interface UserSettings {
-  /** The maximum number of rows to display in the progress board shown
-   * underneath the match board. */
-  progressMaxRows?: number;
-  /** If `true`, performer results will not be saved to the associated performer
-   * custom fields in the Stash database. Plugin settings and filters will still
-   * be saved to the config. */
-  readOnly?: boolean;
-}
-
 interface StashConfigResult {
   general: {
     stashBoxes: StashBox[];
@@ -165,4 +154,17 @@ type StashIDCriterionInput = {
 interface StashSlimPerformerData {
   id: MatchPerformer["id"];
   name: MatchPerformer["name"];
+}
+
+/** The user's game settings. */
+interface UserSettings {
+  /** The quality of the image taken from Stash. */
+  imageQuality?: "original" | "thumbnail";
+  /** The maximum number of rows to display in the progress board shown
+   * underneath the match board. */
+  progressMaxRows?: number;
+  /** If `true`, performer results will not be saved to the associated performer
+   * custom fields in the Stash database. Plugin settings and filters will still
+   * be saved to the config. */
+  readOnly?: boolean;
 }

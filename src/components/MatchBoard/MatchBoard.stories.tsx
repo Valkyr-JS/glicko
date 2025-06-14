@@ -33,6 +33,7 @@ const meta = {
     clickStopHandler: fn(),
     clickSubmitHandler: fn(),
     clickUndoHandler: fn(),
+    imageQuality: undefined,
     matchIndex: 0,
     match,
   },

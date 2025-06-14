@@ -24,6 +24,8 @@ interface GamePageProps extends PageProps {
   ) => Promise<QueryResult<StashFindImagesResult, OperationVariables>>;
   /** Any kind of game error that stop the user from playing. */
   gameError: GameError | null;
+  /** The quality of the performer images as set by the user. */
+  imageQuality: UserSettings["imageQuality"];
   /** The data for the players involved in the match. */
   match: Match;
   /** The zero-based index of the current match in the match list. */
@@ -126,6 +128,7 @@ const GamePage: React.FC<GamePageProps> = (props) => {
           clickStopHandler={handleAbandonProgress}
           clickSubmitHandler={handleSubmitClick}
           clickUndoHandler={props.undoMatchHandler}
+          imageQuality={props.imageQuality}
           matchIndex={props.matchIndex}
           match={props.match}
         />

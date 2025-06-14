@@ -690,6 +690,7 @@ function App() {
           <GamePage
             changeImageHandler={handleChangeImage}
             gameError={gameError}
+            imageQuality={userSettings.imageQuality}
             match={currentMatch}
             matchIndex={results.length}
             performerData={slimPerformerData}

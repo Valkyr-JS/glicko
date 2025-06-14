@@ -70,6 +70,7 @@ const meta = {
   args: {
     changeImageHandler: fn(),
     gameError: undefined,
+    imageQuality: undefined,
     match,
     matchIndex: 0,
     performerData: slimData,

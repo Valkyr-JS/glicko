@@ -8,6 +8,7 @@ import ProgressMaxRows from "./options/ProgressMaxRows";
 import WipePerformerData, {
   WipePerformerDataModal,
 } from "./options/WipePerformerData";
+import ImageQuality from "./options/ImageQuality";
 
 interface SettingsPageProps extends PageProps {
   /** The user's game settings. */
@@ -86,12 +87,15 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
             <div className="col-12 mt-3">
               <ReadOnlyMode enabled={props.settings.readOnly} />
             </div>
-            <div className="col-12 col-md-6 col-lg-4 mt-3">
+            <div className="col-12 col-lg-6 mt-3">
               <ProgressMaxRows userMaxRows={props.settings.progressMaxRows} />
+            </div>
+            <div className="col-12 col-lg-6 mt-3">
+              <ImageQuality imageQuality={props.settings.imageQuality} />
             </div>
           </div>
           <div className="row mt-3">
-            <div className="col-12 col-md-6 col-xl-4">
+            <div className="col-12 col-lg-6">
               <WipePerformerData
                 onClickHandler={() => setShowWipeDataModal(true)}
               />
@@ -162,10 +166,17 @@ const convertFormDataToUserSettings = (data: FormData): UserSettings => {
   // Progress max rows
   const progressMaxRows = +formJson["progress-max-rows"];
 
+  // Image quality
+  const imageQuality =
+    formJson["image-quality"] === "original" ? "original" : "thumbnail";
+
   const updatedSettings: UserSettings = {
+    imageQuality,
     progressMaxRows,
     readOnly,
   };
+
+  console.log(updatedSettings);
 
   return updatedSettings;
 };
@@ -174,6 +185,7 @@ const convertFormDataToUserSettings = (data: FormData): UserSettings => {
 const compareSettings = (setA: UserSettings, setB: UserSettings): boolean => {
   if (setA.readOnly !== setB.readOnly) return false;
   if (setA.progressMaxRows !== setB.progressMaxRows) return false;
+  if (setA.imageQuality !== setB.imageQuality) return false;
 
   return true;
 };
