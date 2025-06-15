@@ -4,7 +4,10 @@ import RankingList from "./RankingList";
 const meta = {
   title: "Components/RankingList",
   component: RankingList,
-  args: {},
+  args: {
+    performers: [],
+    sessionHistory: ["2025-06-15T16:14:53.809Z"],
+  },
   parameters: {
     layout: "padded",
   },
