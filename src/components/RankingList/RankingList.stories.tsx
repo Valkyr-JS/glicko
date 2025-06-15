@@ -6,7 +6,7 @@ const meta = {
   component: RankingList,
   args: {
     performers: [],
-    sessionHistory: ["2025-06-15T16:14:53.809Z"],
+    sessionHistory: [new Date("2025-06-15T16:14:53.809Z")],
   },
   parameters: {
     layout: "padded",
