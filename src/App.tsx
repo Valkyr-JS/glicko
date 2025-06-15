@@ -535,7 +535,7 @@ function App() {
         const sessionHistory: PerformerMatchRecord[] = performerResults.map(
           (r) => ({
             id: +r[0] === +p.id ? r[1] : r[0],
-            r: r[2] === 0 ? 1 : r[2] === 1 ? 0 : r[2],
+            r: r[0] === p.id ? r[2] : r[2] === 1 ? 0 : 1,
             s: sessionDatetime,
           })
         );
