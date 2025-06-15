@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { default as cx } from "classnames";
 import type { StashPerformer } from "@/apollo/schema";
 import styles from "./RankingList.module.scss";
@@ -14,24 +14,70 @@ interface RankingListProps {
 const RankingList: React.FC<RankingListProps> = (props) => {
   /* ------------------------------------------- Sorting ------------------------------------------ */
 
-  const [sorted, setSorted] = useState<StashPerformer[]>(props.performers);
+  const perPage = 25;
+  const [currentData, setCurrentData] = useState<StashPerformer[]>(
+    sortByRating(props.performers).filter((_p, i) => i < perPage)
+  );
   const [collapsed, setCollapsed] = useState(true);
+  const [page, setPage] = useState(1);
 
-  useEffect(() => {
-    const sortByRating = () => {
-      const newSort = sorted.sort(
-        (a, b) =>
-          (b.custom_fields?.glicko_rating ?? GLICKO.RATING_DEFAULT) -
-          (a.custom_fields?.glicko_rating ?? GLICKO.RATING_DEFAULT)
-      );
-      return newSort;
-    };
-    setSorted(sortByRating());
-  }, [props.performers, sorted]);
+  // Used for rank placement
+  const allByRank = sortByRating(props.performers);
+
+  /* ------------------------------------------- Toolbar ------------------------------------------ */
 
   /** Handle clicking the Expand/Collapse button */
   const handleCollapseTable: React.MouseEventHandler = () =>
     setCollapsed(!collapsed);
+
+  const lastPage = Math.ceil(props.performers.length / perPage);
+
+  /** Handle clicking a page button. */
+  const handlePaginationClick = (newPage: number) => {
+    setPage(newPage);
+
+    // First sort the performers
+    const sorted = sortByRating(props.performers);
+
+    // Then get the current slice of data
+    const pageData = sorted.filter(
+      (_p, i) => i < newPage * perPage && i >= (newPage - 1) * perPage
+    );
+    setCurrentData(pageData);
+  };
+
+  const pageButtons = () => {
+    const btnArr = [];
+    for (let i = 0; i < lastPage; i++) {
+      btnArr.push(
+        <button
+          key={i}
+          type="button"
+          className="btn btn-secondary"
+          disabled={i === page - 1}
+          onClick={() => handlePaginationClick(i + 1)}
+        >
+          {i + 1}
+        </button>
+      );
+    }
+    return btnArr;
+  };
+
+  const toolbar = (
+    <div>
+      <button
+        type="submit"
+        className="btn btn-secondary"
+        onClick={handleCollapseTable}
+      >
+        {collapsed ? "Expand" : "Collapse"}
+      </button>
+      <div>{pageButtons()}</div>
+    </div>
+  );
+
+  /* ------------------------------------------ Component ----------------------------------------- */
 
   const tableWrapperClasses = cx({
     "table-responsive": !collapsed,
@@ -40,15 +86,7 @@ const RankingList: React.FC<RankingListProps> = (props) => {
 
   return (
     <section className={styles.RankingList}>
-      <div>
-        <button
-          type="submit"
-          className="btn btn-secondary"
-          onClick={handleCollapseTable}
-        >
-          {collapsed ? "Expand" : "Collapse"}
-        </button>
-      </div>
+      {toolbar}
       <div className={tableWrapperClasses}>
         <table className="table table-striped">
           <thead>
@@ -66,14 +104,14 @@ const RankingList: React.FC<RankingListProps> = (props) => {
             </tr>
           </thead>
           <tbody>
-            {sorted.map((p, i) => {
+            {currentData.map((p, i) => {
               const matchHistory: PerformerMatchRecord[] = JSON.parse(
                 p.custom_fields?.glicko_match_history ?? "[]"
               );
               return (
                 <tr key={i}>
                   <th scope="row">
-                    <span>{i + 1}</span>
+                    <span>{allByRank.findIndex((r) => r.id === p.id) + 1}</span>
                   </th>
                   <td>{p.name}</td>
                   <td>
@@ -133,9 +171,19 @@ const RankingList: React.FC<RankingListProps> = (props) => {
             })}
           </tbody>
         </table>
+        {toolbar}
       </div>
     </section>
   );
 };
 
 export default RankingList;
+
+const sortByRating = (performers: StashPerformer[]) => {
+  const newSort = performers.sort(
+    (a, b) =>
+      (b.custom_fields?.glicko_rating ?? GLICKO.RATING_DEFAULT) -
+      (a.custom_fields?.glicko_rating ?? GLICKO.RATING_DEFAULT)
+  );
+  return newSort;
+};
