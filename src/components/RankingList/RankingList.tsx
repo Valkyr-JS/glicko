@@ -49,17 +49,47 @@ const RankingList: React.FC<RankingListProps> = (props) => {
   const pageButtons = () => {
     const btnArr = [];
     for (let i = 0; i < lastPage; i++) {
-      btnArr.push(
-        <button
-          key={i}
-          type="button"
-          className="btn btn-secondary"
-          disabled={i === page - 1}
-          onClick={() => handlePaginationClick(i + 1)}
-        >
-          {i + 1}
-        </button>
-      );
+      /**
+       * If there are 8 or more pages, not all buttons will be rendered. Only
+       * render buttons for :
+       * The first page
+       * The last page
+       * The current page
+       * The pages either side of the current page
+       */
+      const isFewButtons = lastPage < 8;
+      const isFirstPage = i === 0;
+      const isLastPage = i === lastPage - 1;
+      const isCurrentPage = i === page - 1;
+      const isPreviousPage = i === page - 2;
+      const isNextPage = i === page;
+      const willRender =
+        isFewButtons ||
+        isFirstPage ||
+        isLastPage ||
+        isCurrentPage ||
+        isPreviousPage ||
+        isNextPage;
+
+      if (willRender)
+        btnArr.push(
+          <button
+            key={i}
+            type="button"
+            className="btn btn-secondary"
+            disabled={i === page - 1}
+            onClick={() => handlePaginationClick(i + 1)}
+          >
+            {i + 1}
+          </button>
+        );
+      // Show an ellipsis between jumps
+      else {
+        const isNextNextPage = i === page + 1;
+        const isPreviousPreviousPage = i === page - 3;
+        if (isNextNextPage || isPreviousPreviousPage)
+          btnArr.push(<span style={{ verticalAlign: "bottom" }}>...</span>);
+      }
     }
     return btnArr;
   };

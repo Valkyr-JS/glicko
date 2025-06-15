@@ -118,5 +118,12 @@ $recent-date-index: 10;
 
 .pagination {
   display: flex;
+  justify-content: center;
+  align-items: baseline;
   gap: spacing.$small;
+  width: 100%;
+
+  @media (min-width: 400px) {
+    width: auto;
+  }
 }
