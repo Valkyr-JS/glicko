@@ -325,6 +325,8 @@ function App() {
 
     // Update the state
     setPerformerFilters(updatedFilters);
+
+    await queryStashConfiguration.refetch();
   };
 
   /** Handler for updating the user settings. */
@@ -345,6 +347,8 @@ function App() {
 
     // Update the state
     setUserSettings(updatedSettings);
+
+    await queryStashConfiguration.refetch();
   };
 
   /** Handler for scoring the match as a draw. */
@@ -541,6 +545,8 @@ function App() {
       },
     });
 
+    await queryStashConfiguration.refetch();
+
     // Update Stash performer data with results unless the user is in read-only
     // mode or the Stash version doesn't support custom fields
     if (!userSettings.readOnly && !(stashVersion && stashVersion[1] < 28)) {
@@ -582,8 +588,6 @@ function App() {
           },
         });
       });
-
-      await queryStashConfiguration.refetch();
     }
 
     // Clear the state of session progress
@@ -617,6 +621,18 @@ function App() {
 
   /** Handle wiping all Glicko data from all Stash performers */
   const handleWipePerformerData = async () => {
+    // Update the plugin config with the new session history
+    await mutateStashPluginConfig({
+      variables: {
+        input: {
+          ...queryStashConfiguration.data?.configuration.plugins.glicko,
+          sessionHistory: JSON.stringify([]),
+        },
+      },
+    });
+
+    await queryStashConfiguration.refetch();
+
     // Fetch data for all performers to get all performers from Stash
     // Get ALL performers from Stash
     let page = 1;
