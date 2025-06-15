@@ -32,9 +32,11 @@ export const StashImageSchema = z.object({
 export type StashImage = z.infer<typeof StashImageSchema>;
 
 export const StashPerformerSchema = z.object({
-  custom_fields: z.object({
-    ...StashGlickoCustomFieldsSchema.shape,
-  }),
+  custom_fields: z
+    .object({
+      ...StashGlickoCustomFieldsSchema.shape,
+    })
+    .optional(),
   id: z.coerce.number(),
   image_path: z.string(),
   name: z.string(),
@@ -44,11 +46,9 @@ export type StashPerformer = z.infer<typeof StashPerformerSchema>;
 
 export const StashPerformerUpdateInputSchema = z.object({
   id: z.coerce.number(),
-  custom_fields: z
-    .object({
-      ...StashGlickoCustomFieldsSchema.shape,
-    })
-    .optional(),
+  custom_fields: z.object({
+    ...StashGlickoCustomFieldsSchema.shape,
+  }),
 });
 
 export type StashPerformerUpdateInput = z.infer<

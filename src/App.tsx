@@ -8,9 +8,12 @@ import {
 } from "@apollo/client";
 import {
   GET_ALL_PERFORMERS_BY_PAGE,
+  GET_ALL_PERFORMERS_BY_PAGE_NO_CUSTOM,
   GET_MATCH_PERFORMERS,
+  GET_MATCH_PERFORMERS_NO_CUSTOM,
   GET_PERFORMER_IMAGE,
   GET_SPECIFIC_MATCH_PERFORMERS,
+  GET_SPECIFIC_MATCH_PERFORMERS_NO_CUSTOM,
   GET_STASH_CONFIGURATION,
   GET_STASH_VERSION,
 } from "./apollo/queries";
@@ -35,6 +38,7 @@ import {
 import { Glicko2, Player } from "glicko2";
 import { SET_PERFORMER_DATA, SET_PLUGIN_CONFIG } from "./apollo/mutations";
 import SettingsPage from "./pages/Settings/Settings";
+import { getStashVersionBreakdown } from "./helpers/stash";
 
 function App() {
   /* -------------------------------------- State management -------------------------------------- */
@@ -51,9 +55,14 @@ function App() {
   const [slimPerformerData, setSlimPerformerData] = useState<
     StashSlimPerformerData[]
   >([]);
+  const [stashVersion, setStashVersion] = useState<StashAppVersion | null>(
+    null
+  );
   const [userSettings, setUserSettings] = useState<UserSettings>(
     DEFAULT_USER_SEETTINGS
   );
+
+  console.log(stashVersion);
 
   /* ---------------------------------------- Stash queries --------------------------------------- */
 
@@ -73,17 +82,36 @@ function App() {
   // in settings. The new data wouldn't be cached, so would be lost. It's an
   // unlikely occurance, but better to be safe.
   const [queryAllStashPerformers] = useLazyQuery<StashFindPerformersResult>(
-    GET_ALL_PERFORMERS_BY_PAGE,
+    stashVersion && stashVersion?.[1] < 28
+      ? GET_ALL_PERFORMERS_BY_PAGE_NO_CUSTOM
+      : GET_ALL_PERFORMERS_BY_PAGE,
+
     {
       fetchPolicy: "no-cache",
     }
   );
   const [queryStashPerformerMatch, stashPerformerMatchResponse] =
-    useLazyQuery<StashFindPerformersResult>(GET_MATCH_PERFORMERS);
+    useLazyQuery<StashFindPerformersResult>(
+      stashVersion && stashVersion?.[1] < 28
+        ? GET_MATCH_PERFORMERS_NO_CUSTOM
+        : GET_MATCH_PERFORMERS
+    );
   const [querySpecificStashPerformerMatch] =
-    useLazyQuery<StashFindPerformersResult>(GET_SPECIFIC_MATCH_PERFORMERS);
+    useLazyQuery<StashFindPerformersResult>(
+      stashVersion && stashVersion?.[1] < 28
+        ? GET_SPECIFIC_MATCH_PERFORMERS_NO_CUSTOM
+        : GET_SPECIFIC_MATCH_PERFORMERS
+    );
   const [queryStashPerformerImage] =
     useLazyQuery<StashFindImagesResult>(GET_PERFORMER_IMAGE);
+
+  useEffect(() => {
+    if (queryStashVersionResult.data?.version?.version) {
+      setStashVersion(
+        getStashVersionBreakdown(queryStashVersionResult.data?.version?.version)
+      );
+    } else setStashVersion(null);
+  }, [queryStashVersionResult]);
 
   // Update the performer filters and user settings with the data from the Stash
   // plugin config, if there is any.
@@ -191,6 +219,7 @@ function App() {
       : await queryStashPerformerMatch({
           variables: { ...performerFilters, exclude: excludedName },
         });
+    console.log("matchResponse", matchResponse);
 
     if (matchResponse.error) {
       setGameError({ ...matchResponse.error, details: matchResponse.error });
@@ -226,7 +255,8 @@ function App() {
           coverImg: p.image_path,
           id: p.id,
           imagesAvailable,
-          initialRating: p.custom_fields.glicko_rating ?? GLICKO.RATING_DEFAULT,
+          initialRating:
+            p.custom_fields?.glicko_rating ?? GLICKO.RATING_DEFAULT,
           name: p.name,
         };
       });
@@ -466,11 +496,11 @@ function App() {
 
     // Create Glicko players from ALL performers in Stash
     const allGlickoPerformers = allStashPerformers.map((p) => {
-      const rating = p.custom_fields.glicko_rating ?? GLICKO.RATING_DEFAULT;
+      const rating = p.custom_fields?.glicko_rating ?? GLICKO.RATING_DEFAULT;
       const deviation =
-        p.custom_fields.glicko_deviation ?? GLICKO.DEVIATION_DEFAULT;
+        p.custom_fields?.glicko_deviation ?? GLICKO.DEVIATION_DEFAULT;
       const volatility =
-        p.custom_fields.glicko_volatility ?? GLICKO.VOLATILITY_DEFAULT;
+        p.custom_fields?.glicko_volatility ?? GLICKO.VOLATILITY_DEFAULT;
 
       return {
         ...p,
@@ -495,8 +525,8 @@ function App() {
     session.updateRatings(matches);
 
     // Update Stash performer data with results unless the user is in read-only
-    // mode
-    if (!userSettings.readOnly) {
+    // mode or the Stash version doesn't support custom fields
+    if (!userSettings.readOnly && !(stashVersion && stashVersion[1] < 28)) {
       allGlickoPerformers.forEach((p) => {
         mutateStashPerformer({
           variables: {
@@ -616,11 +646,11 @@ function App() {
     // Loop through each performer
     allStashPerformers.forEach((p) => {
       // If the performer doesn't have any custom fields in the first place, skip
-      if (!Object.keys(p.custom_fields).length) return;
+      if (!Object.keys(p.custom_fields ?? {}).length) return;
 
       // Get the performer's custom fields, filtering out any Glicko-related
       // fields.
-      const validKeys = Object.keys(p.custom_fields).filter(
+      const validKeys = Object.keys(p.custom_fields ?? {}).filter(
         (k) => !disallowedKeys.includes(k)
       );
       const custom_fields = validKeys.reduce(
