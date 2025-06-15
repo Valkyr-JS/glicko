@@ -27,6 +27,7 @@ const meta = {
     layout: "padded",
   },
   args: {
+    boardWidth: undefined,
     changeImageHandler: fn(),
     clickSelectHandler: fn(),
     clickSkipHandler: fn(),
