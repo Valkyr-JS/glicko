@@ -1,3 +1,5 @@
+@use "@/scss/spacing";
+
 /** See for alignment principles - https://www.csescienceeditor.org/article/best-practices-in-table-design/ */
 
 $rank-index: 1;
@@ -102,4 +104,19 @@ $recent-date-index: 10;
       }
     }
   }
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: spacing.$small;
+}
+
+.collapse {
+  margin-right: auto;
+}
+
+.pagination {
+  display: flex;
+  gap: spacing.$small;
 }

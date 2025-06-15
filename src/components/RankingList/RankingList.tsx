@@ -64,16 +64,18 @@ const RankingList: React.FC<RankingListProps> = (props) => {
     return btnArr;
   };
 
+  const collapseClasses = cx("btn", "btn-secondary", styles.collapse);
+
   const toolbar = (
-    <div>
+    <div className={styles.toolbar}>
       <button
         type="submit"
-        className="btn btn-secondary"
+        className={collapseClasses}
         onClick={handleCollapseTable}
       >
         {collapsed ? "Expand" : "Collapse"}
       </button>
-      <div>{pageButtons()}</div>
+      <div className={styles.pagination}>{pageButtons()}</div>
     </div>
   );
 
