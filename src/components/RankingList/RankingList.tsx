@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import type { StashPerformer } from "@/apollo/schema";
 import styles from "./RankingList.module.scss";
+import { GLICKO } from "@/constants";
 
 interface RankingListProps {
   /** The performer data including their glicko data. */
@@ -10,10 +11,26 @@ interface RankingListProps {
 }
 
 const RankingList: React.FC<RankingListProps> = (props) => {
-  console.log("RankingList", props);
+  /* ------------------------------------------- Sorting ------------------------------------------ */
+
+  const [sorted, setSorted] = useState<StashPerformer[]>(props.performers);
+
+  useEffect(() => {
+    const sortByRating = () => {
+      const newSort = sorted.sort(
+        (a, b) =>
+          (b.custom_fields?.glicko_rating ?? GLICKO.RATING_DEFAULT) -
+          (a.custom_fields?.glicko_rating ?? GLICKO.RATING_DEFAULT)
+      );
+      return newSort;
+    };
+    console.log(sortByRating());
+    setSorted(sortByRating());
+  }, [props.performers, sorted]);
+
   return (
     <section className={styles.RankingList}>
-      <table className="table">
+      <table className="table table-striped">
         <thead>
           <tr>
             <th scope="column">Rank</th>
@@ -29,68 +46,32 @@ const RankingList: React.FC<RankingListProps> = (props) => {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <th scope="row">
-              <span>1</span>
-              <span>+1</span>
-            </th>
-            <td>Performer A</td>
-            <td>
-              <span>2000</span>
-              <span>+500</span>
-            </td>
-            <td>
-              <span>2</span>
-              <span>+1</span>
-            </td>
-            <td>0</td>
-            <td>0</td>
-            <td>
-              <span>2</span>
-              <span>+1</span>
-            </td>
-            <td>Player B</td>
-            <td>01/1/2025</td>
-            <td>Won</td>
-          </tr>
-          <tr>
-            <th scope="row">
-              <span>2</span>
-              <span>-1</span>
-            </th>
-            <td>Performer B</td>
-            <td>
-              <span>1500</span>
-              <span>-500</span>
-            </td>
-            <td>1</td>
-            <td>
-              <span>1</span>
-              <span>+1</span>
-            </td>
-            <td>0</td>
-            <td>
-              <span>2</span>
-              <span>+1</span>
-            </td>
-            <td>Player A</td>
-            <td>01/1/2025</td>
-            <td>Lost</td>
-          </tr>
-          <tr>
-            <th scope="row">3</th>
-            <td>Performer C</td>
-            <td>
-              <span>1500</span>
-            </td>
-            <td>0</td>
-            <td>2</td>
-            <td>0</td>
-            <td>2</td>
-            <td>Player A</td>
-            <td>31/12/2024</td>
-            <td>Lost</td>
-          </tr>
+          {sorted.map((p, i) => (
+            <tr>
+              <th scope="row">
+                <span>{i + 1}</span>
+              </th>
+              <td>{p.name}</td>
+              <td>
+                <span>
+                  {Math.round(
+                    p.custom_fields?.glicko_rating ?? GLICKO.RATING_DEFAULT
+                  )}
+                </span>
+              </td>
+              <td>
+                <span>???</span>
+              </td>
+              <td>???</td>
+              <td>???</td>
+              <td>
+                <span>???</span>
+              </td>
+              <td>???</td>
+              <td>???</td>
+              <td>???</td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </section>
