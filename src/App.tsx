@@ -525,8 +525,8 @@ function App() {
     session.updateRatings(matches);
 
     // Update Stash performer data with results unless the user is in read-only
-    // mode
-    if (!userSettings.readOnly) {
+    // mode or the Stash version doesn't support custom fields
+    if (!userSettings.readOnly && !(stashVersion && stashVersion[1] < 28)) {
       allGlickoPerformers.forEach((p) => {
         mutateStashPerformer({
           variables: {
