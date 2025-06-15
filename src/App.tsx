@@ -521,10 +521,33 @@ function App() {
     // Update the session
     session.updateRatings(matches);
 
+    const sessionDatetime = new Date().toISOString();
+
     // Update Stash performer data with results unless the user is in read-only
     // mode or the Stash version doesn't support custom fields
     if (!userSettings.readOnly && !(stashVersion && stashVersion[1] < 28)) {
       allGlickoPerformers.forEach((p) => {
+        // Create match history for the performer
+        const performerResults = results.filter(
+          (r) => r[0] === p.id || r[1] === p.id
+        );
+
+        const sessionHistory: PerformerMatchRecord[] = performerResults.map(
+          (r) => ({
+            id: +r[0] === +p.id ? r[1] : r[0],
+            r: r[2] === 0 ? 1 : r[2] === 1 ? 0 : r[2],
+            s: sessionDatetime,
+          })
+        );
+
+        const previousHistory = p.custom_fields?.glicko_match_history
+          ? (JSON.parse(
+              p.custom_fields.glicko_match_history
+            ) as PerformerMatchRecord[])
+          : [];
+
+        const fullHistory = [...previousHistory, ...sessionHistory];
+
         mutateStashPerformer({
           variables: {
             input: {
@@ -532,6 +555,7 @@ function App() {
               custom_fields: {
                 partial: {
                   glicko_deviation: p.glicko.getRd(),
+                  glicko_match_history: JSON.stringify(fullHistory),
                   glicko_rating: p.glicko.getRating(),
                   glicko_volatility: p.glicko.getVol(),
                 },

@@ -33,45 +33,83 @@ const RankingList: React.FC<RankingListProps> = (props) => {
       <table className="table table-striped">
         <thead>
           <tr>
-            <th scope="column">Rank</th>
-            <th scope="column">Performer</th>
-            <th scope="column">Rating</th>
-            <th scope="column">Total wins</th>
-            <th scope="column">Total loses</th>
-            <th scope="column">Total ties</th>
-            <th scope="column">Total matches</th>
-            <th scope="column">Most recent matchup</th>
-            <th scope="column">Most recent matchup data</th>
-            <th scope="column">Most recent matchup outcome</th>
+            <th scope="col">Rank</th>
+            <th scope="col">Performer</th>
+            <th scope="col">Rating</th>
+            <th scope="col">Total wins</th>
+            <th scope="col">Total loses</th>
+            <th scope="col">Total ties</th>
+            <th scope="col">Total matches</th>
+            <th scope="col">Most recent matchup</th>
+            <th scope="col">Most recent matchup date</th>
+            <th scope="col">Most recent matchup outcome</th>
           </tr>
         </thead>
         <tbody>
-          {sorted.map((p, i) => (
-            <tr>
-              <th scope="row">
-                <span>{i + 1}</span>
-              </th>
-              <td>{p.name}</td>
-              <td>
-                <span>
-                  {Math.round(
-                    p.custom_fields?.glicko_rating ?? GLICKO.RATING_DEFAULT
-                  )}
-                </span>
-              </td>
-              <td>
-                <span>???</span>
-              </td>
-              <td>???</td>
-              <td>???</td>
-              <td>
-                <span>???</span>
-              </td>
-              <td>???</td>
-              <td>???</td>
-              <td>???</td>
-            </tr>
-          ))}
+          {sorted.map((p, i) => {
+            const matchHistory: PerformerMatchRecord[] = JSON.parse(
+              p.custom_fields?.glicko_match_history ?? "[]"
+            );
+            return (
+              <tr key={i}>
+                <th scope="row">
+                  <span>{i + 1}</span>
+                </th>
+                <td>{p.name}</td>
+                <td>
+                  <span>
+                    {Math.round(
+                      p.custom_fields?.glicko_rating ?? GLICKO.RATING_DEFAULT
+                    )}
+                  </span>
+                </td>
+                <td>
+                  <span>
+                    {matchHistory.length
+                      ? matchHistory.filter((m) => m.r === 1).length
+                      : "-"}
+                  </span>
+                </td>
+                <td>
+                  <span>
+                    {matchHistory.length
+                      ? matchHistory.filter((m) => m.r === 0).length
+                      : "-"}
+                  </span>
+                </td>
+                <td>
+                  <span>
+                    {matchHistory.length
+                      ? matchHistory.filter((m) => m.r === 0.5).length
+                      : "-"}
+                  </span>
+                </td>
+                <td>
+                  <span>{matchHistory.length}</span>
+                </td>
+                <td>
+                  {matchHistory.length
+                    ? props.performers.find((p) => p.id === +matchHistory[0].id)
+                        ?.name
+                    : "-"}
+                </td>
+                <td>
+                  {matchHistory.length
+                    ? new Date(matchHistory[0].s).toDateString()
+                    : "-"}
+                </td>
+                <td>
+                  {matchHistory.length
+                    ? matchHistory[0].r === 1
+                      ? "Won"
+                      : matchHistory[0].r === 0
+                      ? "Loss"
+                      : "Tie"
+                    : "-"}
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </section>
