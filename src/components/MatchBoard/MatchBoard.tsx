@@ -12,9 +12,11 @@ import { faTrophy } from "@fortawesome/pro-solid-svg-icons/faTrophy";
 import { default as cx } from "classnames";
 import type { StashFindImagesResult, StashPerformer } from "@/apollo/schema";
 import styles from "./MatchBoard.module.scss";
-import { DEFAULT_IMAGE_QUALITY } from "@/constants";
+import { DEFAULT_BOARD_WIDTH, DEFAULT_IMAGE_QUALITY } from "@/constants";
 
 interface MatchBoardProps {
+  /** The custom max-width of the match board. */
+  boardWidth: UserSettings["boardWidth"];
   /** Handler for clicking the change player image button. */
   changeImageHandler: (
     performerID: StashPerformer["id"]
@@ -48,10 +50,15 @@ const MatchBoard: React.FC<MatchBoardProps> = (props) => {
     setLoading(false);
   }, [props.match]);
 
+  const boardWidth = props.boardWidth ?? DEFAULT_BOARD_WIDTH;
+
   return (
     <section className={styles["one-vs-one-board"]}>
       <h2>Round {props.matchIndex + 1}</h2>
-      <div className={styles["profiles"]}>
+      <div
+        className={styles["profiles"]}
+        style={{ maxWidth: boardWidth + "px" }}
+      >
         <PlayerProfile
           {...props.match[0]}
           changeImageHandler={props.changeImageHandler}

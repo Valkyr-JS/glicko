@@ -124,6 +124,7 @@ const GamePage: React.FC<GamePageProps> = (props) => {
     <>
       <main className={classes}>
         <MatchBoard
+          boardWidth={props.userSettings.boardWidth}
           changeImageHandler={changeImageHandler}
           clickSelectHandler={props.setWinnerHandler}
           clickSkipHandler={props.setDrawHandler}

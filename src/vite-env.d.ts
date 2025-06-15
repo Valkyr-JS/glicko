@@ -160,6 +160,8 @@ interface StashSlimPerformerData {
 interface UserSettings {
   /** Dictates whether selecting performers using the arrow keys is enabled. */
   arrowKeys?: boolean;
+  /** The custom max-width of the match board. */
+  boardWidth?: number;
   /** The quality of the image taken from Stash. */
   imageQuality?: "original" | "thumbnail";
   /** The maximum number of rows to display in the progress board shown
