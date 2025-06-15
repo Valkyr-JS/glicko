@@ -2,14 +2,15 @@ import React, { useRef, useState } from "react";
 import { faHand } from "@fortawesome/pro-solid-svg-icons/faHand";
 import { default as cx } from "classnames";
 import Modal from "@/components/Modal/Modal";
-import styles from "./Settings.module.scss";
-import ReadOnlyMode from "./options/ReadOnlyMode";
+import ArrowKeys from "./options/ArrowKeys";
+import BoardWidth from "./options/BoardWidth";
+import ImageQuality from "./options/ImageQuality";
 import ProgressMaxRows from "./options/ProgressMaxRows";
+import ReadOnlyMode from "./options/ReadOnlyMode";
 import WipePerformerData, {
   WipePerformerDataModal,
 } from "./options/WipePerformerData";
-import ImageQuality from "./options/ImageQuality";
-import ArrowKeys from "./options/ArrowKeys";
+import styles from "./Settings.module.scss";
 
 interface SettingsPageProps extends PageProps {
   /** The user's game settings. */
@@ -97,6 +98,9 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
             <div className="col-12 col-lg-6 mt-3">
               <ProgressMaxRows userMaxRows={props.settings.progressMaxRows} />
             </div>
+            <div className="col-12 col-lg-6 mt-3">
+              <BoardWidth width={props.settings.boardWidth} />
+            </div>
           </div>
           <div className="row mt-3">
             <div className="col-12 col-lg-6">
@@ -171,14 +175,18 @@ const convertFormDataToUserSettings = (data: FormData): UserSettings => {
   const imageQuality =
     formJson["image-quality"] === "original" ? "original" : "thumbnail";
 
-  // Progress max rows
-  const progressMaxRows = +formJson["progress-max-rows"];
-
   // Arrow-keys mode
   const arrowKeys = !!formKeys.find((k) => k === "arrow-keys");
 
+  // Progress max rows
+  const progressMaxRows = +formJson["progress-max-rows"];
+
+  // Board width
+  const boardWidth = +formJson["board-width"];
+
   const updatedSettings: UserSettings = {
     arrowKeys,
+    boardWidth,
     imageQuality,
     progressMaxRows,
     readOnly,
@@ -193,6 +201,7 @@ const compareSettings = (setA: UserSettings, setB: UserSettings): boolean => {
   if (setA.imageQuality !== setB.imageQuality) return false;
   if (setA.arrowKeys !== setB.arrowKeys) return false;
   if (setA.progressMaxRows !== setB.progressMaxRows) return false;
+  if (setA.boardWidth !== setB.boardWidth) return false;
 
   return true;
 };
