@@ -22,4 +22,45 @@ $recent-outcome-index: 10;
       text-align: center;
     }
   }
+
+  // Hide all but the three most important columns at the lowest breakpoint
+  th,
+  td {
+    &:nth-child(#{$wins-index}),
+    &:nth-child(#{$losses-index}),
+    &:nth-child(#{$ties-index}),
+    &:nth-child(#{$matches-index}),
+    &:nth-child(#{$recent-match-index}),
+    &:nth-child(#{$recent-date-index}),
+    &:nth-child(#{$recent-outcome-index}) {
+      display: none;
+    }
+
+    @media (min-width: 576px) {
+      &:nth-child(#{$wins-index}),
+      &:nth-child(#{$losses-index}),
+      &:nth-child(#{$ties-index}) {
+        display: table-cell;
+      }
+    }
+
+    @media (min-width: 768px) {
+      &:nth-child(#{$matches-index}) {
+        display: table-cell;
+      }
+    }
+
+    @media (min-width: 992px) {
+      &:nth-child(#{$recent-match-index}),
+      &:nth-child(#{$recent-outcome-index}) {
+        display: table-cell;
+      }
+    }
+
+    @media (min-width: 992px) {
+      &:nth-child(#{$recent-date-index}) {
+        display: table-cell;
+      }
+    }
+  }
 }
