@@ -427,8 +427,6 @@ function App() {
 
   /** Handle submitting results of a session */
   const handleSubmitResults = async () => {
-    await queryStashConfiguration.refetch();
-
     // Update the processing state
     setProcessing(true);
 
@@ -584,6 +582,8 @@ function App() {
           },
         });
       });
+
+      await queryStashConfiguration.refetch();
     }
 
     // Clear the state of session progress
