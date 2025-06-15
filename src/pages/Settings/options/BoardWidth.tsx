@@ -20,7 +20,7 @@ const BoardWidth: React.FC<BoardWidthProps> = (props) => {
       <small>
         <p className="mt-2">
           If you find yourself needing to scroll up and down to see the whole
-          game board, you can try reducing the size of the baord for a better
+          game board, you can try reducing the size of the board for a better
           experience.
         </p>
         <p>
