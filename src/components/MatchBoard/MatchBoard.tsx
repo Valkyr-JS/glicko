@@ -39,9 +39,15 @@ interface MatchBoardProps {
   matchIndex: number;
   /** The players in the current match. */
   match: Match;
+  /** The user's game settings. */
+  userSettings: UserSettings;
 }
 
-const MatchBoard: React.FC<MatchBoardProps> = (props) => {
+const MatchBoard: React.FC<MatchBoardProps> = ({
+  userSettings,
+  clickSelectHandler,
+  ...props
+}) => {
   /** Whether a match is currently being loaded. */
   const [loading, setLoading] = useState(false);
 
@@ -52,6 +58,31 @@ const MatchBoard: React.FC<MatchBoardProps> = (props) => {
 
   const boardWidth = props.boardWidth ?? DEFAULT_BOARD_WIDTH;
 
+  /* --------------------------------------- Keyboard events -------------------------------------- */
+
+  useEffect(() => {
+    const keyUpEvent = (e: KeyboardEvent) => {
+      if (userSettings.arrowKeys && !loading) {
+        switch (e.key) {
+          // On left arrow key, vote for the left performer.
+          case "ArrowLeft":
+            clickSelectHandler(0);
+            setLoading(true);
+            break;
+          // On right arrow key, vote for the right performer.
+          case "ArrowRight":
+            clickSelectHandler(1);
+            setLoading(true);
+            break;
+        }
+      }
+    };
+
+    document.addEventListener("keyup", keyUpEvent);
+    return () => document.removeEventListener("keyup", keyUpEvent);
+  }, [loading, clickSelectHandler, userSettings]);
+
+  /* ------------------------------------------ Component ----------------------------------------- */
   return (
     <section className={styles["one-vs-one-board"]}>
       <h2>Round {props.matchIndex + 1}</h2>
@@ -62,7 +93,7 @@ const MatchBoard: React.FC<MatchBoardProps> = (props) => {
         <PlayerProfile
           {...props.match[0]}
           changeImageHandler={props.changeImageHandler}
-          clickSelectHandler={props.clickSelectHandler}
+          clickSelectHandler={clickSelectHandler}
           imageQuality={props.imageQuality}
           loading={loading}
           position={0}
@@ -71,7 +102,7 @@ const MatchBoard: React.FC<MatchBoardProps> = (props) => {
         <PlayerProfile
           {...props.match[1]}
           changeImageHandler={props.changeImageHandler}
-          clickSelectHandler={props.clickSelectHandler}
+          clickSelectHandler={clickSelectHandler}
           imageQuality={props.imageQuality}
           loading={loading}
           position={1}

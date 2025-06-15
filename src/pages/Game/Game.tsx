@@ -98,26 +98,6 @@ const GamePage: React.FC<GamePageProps> = (props) => {
   /** Handler for closing the game error modal. */
   const handleErrorClose = () => setShowErrorModal(false);
 
-  /* --------------------------------------- Keyboard events -------------------------------------- */
-
-  useEffect(() => {
-    if (props.userSettings.arrowKeys) {
-      const keyDownEvent = (e: KeyboardEvent) => {
-        switch (e.key) {
-          // On left arrow key, vote for the left performer.
-          case "ArrowLeft":
-            return props.setWinnerHandler(0);
-          // On right arrow key, vote for the right performer.
-          case "ArrowRight":
-            return props.setWinnerHandler(1);
-        }
-      };
-
-      window.addEventListener("keydown", keyDownEvent);
-      return () => window.removeEventListener("keydown", keyDownEvent);
-    }
-  }, [props]);
-
   /* ------------------------------------------ Component ----------------------------------------- */
 
   return (
@@ -134,6 +114,7 @@ const GamePage: React.FC<GamePageProps> = (props) => {
           imageQuality={props.imageQuality}
           matchIndex={props.matchIndex}
           match={props.match}
+          userSettings={props.userSettings}
         />
         <ProgressBoard
           columnTitles={["Choice A", "Choice B"]}
