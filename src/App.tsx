@@ -9,6 +9,7 @@ import {
 import {
   GET_ALL_PERFORMERS_BY_PAGE,
   GET_MATCH_PERFORMERS,
+  GET_MATCH_PERFORMERS_NO_CUSTOM,
   GET_PERFORMER_IMAGE,
   GET_SPECIFIC_MATCH_PERFORMERS,
   GET_STASH_CONFIGURATION,
@@ -85,7 +86,11 @@ function App() {
     }
   );
   const [queryStashPerformerMatch, stashPerformerMatchResponse] =
-    useLazyQuery<StashFindPerformersResult>(GET_MATCH_PERFORMERS);
+    useLazyQuery<StashFindPerformersResult>(
+      stashVersion && stashVersion?.[1] < 28
+        ? GET_MATCH_PERFORMERS_NO_CUSTOM
+        : GET_MATCH_PERFORMERS
+    );
   const [querySpecificStashPerformerMatch] =
     useLazyQuery<StashFindPerformersResult>(GET_SPECIFIC_MATCH_PERFORMERS);
   const [queryStashPerformerImage] =
@@ -205,6 +210,7 @@ function App() {
       : await queryStashPerformerMatch({
           variables: { ...performerFilters, exclude: excludedName },
         });
+    console.log("matchResponse", matchResponse);
 
     if (matchResponse.error) {
       setGameError({ ...matchResponse.error, details: matchResponse.error });
