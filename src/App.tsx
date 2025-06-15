@@ -62,8 +62,6 @@ function App() {
     DEFAULT_USER_SETTINGS
   );
 
-  console.log(stashVersion);
-
   /* ---------------------------------------- Stash queries --------------------------------------- */
 
   const queryStashVersionResult: QueryResult<
@@ -219,7 +217,6 @@ function App() {
       : await queryStashPerformerMatch({
           variables: { ...performerFilters, exclude: excludedName },
         });
-    console.log("matchResponse", matchResponse);
 
     if (matchResponse.error) {
       setGameError({ ...matchResponse.error, details: matchResponse.error });
