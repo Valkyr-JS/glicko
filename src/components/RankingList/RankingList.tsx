@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { default as cx } from "classnames";
 import type { StashPerformer } from "@/apollo/schema";
 import styles from "./RankingList.module.scss";
 import { GLICKO } from "@/constants";
@@ -14,6 +15,7 @@ const RankingList: React.FC<RankingListProps> = (props) => {
   /* ------------------------------------------- Sorting ------------------------------------------ */
 
   const [sorted, setSorted] = useState<StashPerformer[]>(props.performers);
+  const [collapsed, setCollapsed] = useState(true);
 
   useEffect(() => {
     const sortByRating = () => {
@@ -27,9 +29,27 @@ const RankingList: React.FC<RankingListProps> = (props) => {
     setSorted(sortByRating());
   }, [props.performers, sorted]);
 
+  /** Handle clicking the Expand/Collapse button */
+  const handleCollapseTable: React.MouseEventHandler = () =>
+    setCollapsed(!collapsed);
+
+  const tableWrapperClasses = cx({
+    "table-responsive": !collapsed,
+    [styles.expanded]: !collapsed,
+  });
+
   return (
     <section className={styles.RankingList}>
-      <div className="table-responsive">
+      <div>
+        <button
+          type="submit"
+          className="btn btn-secondary"
+          onClick={handleCollapseTable}
+        >
+          {collapsed ? "Expand" : "Collapse"}
+        </button>
+      </div>
+      <div className={tableWrapperClasses}>
         <table className="table table-striped">
           <thead>
             <tr>
@@ -41,8 +61,8 @@ const RankingList: React.FC<RankingListProps> = (props) => {
               <th scope="col">Ties</th>
               <th scope="col">Matches</th>
               <th scope="col">Most recent matchup</th>
-              <th scope="col">Most recent matchup date</th>
-              <th scope="col">Most recent matchup outcome</th>
+              <th scope="col">Outcome</th>
+              <th scope="col">Date</th>
             </tr>
           </thead>
           <tbody>
@@ -96,16 +116,16 @@ const RankingList: React.FC<RankingListProps> = (props) => {
                   </td>
                   <td>
                     {matchHistory.length
-                      ? new Date(matchHistory[0].s).toDateString()
-                      : "-"}
-                  </td>
-                  <td>
-                    {matchHistory.length
                       ? matchHistory[0].r === 1
                         ? "Won"
                         : matchHistory[0].r === 0
                         ? "Lost"
                         : "Tie"
+                      : "-"}
+                  </td>
+                  <td>
+                    {matchHistory.length
+                      ? new Date(matchHistory[0].s).toDateString()
                       : "-"}
                   </td>
                 </tr>

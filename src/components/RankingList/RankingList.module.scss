@@ -1,3 +1,5 @@
+/** See for alignment principles - https://www.csescienceeditor.org/article/best-practices-in-table-design/ */
+
 $rank-index: 1;
 $performer-index: 2;
 $rating-index: 3;
@@ -6,26 +8,36 @@ $losses-index: 5;
 $ties-index: 6;
 $matches-index: 7;
 $recent-match-index: 8;
-$recent-date-index: 9;
-$recent-outcome-index: 10;
+$recent-outcome-index: 9;
+$recent-date-index: 10;
 
 .RankingList {
-  th,
-  td {
+  // Center-align number column headings
+
+  th {
+    // Right-align number columns
     &:nth-child(#{$rating-index}),
     &:nth-child(#{$wins-index}),
     &:nth-child(#{$losses-index}),
     &:nth-child(#{$ties-index}),
-    &:nth-child(#{$matches-index}),
-    &:nth-child(#{$recent-date-index}),
-    &:nth-child(#{$recent-outcome-index}) {
+    &:nth-child(#{$matches-index}) {
       text-align: center;
     }
   }
+  td {
+    // Right-align number columns
+    &:nth-child(#{$rating-index}),
+    &:nth-child(#{$wins-index}),
+    &:nth-child(#{$losses-index}),
+    &:nth-child(#{$ties-index}),
+    &:nth-child(#{$matches-index}) {
+      text-align: right;
+    }
+  }
 
-  // Hide all but the three most important columns at the lowest breakpoint
   th,
   td {
+    // Hide all but the three most important columns at the lowest breakpoint
     &:nth-child(#{$wins-index}),
     &:nth-child(#{$losses-index}),
     &:nth-child(#{$ties-index}),
@@ -57,9 +69,36 @@ $recent-outcome-index: 10;
       }
     }
 
-    @media (min-width: 992px) {
+    @media (min-width: 1140px) {
       &:nth-child(#{$recent-date-index}) {
         display: table-cell;
+      }
+    }
+
+    // Don't wrap specific columns
+    &:nth-child(#{$recent-date-index}) {
+      white-space: pre;
+    }
+  }
+
+  // Reveal all columns if expanded
+  .expanded {
+    th,
+    td {
+      &:nth-child(#{$wins-index}),
+      &:nth-child(#{$losses-index}),
+      &:nth-child(#{$ties-index}),
+      &:nth-child(#{$matches-index}),
+      &:nth-child(#{$recent-match-index}),
+      &:nth-child(#{$recent-date-index}),
+      &:nth-child(#{$recent-outcome-index}) {
+        display: table-cell;
+      }
+
+      // Don't wrap any columns when expanded
+      &:nth-child(#{$performer-index}),
+      &:nth-child(#{$recent-match-index}) {
+        white-space: pre;
       }
     }
   }
