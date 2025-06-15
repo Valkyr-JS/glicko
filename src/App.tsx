@@ -427,6 +427,8 @@ function App() {
 
   /** Handle submitting results of a session */
   const handleSubmitResults = async () => {
+    await queryStashConfiguration.refetch();
+
     // Update the processing state
     setProcessing(true);
 
@@ -521,7 +523,25 @@ function App() {
     // Update the session
     session.updateRatings(matches);
 
+    // Get the previous session records from the config
+    const sessionHistory: string[] = JSON.parse(
+      queryStashConfiguration.data?.configuration.plugins.glicko
+        ?.sessionHistory ?? "[]"
+    );
+
+    // Get the current ISO date and push it to the history
     const sessionDatetime = new Date().toISOString();
+    const updatedHistory: string[] = [...sessionHistory, sessionDatetime];
+
+    // Update the plugin config with the new session history
+    await mutateStashPluginConfig({
+      variables: {
+        input: {
+          ...queryStashConfiguration.data?.configuration.plugins.glicko,
+          sessionHistory: JSON.stringify(updatedHistory),
+        },
+      },
+    });
 
     // Update Stash performer data with results unless the user is in read-only
     // mode or the Stash version doesn't support custom fields

@@ -82,6 +82,7 @@ export const StashConfigResultSchema = z.object({
       glicko: z
         .object({
           performerFilters: z.string().optional(),
+          sessionHistory: z.string().optional(),
           userSettings: z.string().optional(),
         })
         .optional(),
@@ -134,5 +135,6 @@ export const StashPluginUserSettingsParsed = z.object({
 
 export const StashPluginConfigParsed = z.object({
   performerFilters: z.object({ ...StashPluginPerformerFiltersParsed.shape }),
+  sessionHistory: z.array(z.coerce.date()),
   userSettings: z.object({ ...StashPluginUserSettingsParsed.shape }),
 });
