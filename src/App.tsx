@@ -35,6 +35,7 @@ import {
 import { Glicko2, Player } from "glicko2";
 import { SET_PERFORMER_DATA, SET_PLUGIN_CONFIG } from "./apollo/mutations";
 import SettingsPage from "./pages/Settings/Settings";
+import { getStashVersionBreakdown } from "./helpers/stash";
 
 function App() {
   /* -------------------------------------- State management -------------------------------------- */
@@ -51,9 +52,14 @@ function App() {
   const [slimPerformerData, setSlimPerformerData] = useState<
     StashSlimPerformerData[]
   >([]);
+  const [stashVersion, setStashVersion] = useState<StashAppVersion | null>(
+    null
+  );
   const [userSettings, setUserSettings] = useState<UserSettings>(
     DEFAULT_USER_SEETTINGS
   );
+
+  console.log(stashVersion);
 
   /* ---------------------------------------- Stash queries --------------------------------------- */
 
@@ -84,6 +90,14 @@ function App() {
     useLazyQuery<StashFindPerformersResult>(GET_SPECIFIC_MATCH_PERFORMERS);
   const [queryStashPerformerImage] =
     useLazyQuery<StashFindImagesResult>(GET_PERFORMER_IMAGE);
+
+  useEffect(() => {
+    if (queryStashVersionResult.data?.version?.version) {
+      setStashVersion(
+        getStashVersionBreakdown(queryStashVersionResult.data?.version?.version)
+      );
+    } else setStashVersion(null);
+  }, [queryStashVersionResult]);
 
   // Update the performer filters and user settings with the data from the Stash
   // plugin config, if there is any.

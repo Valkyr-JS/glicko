@@ -156,6 +156,8 @@ interface StashSlimPerformerData {
   name: MatchPerformer["name"];
 }
 
+type StashAppVersion = [major: number, minor: number, patch: number]
+
 /** The user's game settings. */
 interface UserSettings {
   /** Dictates whether selecting performers using the arrow keys is enabled. */
