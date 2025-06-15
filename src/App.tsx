@@ -8,10 +8,12 @@ import {
 } from "@apollo/client";
 import {
   GET_ALL_PERFORMERS_BY_PAGE,
+  GET_ALL_PERFORMERS_BY_PAGE_NO_CUSTOM,
   GET_MATCH_PERFORMERS,
   GET_MATCH_PERFORMERS_NO_CUSTOM,
   GET_PERFORMER_IMAGE,
   GET_SPECIFIC_MATCH_PERFORMERS,
+  GET_SPECIFIC_MATCH_PERFORMERS_NO_CUSTOM,
   GET_STASH_CONFIGURATION,
   GET_STASH_VERSION,
 } from "./apollo/queries";
@@ -80,7 +82,10 @@ function App() {
   // in settings. The new data wouldn't be cached, so would be lost. It's an
   // unlikely occurance, but better to be safe.
   const [queryAllStashPerformers] = useLazyQuery<StashFindPerformersResult>(
-    GET_ALL_PERFORMERS_BY_PAGE,
+    stashVersion && stashVersion?.[1] < 28
+      ? GET_ALL_PERFORMERS_BY_PAGE_NO_CUSTOM
+      : GET_ALL_PERFORMERS_BY_PAGE,
+
     {
       fetchPolicy: "no-cache",
     }
@@ -92,7 +97,11 @@ function App() {
         : GET_MATCH_PERFORMERS
     );
   const [querySpecificStashPerformerMatch] =
-    useLazyQuery<StashFindPerformersResult>(GET_SPECIFIC_MATCH_PERFORMERS);
+    useLazyQuery<StashFindPerformersResult>(
+      stashVersion && stashVersion?.[1] < 28
+        ? GET_SPECIFIC_MATCH_PERFORMERS_NO_CUSTOM
+        : GET_SPECIFIC_MATCH_PERFORMERS
+    );
   const [queryStashPerformerImage] =
     useLazyQuery<StashFindImagesResult>(GET_PERFORMER_IMAGE);
 
