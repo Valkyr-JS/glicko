@@ -246,7 +246,8 @@ function App() {
           coverImg: p.image_path,
           id: p.id,
           imagesAvailable,
-          initialRating: p.custom_fields.glicko_rating ?? GLICKO.RATING_DEFAULT,
+          initialRating:
+            p.custom_fields?.glicko_rating ?? GLICKO.RATING_DEFAULT,
           name: p.name,
         };
       });
@@ -486,11 +487,11 @@ function App() {
 
     // Create Glicko players from ALL performers in Stash
     const allGlickoPerformers = allStashPerformers.map((p) => {
-      const rating = p.custom_fields.glicko_rating ?? GLICKO.RATING_DEFAULT;
+      const rating = p.custom_fields?.glicko_rating ?? GLICKO.RATING_DEFAULT;
       const deviation =
-        p.custom_fields.glicko_deviation ?? GLICKO.DEVIATION_DEFAULT;
+        p.custom_fields?.glicko_deviation ?? GLICKO.DEVIATION_DEFAULT;
       const volatility =
-        p.custom_fields.glicko_volatility ?? GLICKO.VOLATILITY_DEFAULT;
+        p.custom_fields?.glicko_volatility ?? GLICKO.VOLATILITY_DEFAULT;
 
       return {
         ...p,
@@ -636,11 +637,11 @@ function App() {
     // Loop through each performer
     allStashPerformers.forEach((p) => {
       // If the performer doesn't have any custom fields in the first place, skip
-      if (!Object.keys(p.custom_fields).length) return;
+      if (!Object.keys(p.custom_fields ?? {}).length) return;
 
       // Get the performer's custom fields, filtering out any Glicko-related
       // fields.
-      const validKeys = Object.keys(p.custom_fields).filter(
+      const validKeys = Object.keys(p.custom_fields ?? {}).filter(
         (k) => !disallowedKeys.includes(k)
       );
       const custom_fields = validKeys.reduce(
