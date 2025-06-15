@@ -24,7 +24,7 @@ export const DEFAULT_BOARD_WIDTH = 1100;
 export const DEFAULT_IMAGE_QUALITY = "thumbnail";
 export const DEFAULT_MAX_PROGRESS_BOARD_ROWS = 5;
 
-export const DEFAULT_USER_SEETTINGS: UserSettings = {
+export const DEFAULT_USER_SETTINGS: UserSettings = {
   arrowKeys: DEFAULT_ALLOW_ARROW_KEYS,
   boardWidth: DEFAULT_BOARD_WIDTH,
   imageQuality: DEFAULT_IMAGE_QUALITY,

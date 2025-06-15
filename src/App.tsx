@@ -32,7 +32,7 @@ import GamePage from "./pages/Game/Game";
 import HomePage from "./pages/Home/Home";
 import {
   DEFAULT_PERFORMER_FILTERS,
-  DEFAULT_USER_SEETTINGS,
+  DEFAULT_USER_SETTINGS,
   GLICKO,
 } from "./constants";
 import { Glicko2, Player } from "glicko2";
@@ -59,7 +59,7 @@ function App() {
     null
   );
   const [userSettings, setUserSettings] = useState<UserSettings>(
-    DEFAULT_USER_SEETTINGS
+    DEFAULT_USER_SETTINGS
   );
 
   console.log(stashVersion);

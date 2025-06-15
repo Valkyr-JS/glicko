@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, fn, userEvent, within } from "storybook/test";
 import MatchBoard from "./MatchBoard";
 import { getStashContent } from "../../../.storybook/tools";
-import { DEFAULT_USER_SEETTINGS } from "@/constants";
+import { DEFAULT_USER_SETTINGS } from "@/constants";
 
 const match: [MatchPerformer, MatchPerformer] = [
   {
@@ -38,7 +38,7 @@ const meta = {
     imageQuality: undefined,
     matchIndex: 0,
     match,
-    userSettings: DEFAULT_USER_SEETTINGS,
+    userSettings: DEFAULT_USER_SETTINGS,
   },
 } satisfies Meta<typeof MatchBoard>;
 
