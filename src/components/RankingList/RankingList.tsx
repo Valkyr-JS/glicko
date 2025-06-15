@@ -24,94 +24,96 @@ const RankingList: React.FC<RankingListProps> = (props) => {
       );
       return newSort;
     };
-    console.log(sortByRating());
     setSorted(sortByRating());
   }, [props.performers, sorted]);
 
   return (
     <section className={styles.RankingList}>
-      <table className="table table-striped">
-        <thead>
-          <tr>
-            <th scope="col">Rank</th>
-            <th scope="col">Performer</th>
-            <th scope="col">Rating</th>
-            <th scope="col">Total wins</th>
-            <th scope="col">Total loses</th>
-            <th scope="col">Total ties</th>
-            <th scope="col">Total matches</th>
-            <th scope="col">Most recent matchup</th>
-            <th scope="col">Most recent matchup date</th>
-            <th scope="col">Most recent matchup outcome</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sorted.map((p, i) => {
-            const matchHistory: PerformerMatchRecord[] = JSON.parse(
-              p.custom_fields?.glicko_match_history ?? "[]"
-            );
-            return (
-              <tr key={i}>
-                <th scope="row">
-                  <span>{i + 1}</span>
-                </th>
-                <td>{p.name}</td>
-                <td>
-                  <span>
-                    {Math.round(
-                      p.custom_fields?.glicko_rating ?? GLICKO.RATING_DEFAULT
-                    )}
-                  </span>
-                </td>
-                <td>
-                  <span>
+      <div className="table-responsive">
+        <table className="table table-striped">
+          <thead>
+            <tr>
+              <th scope="col">Rank</th>
+              <th scope="col">Performer</th>
+              <th scope="col">Rating</th>
+              <th scope="col">Wins</th>
+              <th scope="col">Losses</th>
+              <th scope="col">Ties</th>
+              <th scope="col">Matches</th>
+              <th scope="col">Most recent matchup</th>
+              <th scope="col">Most recent matchup date</th>
+              <th scope="col">Most recent matchup outcome</th>
+            </tr>
+          </thead>
+          <tbody>
+            {sorted.map((p, i) => {
+              const matchHistory: PerformerMatchRecord[] = JSON.parse(
+                p.custom_fields?.glicko_match_history ?? "[]"
+              );
+              return (
+                <tr key={i}>
+                  <th scope="row">
+                    <span>{i + 1}</span>
+                  </th>
+                  <td>{p.name}</td>
+                  <td>
+                    <span>
+                      {Math.round(
+                        p.custom_fields?.glicko_rating ?? GLICKO.RATING_DEFAULT
+                      )}
+                    </span>
+                  </td>
+                  <td>
+                    <span>
+                      {matchHistory.length
+                        ? matchHistory.filter((m) => m.r === 1).length
+                        : "-"}
+                    </span>
+                  </td>
+                  <td>
+                    <span>
+                      {matchHistory.length
+                        ? matchHistory.filter((m) => m.r === 0).length
+                        : "-"}
+                    </span>
+                  </td>
+                  <td>
+                    <span>
+                      {matchHistory.length
+                        ? matchHistory.filter((m) => m.r === 0.5).length
+                        : "-"}
+                    </span>
+                  </td>
+                  <td>
+                    <span>{matchHistory.length}</span>
+                  </td>
+                  <td>
                     {matchHistory.length
-                      ? matchHistory.filter((m) => m.r === 1).length
+                      ? props.performers.find(
+                          (p) => p.id === +matchHistory[0].id
+                        )?.name
                       : "-"}
-                  </span>
-                </td>
-                <td>
-                  <span>
+                  </td>
+                  <td>
                     {matchHistory.length
-                      ? matchHistory.filter((m) => m.r === 0).length
+                      ? new Date(matchHistory[0].s).toDateString()
                       : "-"}
-                  </span>
-                </td>
-                <td>
-                  <span>
+                  </td>
+                  <td>
                     {matchHistory.length
-                      ? matchHistory.filter((m) => m.r === 0.5).length
+                      ? matchHistory[0].r === 1
+                        ? "Won"
+                        : matchHistory[0].r === 0
+                        ? "Lost"
+                        : "Tie"
                       : "-"}
-                  </span>
-                </td>
-                <td>
-                  <span>{matchHistory.length}</span>
-                </td>
-                <td>
-                  {matchHistory.length
-                    ? props.performers.find((p) => p.id === +matchHistory[0].id)
-                        ?.name
-                    : "-"}
-                </td>
-                <td>
-                  {matchHistory.length
-                    ? new Date(matchHistory[0].s).toDateString()
-                    : "-"}
-                </td>
-                <td>
-                  {matchHistory.length
-                    ? matchHistory[0].r === 1
-                      ? "Won"
-                      : matchHistory[0].r === 0
-                      ? "Loss"
-                      : "Tie"
-                    : "-"}
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
     </section>
   );
 };

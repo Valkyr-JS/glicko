@@ -1,2 +1,25 @@
+$rank-index: 1;
+$performer-index: 2;
+$rating-index: 3;
+$wins-index: 4;
+$losses-index: 5;
+$ties-index: 6;
+$matches-index: 7;
+$recent-match-index: 8;
+$recent-date-index: 9;
+$recent-outcome-index: 10;
+
 .RankingList {
+  th,
+  td {
+    &:nth-child(#{$rating-index}),
+    &:nth-child(#{$wins-index}),
+    &:nth-child(#{$losses-index}),
+    &:nth-child(#{$ties-index}),
+    &:nth-child(#{$matches-index}),
+    &:nth-child(#{$recent-date-index}),
+    &:nth-child(#{$recent-outcome-index}) {
+      text-align: center;
+    }
+  }
 }
