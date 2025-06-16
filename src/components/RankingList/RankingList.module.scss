@@ -97,11 +97,8 @@ $recent-date-index: 10;
         display: table-cell;
       }
 
-      // Don't wrap any columns when expanded
-      &:nth-child(#{$performer-index}),
-      &:nth-child(#{$recent-match-index}) {
-        white-space: pre;
-      }
+      // Don't wrap any columns when expanded {
+      white-space: pre;
     }
   }
 }
