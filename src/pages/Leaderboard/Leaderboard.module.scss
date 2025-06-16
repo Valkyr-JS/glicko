@@ -1,0 +1,5 @@
+@use "@/scss/pages";
+
+.Leaderboard {
+  @include pages.layout;
+}
