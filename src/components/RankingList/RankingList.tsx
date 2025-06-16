@@ -14,7 +14,7 @@ interface RankingListProps {
 }
 
 interface SortMethod {
-  name: "name" | "rating";
+  name: "name" | "rating" | "wins";
   sorter: (performers: StashPerformer[]) => StashPerformer[];
 }
 
@@ -61,6 +61,7 @@ const RankingList: React.FC<RankingListProps> = (props) => {
 
   const handleClickSortRank = () => handleSortClick(sortMethodRating);
   const handleClickSortName = () => handleSortClick(sortMethodName);
+  const handleClickSortWins = () => handleSortClick(sortMethodWins);
 
   /* ------------------------------------------- Toolbar ------------------------------------------ */
 
@@ -175,7 +176,7 @@ const RankingList: React.FC<RankingListProps> = (props) => {
                 </th>
                 <th scope="col">Rating</th>
                 <th scope="col">
-                  <SortButton>Wins</SortButton>
+                  <SortButton onClick={handleClickSortWins}>Wins</SortButton>
                 </th>
                 <th scope="col">
                   <SortButton>Losses</SortButton>
@@ -317,4 +318,27 @@ const sortByRating = (performers: StashPerformer[]): StashPerformer[] => {
 const sortMethodRating = {
   name: "rating",
   sorter: sortByRating,
+} as const;
+
+const sortByWins = (performers: StashPerformer[]): StashPerformer[] => {
+  const newSort = performers.sort((a, b) => {
+    const getWins = (records: PerformerMatchRecord[]) =>
+      records.filter((m) => m.r === 1).length;
+
+    const aWins = getWins(
+      JSON.parse(a.custom_fields?.glicko_match_history ?? "[]")
+    );
+
+    const bWins = getWins(
+      JSON.parse(b.custom_fields?.glicko_match_history ?? "[]")
+    );
+
+    return bWins - aWins;
+  });
+  return newSort;
+};
+
+const sortMethodWins = {
+  name: "wins",
+  sorter: sortByWins,
 } as const;
