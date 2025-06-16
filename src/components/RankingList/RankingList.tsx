@@ -14,7 +14,7 @@ interface RankingListProps {
 }
 
 interface SortMethod {
-  name: "losses" | "name" | "rating" | "ties" | "wins";
+  name: "date" | "losses" | "matches" | "name" | "rating" | "ties" | "wins";
   sorter: (performers: StashPerformer[]) => StashPerformer[];
 }
 
@@ -59,6 +59,7 @@ const RankingList: React.FC<RankingListProps> = (props) => {
     setPage(1);
   };
 
+  const handleClickSortDate = () => handleSortClick(sortMethodDate);
   const handleClickSortLosses = () => handleSortClick(sortMethodLosses);
   const handleClickSortMatches = () => handleSortClick(sortMethodMatches);
   const handleClickSortName = () => handleSortClick(sortMethodName);
@@ -197,7 +198,7 @@ const RankingList: React.FC<RankingListProps> = (props) => {
                 <th scope="col">Most recent matchup</th>
                 <th scope="col">Outcome</th>
                 <th scope="col">
-                  <SortButton>Date</SortButton>
+                  <SortButton onClick={handleClickSortDate}>Date</SortButton>
                 </th>
               </tr>
             </thead>
@@ -414,6 +415,29 @@ const sortByMatches = (performers: StashPerformer[]): StashPerformer[] => {
 };
 
 const sortMethodMatches = {
-  name: "ties",
+  name: "matches",
   sorter: sortByMatches,
+} as const;
+
+const sortByDate = (performers: StashPerformer[]): StashPerformer[] => {
+  const newSort = performers.sort((a, b) => {
+    const getRecord = (records: PerformerMatchRecord[]) =>
+      records.sort((c, d) => +new Date(c.s) - +new Date(d.s))[0];
+
+    const aDate = getRecord(
+      JSON.parse(a.custom_fields?.glicko_match_history ?? "[]")
+    );
+
+    const bDate = getRecord(
+      JSON.parse(b.custom_fields?.glicko_match_history ?? "[]")
+    );
+
+    return +new Date(bDate.s) - +new Date(aDate.s);
+  });
+  return newSort;
+};
+
+const sortMethodDate = {
+  name: "date",
+  sorter: sortByDate,
 } as const;
