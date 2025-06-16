@@ -13,6 +13,11 @@ interface RankingListProps {
   sessionHistory: Date[];
 }
 
+interface SortMethod {
+  name: "rating";
+  sorter: (performers: StashPerformer[]) => StashPerformer[];
+}
+
 const RankingList: React.FC<RankingListProps> = (props) => {
   /* ------------------------------------------- Sorting ------------------------------------------ */
 
@@ -21,10 +26,36 @@ const RankingList: React.FC<RankingListProps> = (props) => {
     sortByRating(props.performers).filter((_p, i) => i < perPage)
   );
   const [collapsed, setCollapsed] = useState(true);
+  const [method, setMethod] = useState<SortMethod>(sortMethodRating);
+  const [reverse, setReverse] = useState(false);
   const [page, setPage] = useState(1);
 
   // Used for rank placement
   const allByRank = sortByRating(props.performers);
+
+  const filterForPage = (i: number, page: number) =>
+    i < page * perPage && i >= (page - 1) * perPage;
+
+  const handleClickSortRank = () => {
+    // Identify if this is a different method from the current
+    const isChangedMethod = method.name !== "rating";
+    if (isChangedMethod) setMethod(sortMethodRating);
+
+    // If not changed, reverse the current order
+    const isReverse = !isChangedMethod;
+    if (isReverse) setReverse(!reverse);
+
+    // First sort the performers
+    const sorted = sortMethodRating.sorter(props.performers);
+
+    // Reverse the order if needed
+    const reversed = !reverse ? sorted.reverse() : sorted;
+
+    // Then get the current slice of data
+    const pageData = reversed.filter((_p, i) => filterForPage(i, 1));
+    setCurrentData(pageData);
+    setPage(1);
+  };
 
   /* ------------------------------------------- Toolbar ------------------------------------------ */
 
@@ -39,12 +70,13 @@ const RankingList: React.FC<RankingListProps> = (props) => {
     setPage(newPage);
 
     // First sort the performers
-    const sorted = sortByRating(props.performers);
+    const sorted = method.sorter(props.performers);
+
+    // Reverse the order if needed
+    const reversed = reverse ? sorted.reverse() : sorted;
 
     // Then get the current slice of data
-    const pageData = sorted.filter(
-      (_p, i) => i < newPage * perPage && i >= (newPage - 1) * perPage
-    );
+    const pageData = reversed.filter((_p, i) => filterForPage(i, newPage));
     setCurrentData(pageData);
   };
 
@@ -129,7 +161,7 @@ const RankingList: React.FC<RankingListProps> = (props) => {
             <thead>
               <tr>
                 <th scope="col">
-                  <SortButton>Rank</SortButton>
+                  <SortButton onClick={handleClickSortRank}>Rank</SortButton>
                 </th>
                 <th scope="col">
                   <SortButton>Performer</SortButton>
@@ -252,13 +284,7 @@ const SortButton: React.FC<
   );
 };
 
-// const sortByName = (performers: StashPerformer[], reverse: boolean) => {
-//   const newSort = performers.sort((a, b) => a.name.localeCompare(b.name));
-//   if (reverse) return newSort.reverse();
-//   return newSort;
-// };
-
-const sortByRating = (performers: StashPerformer[]) => {
+const sortByRating = (performers: StashPerformer[]): StashPerformer[] => {
   const newSort = performers.sort(
     (a, b) =>
       (b.custom_fields?.glicko_rating ?? GLICKO.RATING_DEFAULT) -
@@ -266,3 +292,8 @@ const sortByRating = (performers: StashPerformer[]) => {
   );
   return newSort;
 };
+
+const sortMethodRating = {
+  name: "rating",
+  sorter: sortByRating,
+} as const;
