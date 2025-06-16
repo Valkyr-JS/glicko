@@ -14,7 +14,7 @@ interface RankingListProps {
 }
 
 interface SortMethod {
-  name: "name" | "rating" | "wins";
+  name: "losses" | "name" | "rating" | "wins";
   sorter: (performers: StashPerformer[]) => StashPerformer[];
 }
 
@@ -59,8 +59,9 @@ const RankingList: React.FC<RankingListProps> = (props) => {
     setPage(1);
   };
 
-  const handleClickSortRank = () => handleSortClick(sortMethodRating);
+  const handleClickSortLosses = () => handleSortClick(sortMethodLosses);
   const handleClickSortName = () => handleSortClick(sortMethodName);
+  const handleClickSortRank = () => handleSortClick(sortMethodRating);
   const handleClickSortWins = () => handleSortClick(sortMethodWins);
 
   /* ------------------------------------------- Toolbar ------------------------------------------ */
@@ -179,7 +180,9 @@ const RankingList: React.FC<RankingListProps> = (props) => {
                   <SortButton onClick={handleClickSortWins}>Wins</SortButton>
                 </th>
                 <th scope="col">
-                  <SortButton>Losses</SortButton>
+                  <SortButton onClick={handleClickSortLosses}>
+                    Losses
+                  </SortButton>
                 </th>
                 <th scope="col">
                   <SortButton>Ties</SortButton>
@@ -341,4 +344,27 @@ const sortByWins = (performers: StashPerformer[]): StashPerformer[] => {
 const sortMethodWins = {
   name: "wins",
   sorter: sortByWins,
+} as const;
+
+const sortByLosses = (performers: StashPerformer[]): StashPerformer[] => {
+  const newSort = performers.sort((a, b) => {
+    const getWins = (records: PerformerMatchRecord[]) =>
+      records.filter((m) => m.r === 0).length;
+
+    const aWins = getWins(
+      JSON.parse(a.custom_fields?.glicko_match_history ?? "[]")
+    );
+
+    const bWins = getWins(
+      JSON.parse(b.custom_fields?.glicko_match_history ?? "[]")
+    );
+
+    return bWins - aWins;
+  });
+  return newSort;
+};
+
+const sortMethodLosses = {
+  name: "losses",
+  sorter: sortByLosses,
 } as const;
