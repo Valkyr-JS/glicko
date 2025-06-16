@@ -115,7 +115,7 @@ const RankingList: React.FC<RankingListProps> = (props) => {
 
   /* ------------------------------------------ Component ----------------------------------------- */
 
-  const tableWrapperClasses = cx({
+  const tableWrapperClasses = cx("mb-3", {
     "table-responsive": !collapsed,
     [styles.expanded]: !collapsed,
   });
@@ -225,8 +225,8 @@ const RankingList: React.FC<RankingListProps> = (props) => {
               })}
             </tbody>
           </table>
-          {toolbar}
-        </div>{" "}
+        </div>
+        {toolbar}
       </div>
     </section>
   );
