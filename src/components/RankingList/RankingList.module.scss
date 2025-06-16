@@ -113,7 +113,10 @@ $recent-date-index: 10;
 }
 
 .collapse {
-  margin-right: auto;
+  @media (min-width: 1140px) {
+    // Hide at the largest breakpoint
+    display: none;
+  }
 }
 
 .pagination {
@@ -122,6 +125,7 @@ $recent-date-index: 10;
   align-items: baseline;
   gap: spacing.$small;
   width: 100%;
+  margin-left: auto;
 
   @media (min-width: 400px) {
     width: auto;
