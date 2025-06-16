@@ -91,6 +91,8 @@ const RankingList: React.FC<RankingListProps> = (props) => {
           btnArr.push(<span style={{ verticalAlign: "bottom" }}>...</span>);
       }
     }
+
+    if (btnArr.length < 2) return null;
     return btnArr;
   };
 
