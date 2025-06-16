@@ -9,6 +9,7 @@ import type { OperationVariables, QueryResult } from "@apollo/client";
 import { GameErrorModal } from "@/components/Modal/Modal";
 import StashVersionReport from "@/components/StashVersionReport/StashVersionReport";
 import styles from "./Home.module.scss";
+import { getStashVersionBreakdown } from "@/helpers/stash";
 
 type StashVersionFetchRequest = QueryResult<
   StashVersionResult,
@@ -67,6 +68,30 @@ const HomePage: React.FC<HomePageProps> = (props) => {
     </button>
   );
 
+  /* ----------------------------------------- Leaderboard ---------------------------------------- */
+
+  /** Handle clicking the leaderboard button */
+  const handleOpenLeaderboard: React.MouseEventHandler<
+    HTMLButtonElement
+  > = () => props.setActivePage("LEADERBOARD");
+
+  // Disable the button if Stash is below v0.28.0
+  const leaderboardButton = (
+    <button
+      type="button"
+      className="btn btn-secondary"
+      disabled={
+        props.versionLoading ||
+        !!props.versionError ||
+        (!!props.versionData?.version?.version &&
+          getStashVersionBreakdown(props.versionData.version.version)[1] < 28)
+      }
+      onClick={handleOpenLeaderboard}
+    >
+      Leaderboard
+    </button>
+  );
+
   /* -------------------------------------- Performer filters ------------------------------------- */
 
   /** Handle clicking the performer filters button */
@@ -122,13 +147,9 @@ const HomePage: React.FC<HomePageProps> = (props) => {
         <nav>
           <ul>
             <li>{startButton}</li>
+            <li>{leaderboardButton}</li>
             <li>{filtersButton}</li>
             <li>{settingsButton}</li>
-            <li>
-              <button type="button" className="btn btn-secondary" disabled>
-                Leaderboard
-              </button>
-            </li>
           </ul>
         </nav>
         <div className={styles.report}>

@@ -87,6 +87,7 @@ enum PagesEnum {
   HOME = "HOME",
   FILTERS = "FILTERS",
   GAME = "GAME",
+  LEADERBOARD = "LEADERBOARD",
   SETTINGS = "SETTINGS",
 }
 

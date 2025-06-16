@@ -44,7 +44,7 @@ const StashVersionReport: React.FC<StashVersionReportProps> = (props) => {
 
   if (vMinor < 28)
     versionWarnings.push(
-      "Glicko requires at least v0.28.0 in order to save performer ratings. With your current version, you will lose all ratings after ending a tournament."
+      "Glicko requires at least v0.28.0 in order to save performer ratings and view the leaderboard. With your current version, you will lose all ratings after ending a tournament."
     );
 
   const fullyCompatible = (

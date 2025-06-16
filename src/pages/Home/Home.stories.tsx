@@ -139,3 +139,43 @@ export const UnableToConnect: Story = {
     expect(filtersBtn).toBeDisabled();
   },
 };
+
+export const Version28Leaderboard: Story = {
+  args: {
+    versionData: {
+      version: {
+        version: "v0.28.1",
+        hash: "cc6917f2",
+        build_time: "2025-03-19 23:01:38",
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const leaderboardButton = canvas.getByRole("button", {
+      name: "Leaderboard",
+    });
+
+    expect(leaderboardButton).not.toBeDisabled();
+  },
+};
+
+export const Version27Leaderboard: Story = {
+  args: {
+    versionData: {
+      version: {
+        version: "v0.27.1",
+        hash: "cc6917f2",
+        build_time: "2025-03-19 23:01:38",
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const leaderboardButton = canvas.getByRole("button", {
+      name: "Leaderboard",
+    });
+
+    expect(leaderboardButton).toBeDisabled();
+  },
+};
