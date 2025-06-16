@@ -47,8 +47,11 @@ const RankingList: React.FC<RankingListProps> = (props) => {
     const isReversed = isChangedMethod ? false : !reverse;
     setReverse(isReversed);
 
-    // First sort the performers
-    const sorted = newMethod.sorter(props.performers);
+    // First sort alphabetically so that equal values are sorted as such
+    const alpha = sortMethodName.sorter(props.performers);
+
+    // Then sort by the new method
+    const sorted = newMethod.sorter(alpha);
 
     // Reverse the order if needed
     const reversed = isReversed ? sorted.reverse() : sorted;
