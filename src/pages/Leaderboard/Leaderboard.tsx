@@ -1,5 +1,6 @@
 import React from "react";
 import type { StashPerformer } from "@/apollo/schema";
+import RankingList from "@/components/RankingList/RankingList";
 import styles from "./Leaderboard.module.scss";
 
 interface LeaderboardPageProps extends PageProps {
@@ -10,10 +11,15 @@ interface LeaderboardPageProps extends PageProps {
 }
 
 const LeaderboardPage: React.FC<LeaderboardPageProps> = (props) => {
-  console.log(props);
   return (
     <main className={styles.Leaderboard}>
-      <div className="container">Leaderboard</div>
+      <div className="container">
+        <h1>Leaderboard</h1>
+        <RankingList
+          performers={props.performers}
+          sessionHistory={props.sessionHistory}
+        />
+      </div>
     </main>
   );
 };
