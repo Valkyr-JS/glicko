@@ -60,6 +60,7 @@ const RankingList: React.FC<RankingListProps> = (props) => {
   };
 
   const handleClickSortLosses = () => handleSortClick(sortMethodLosses);
+  const handleClickSortMatches = () => handleSortClick(sortMethodMatches);
   const handleClickSortName = () => handleSortClick(sortMethodName);
   const handleClickSortRank = () => handleSortClick(sortMethodRating);
   const handleClickSortTies = () => handleSortClick(sortMethodTies);
@@ -189,7 +190,9 @@ const RankingList: React.FC<RankingListProps> = (props) => {
                   <SortButton onClick={handleClickSortTies}>Ties</SortButton>
                 </th>
                 <th scope="col">
-                  <SortButton>Matches</SortButton>
+                  <SortButton onClick={handleClickSortMatches}>
+                    Matches
+                  </SortButton>
                 </th>
                 <th scope="col">Most recent matchup</th>
                 <th scope="col">Outcome</th>
@@ -326,14 +329,14 @@ const sortMethodRating = {
 
 const sortByWins = (performers: StashPerformer[]): StashPerformer[] => {
   const newSort = performers.sort((a, b) => {
-    const getWins = (records: PerformerMatchRecord[]) =>
+    const getRecord = (records: PerformerMatchRecord[]) =>
       records.filter((m) => m.r === 1).length;
 
-    const aWins = getWins(
+    const aWins = getRecord(
       JSON.parse(a.custom_fields?.glicko_match_history ?? "[]")
     );
 
-    const bWins = getWins(
+    const bWins = getRecord(
       JSON.parse(b.custom_fields?.glicko_match_history ?? "[]")
     );
 
@@ -349,18 +352,18 @@ const sortMethodWins = {
 
 const sortByLosses = (performers: StashPerformer[]): StashPerformer[] => {
   const newSort = performers.sort((a, b) => {
-    const getWins = (records: PerformerMatchRecord[]) =>
+    const getRecord = (records: PerformerMatchRecord[]) =>
       records.filter((m) => m.r === 0).length;
 
-    const aWins = getWins(
+    const aLosses = getRecord(
       JSON.parse(a.custom_fields?.glicko_match_history ?? "[]")
     );
 
-    const bWins = getWins(
+    const bLosses = getRecord(
       JSON.parse(b.custom_fields?.glicko_match_history ?? "[]")
     );
 
-    return bWins - aWins;
+    return bLosses - aLosses;
   });
   return newSort;
 };
@@ -372,18 +375,18 @@ const sortMethodLosses = {
 
 const sortByTies = (performers: StashPerformer[]): StashPerformer[] => {
   const newSort = performers.sort((a, b) => {
-    const getWins = (records: PerformerMatchRecord[]) =>
+    const getRecord = (records: PerformerMatchRecord[]) =>
       records.filter((m) => m.r === 0.5).length;
 
-    const aWins = getWins(
+    const aTies = getRecord(
       JSON.parse(a.custom_fields?.glicko_match_history ?? "[]")
     );
 
-    const bWins = getWins(
+    const bTies = getRecord(
       JSON.parse(b.custom_fields?.glicko_match_history ?? "[]")
     );
 
-    return bWins - aWins;
+    return bTies - aTies;
   });
   return newSort;
 };
@@ -391,4 +394,26 @@ const sortByTies = (performers: StashPerformer[]): StashPerformer[] => {
 const sortMethodTies = {
   name: "ties",
   sorter: sortByTies,
+} as const;
+
+const sortByMatches = (performers: StashPerformer[]): StashPerformer[] => {
+  const newSort = performers.sort((a, b) => {
+    const getRecord = (records: PerformerMatchRecord[]) => records.length;
+
+    const aCount = getRecord(
+      JSON.parse(a.custom_fields?.glicko_match_history ?? "[]")
+    );
+
+    const bCount = getRecord(
+      JSON.parse(b.custom_fields?.glicko_match_history ?? "[]")
+    );
+
+    return bCount - aCount;
+  });
+  return newSort;
+};
+
+const sortMethodMatches = {
+  name: "ties",
+  sorter: sortByMatches,
 } as const;
