@@ -39,6 +39,7 @@ import { Glicko2, Player } from "glicko2";
 import { SET_PERFORMER_DATA, SET_PLUGIN_CONFIG } from "./apollo/mutations";
 import SettingsPage from "./pages/Settings/Settings";
 import { getStashVersionBreakdown } from "./helpers/stash";
+import LeaderboardPage from "./pages/Leaderboard/Leaderboard";
 
 function App() {
   /* -------------------------------------- State management -------------------------------------- */
@@ -805,6 +806,8 @@ function App() {
             versionLoading={queryStashVersionResult.loading}
           />
         );
+    case "LEADERBOARD":
+      return <LeaderboardPage setActivePage={setActivePage} />;
     case "SETTINGS":
       return (
         <SettingsPage

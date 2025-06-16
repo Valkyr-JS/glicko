@@ -1,3 +1,5 @@
+import client from "@/apollo/client";
+import { ApolloProvider } from "@apollo/client";
 import type { ReactRenderer } from "@storybook/react-vite";
 import { useState } from "react";
 import type { DecoratorFunction } from "storybook/internal/csf";
@@ -46,5 +48,13 @@ export const WithFormSubmission: Decorator = (Story) => {
       </form>
       {responseEl}
     </div>
+  );
+};
+
+export const WithApollo: Decorator = (Story) => {
+  return (
+    <ApolloProvider client={client}>
+      <Story />
+    </ApolloProvider>
   );
 };

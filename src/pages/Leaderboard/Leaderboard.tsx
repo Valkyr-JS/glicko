@@ -1,26 +1,118 @@
-import React from "react";
-import type { StashPerformer } from "@/apollo/schema";
+import React, { useEffect, useState } from "react";
 import RankingList from "@/components/RankingList/RankingList";
 import styles from "./Leaderboard.module.scss";
+import { useLazyQuery } from "@apollo/client";
+import type {
+  StashPerformer,
+  StashFindPerformersResult,
+} from "@/apollo/schema";
+import { GET_ALL_PERFORMERS_BY_PAGE } from "@/apollo/queries";
+import { GameErrorModal } from "@/components/Modal/Modal";
 
-interface LeaderboardPageProps extends PageProps {
-  /** The performer data including their glicko data. */
-  performers: StashPerformer[];
-  /** The array of ISO datetime strings of when each session concluded. */
-  sessionHistory: Date[];
-}
+const LeaderboardPage: React.FC<PageProps> = () => {
+  const [gameError, setGameError] = useState<GameError | null>(null);
+  const [processing, setProcessing] = useState(false);
+  const [performers, setPerformers] = useState<StashPerformer[]>([]);
+  const [showGameErrorModal, setShowGameErrorModal] = useState(false);
 
-const LeaderboardPage: React.FC<LeaderboardPageProps> = (props) => {
+  // Fetch data on entering the page
+  const [queryAllStashPerformers] = useLazyQuery<StashFindPerformersResult>(
+    GET_ALL_PERFORMERS_BY_PAGE,
+    {
+      fetchPolicy: "no-cache",
+    }
+  );
+
+  useEffect(() => {
+    // Get ALL performers from Stash
+    let page = 1;
+    const perPage = 25;
+    setProcessing(true);
+
+    // Get the first page of performers
+    queryAllStashPerformers({
+      variables: { page, perPage },
+    }).then((res) => {
+      if (!res.data || res.error) {
+        // Throw an error
+        setGameError({
+          name: "Processing error",
+          message:
+            "There was an error in fetching performer data while processing your results.",
+          details: res.error,
+        });
+
+        // Update the processing state
+        setProcessing(false);
+        return;
+      }
+
+      let allStashPerformers = res.data.findPerformers.performers;
+
+      const pageLimit = Math.ceil(res.data.findPerformers.count / perPage);
+      page++;
+
+      const getRemainingPages = async () => {
+        while (page <= pageLimit) {
+          const nextPage = await queryAllStashPerformers({
+            variables: { page, perPage },
+          });
+
+          if (!nextPage.data || nextPage.error) {
+            // Throw an error
+            setGameError({
+              name: "Processing error",
+              message:
+                "There was an error in fetching performer data while processing your results.",
+              details: nextPage.error,
+            });
+
+            // Update the processing state
+            setProcessing(false);
+            return;
+          }
+
+          allStashPerformers = [
+            ...allStashPerformers,
+            ...nextPage.data.findPerformers.performers,
+          ];
+          page++;
+        }
+      };
+
+      getRemainingPages().then(() => {
+        setPerformers(allStashPerformers);
+        setProcessing(false);
+      });
+    });
+  }, [queryAllStashPerformers]);
+
+  const handleCloseErrorModal = () => {
+    setGameError(null);
+    setShowGameErrorModal(false);
+  };
+
+  if (processing || performers.length === 0)
+    return (
+      <main className={styles.Leaderboard}>
+        <div className="container">Loading...</div>
+      </main>
+    );
+
   return (
-    <main className={styles.Leaderboard}>
-      <div className="container">
-        <h1>Leaderboard</h1>
-        <RankingList
-          performers={props.performers}
-          sessionHistory={props.sessionHistory}
-        />
-      </div>
-    </main>
+    <>
+      <main className={styles.Leaderboard}>
+        <div className="container">
+          <h1>Leaderboard</h1>
+          <RankingList performers={performers} sessionHistory={[]} />
+        </div>
+      </main>
+      <GameErrorModal
+        closeHandler={handleCloseErrorModal}
+        gameError={gameError}
+        show={showGameErrorModal}
+      />
+    </>
   );
 };
 
