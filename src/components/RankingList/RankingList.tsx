@@ -245,7 +245,7 @@ const RankingList: React.FC<RankingListProps> = (props) => {
                   <td>
                     {matchHistory.length
                       ? props.performers.find(
-                          (p) => p.id === +matchHistory[0].id
+                          (p) => +p.id === +matchHistory[0].id
                         )?.name
                       : "-"}
                   </td>
