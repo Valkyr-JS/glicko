@@ -14,7 +14,7 @@ interface RankingListProps {
 }
 
 interface SortMethod {
-  name: "rating";
+  name: "name" | "rating";
   sorter: (performers: StashPerformer[]) => StashPerformer[];
 }
 
@@ -36,26 +36,31 @@ const RankingList: React.FC<RankingListProps> = (props) => {
   const filterForPage = (i: number, page: number) =>
     i < page * perPage && i >= (page - 1) * perPage;
 
-  const handleClickSortRank = () => {
+  /** Helper to update the currently displayed data by the given sort method. */
+  const handleSortClick = (newMethod: SortMethod) => {
     // Identify if this is a different method from the current
-    const isChangedMethod = method.name !== "rating";
-    if (isChangedMethod) setMethod(sortMethodRating);
+    const isChangedMethod = method.name !== newMethod.name;
+    if (isChangedMethod) setMethod(newMethod);
 
-    // If not changed, reverse the current order
-    const isReverse = !isChangedMethod;
-    if (isReverse) setReverse(!reverse);
+    // If the method has not changed, reverse the current order otherwise no
+    // reverse
+    const isReversed = isChangedMethod ? false : !reverse;
+    setReverse(isReversed);
 
     // First sort the performers
-    const sorted = sortMethodRating.sorter(props.performers);
+    const sorted = newMethod.sorter(props.performers);
 
     // Reverse the order if needed
-    const reversed = !reverse ? sorted.reverse() : sorted;
+    const reversed = isReversed ? sorted.reverse() : sorted;
 
     // Then get the current slice of data
     const pageData = reversed.filter((_p, i) => filterForPage(i, 1));
     setCurrentData(pageData);
     setPage(1);
   };
+
+  const handleClickSortRank = () => handleSortClick(sortMethodRating);
+  const handleClickSortName = () => handleSortClick(sortMethodName);
 
   /* ------------------------------------------- Toolbar ------------------------------------------ */
 
@@ -164,7 +169,9 @@ const RankingList: React.FC<RankingListProps> = (props) => {
                   <SortButton onClick={handleClickSortRank}>Rank</SortButton>
                 </th>
                 <th scope="col">
-                  <SortButton>Performer</SortButton>
+                  <SortButton onClick={handleClickSortName}>
+                    Performer
+                  </SortButton>
                 </th>
                 <th scope="col">Rating</th>
                 <th scope="col">
@@ -283,6 +290,20 @@ const SortButton: React.FC<
     </button>
   );
 };
+
+const sortByName = (performers: StashPerformer[]): StashPerformer[] => {
+  const newSort = performers.sort((a, b) => {
+    const nameA = a.name.toLowerCase();
+    const nameB = b.name.toLowerCase();
+    return nameA < nameB ? -1 : nameA > nameB ? 1 : 0;
+  });
+  return newSort;
+};
+
+const sortMethodName = {
+  name: "name",
+  sorter: sortByName,
+} as const;
 
 const sortByRating = (performers: StashPerformer[]): StashPerformer[] => {
   const newSort = performers.sort(
