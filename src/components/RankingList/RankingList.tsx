@@ -3,6 +3,8 @@ import { default as cx } from "classnames";
 import type { StashPerformer } from "@/apollo/schema";
 import styles from "./RankingList.module.scss";
 import { GLICKO } from "@/constants";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSort } from "@fortawesome/pro-solid-svg-icons/faSort";
 
 interface RankingListProps {
   /** The performer data including their glicko data. */
@@ -120,98 +122,141 @@ const RankingList: React.FC<RankingListProps> = (props) => {
 
   return (
     <section className={styles.RankingList}>
-      {toolbar}
-      <div className={tableWrapperClasses}>
-        <table className="table table-striped">
-          <thead>
-            <tr>
-              <th scope="col">Rank</th>
-              <th scope="col">Performer</th>
-              <th scope="col">Rating</th>
-              <th scope="col">Wins</th>
-              <th scope="col">Losses</th>
-              <th scope="col">Ties</th>
-              <th scope="col">Matches</th>
-              <th scope="col">Most recent matchup</th>
-              <th scope="col">Outcome</th>
-              <th scope="col">Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentData.map((p, i) => {
-              const matchHistory: PerformerMatchRecord[] = JSON.parse(
-                p.custom_fields?.glicko_match_history ?? "[]"
-              );
-              return (
-                <tr key={i}>
-                  <th scope="row">
-                    <span>{allByRank.findIndex((r) => r.id === p.id) + 1}</span>
-                  </th>
-                  <td>{p.name}</td>
-                  <td>
-                    <span>
-                      {Math.round(
-                        p.custom_fields?.glicko_rating ?? GLICKO.RATING_DEFAULT
-                      )}
-                    </span>
-                  </td>
-                  <td>
-                    <span>
-                      {matchHistory.length
-                        ? matchHistory.filter((m) => m.r === 1).length
-                        : "-"}
-                    </span>
-                  </td>
-                  <td>
-                    <span>
-                      {matchHistory.length
-                        ? matchHistory.filter((m) => m.r === 0).length
-                        : "-"}
-                    </span>
-                  </td>
-                  <td>
-                    <span>
-                      {matchHistory.length
-                        ? matchHistory.filter((m) => m.r === 0.5).length
-                        : "-"}
-                    </span>
-                  </td>
-                  <td>
-                    <span>{matchHistory.length}</span>
-                  </td>
-                  <td>
-                    {matchHistory.length
-                      ? props.performers.find(
-                          (p) => p.id === +matchHistory[0].id
-                        )?.name
-                      : "-"}
-                  </td>
-                  <td>
-                    {matchHistory.length
-                      ? matchHistory[0].r === 1
-                        ? "Won"
-                        : matchHistory[0].r === 0
-                        ? "Lost"
-                        : "Tie"
-                      : "-"}
-                  </td>
-                  <td>
-                    {matchHistory.length
-                      ? new Date(matchHistory[0].s).toDateString()
-                      : "-"}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+      <div className="container">
         {toolbar}
+        <div className={tableWrapperClasses}>
+          <table className="table table-striped">
+            <thead>
+              <tr>
+                <th scope="col">
+                  <SortButton>Rank</SortButton>
+                </th>
+                <th scope="col">
+                  <SortButton>Performer</SortButton>
+                </th>
+                <th scope="col">Rating</th>
+                <th scope="col">
+                  <SortButton>Wins</SortButton>
+                </th>
+                <th scope="col">
+                  <SortButton>Losses</SortButton>
+                </th>
+                <th scope="col">
+                  <SortButton>Ties</SortButton>
+                </th>
+                <th scope="col">
+                  <SortButton>Matches</SortButton>
+                </th>
+                <th scope="col">Most recent matchup</th>
+                <th scope="col">Outcome</th>
+                <th scope="col">
+                  <SortButton>Date</SortButton>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentData.map((p, i) => {
+                const matchHistory: PerformerMatchRecord[] = JSON.parse(
+                  p.custom_fields?.glicko_match_history ?? "[]"
+                );
+                return (
+                  <tr key={i}>
+                    <th scope="row">
+                      <span>
+                        {allByRank.findIndex((r) => r.id === p.id) + 1}
+                      </span>
+                    </th>
+                    <td>{p.name}</td>
+                    <td>
+                      <span>
+                        {Math.round(
+                          p.custom_fields?.glicko_rating ??
+                            GLICKO.RATING_DEFAULT
+                        )}
+                      </span>
+                    </td>
+                    <td>
+                      <span>
+                        {matchHistory.length
+                          ? matchHistory.filter((m) => m.r === 1).length
+                          : "-"}
+                      </span>
+                    </td>
+                    <td>
+                      <span>
+                        {matchHistory.length
+                          ? matchHistory.filter((m) => m.r === 0).length
+                          : "-"}
+                      </span>
+                    </td>
+                    <td>
+                      <span>
+                        {matchHistory.length
+                          ? matchHistory.filter((m) => m.r === 0.5).length
+                          : "-"}
+                      </span>
+                    </td>
+                    <td>
+                      <span>{matchHistory.length}</span>
+                    </td>
+                    <td>
+                      {matchHistory.length
+                        ? props.performers.find(
+                            (p) => p.id === +matchHistory[0].id
+                          )?.name
+                        : "-"}
+                    </td>
+                    <td>
+                      {matchHistory.length
+                        ? matchHistory[0].r === 1
+                          ? "Won"
+                          : matchHistory[0].r === 0
+                          ? "Lost"
+                          : "Tie"
+                        : "-"}
+                    </td>
+                    <td>
+                      {matchHistory.length
+                        ? new Date(matchHistory[0].s).toDateString()
+                        : "-"}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+          {toolbar}
+        </div>{" "}
       </div>
     </section>
   );
 };
 
 export default RankingList;
+
+/* ---------------------------------------------------------------------------------------------- */
+/*                                             Sorting                                            */
+/* ---------------------------------------------------------------------------------------------- */
+
+const SortButton: React.FC<
+  React.DetailedHTMLProps<
+    React.ButtonHTMLAttributes<HTMLButtonElement>,
+    HTMLButtonElement
+  >
+> = (props) => {
+  return (
+    <button {...props} className={styles.SortButton} type="button">
+      <span className="mr-3">{props.children}</span>
+      <FontAwesomeIcon icon={faSort} />
+    </button>
+  );
+};
+
+// const sortByName = (performers: StashPerformer[], reverse: boolean) => {
+//   const newSort = performers.sort((a, b) => a.name.localeCompare(b.name));
+//   if (reverse) return newSort.reverse();
+//   return newSort;
+// };
 
 const sortByRating = (performers: StashPerformer[]) => {
   const newSort = performers.sort(
