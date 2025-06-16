@@ -6,7 +6,7 @@ import type {
   StashPerformer,
   StashFindPerformersResult,
 } from "@/apollo/schema";
-import { GET_ALL_PERFORMERS_BY_PAGE } from "@/apollo/queries";
+import { GET_ALL_PERFORMERS_WITH_HISTORY_BY_PAGE } from "@/apollo/queries";
 import { GameErrorModal } from "@/components/Modal/Modal";
 
 const LeaderboardPage: React.FC<PageProps> = () => {
@@ -17,7 +17,7 @@ const LeaderboardPage: React.FC<PageProps> = () => {
 
   // Fetch data on entering the page
   const [queryAllStashPerformers] = useLazyQuery<StashFindPerformersResult>(
-    GET_ALL_PERFORMERS_BY_PAGE,
+    GET_ALL_PERFORMERS_WITH_HISTORY_BY_PAGE,
     {
       fetchPolicy: "no-cache",
     }
