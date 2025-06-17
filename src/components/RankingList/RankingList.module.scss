@@ -14,8 +14,15 @@ $recent-outcome-index: 9;
 $recent-date-index: 10;
 
 .RankingList {
-  // Center-align number column headings
+  // Make links white so they're easier to read
+  th,
+  td {
+    a {
+      color: #f5f8fa;
+    }
+  }
 
+  // Center-align number column headings
   th {
     // Right-align number columns
     &:nth-child(#{$rating-index}),
