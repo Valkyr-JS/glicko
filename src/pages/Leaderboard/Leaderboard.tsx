@@ -9,7 +9,7 @@ import type {
 import { GET_ALL_PERFORMERS_WITH_HISTORY_BY_PAGE } from "@/apollo/queries";
 import { GameErrorModal } from "@/components/Modal/Modal";
 
-const LeaderboardPage: React.FC<PageProps> = () => {
+const LeaderboardPage: React.FC<PageProps> = (props) => {
   const [gameError, setGameError] = useState<GameError | null>(null);
   const [processing, setProcessing] = useState(false);
   const [performers, setPerformers] = useState<StashPerformer[]>([]);
@@ -38,7 +38,7 @@ const LeaderboardPage: React.FC<PageProps> = () => {
         setGameError({
           name: "Processing error",
           message:
-            "There was an error in fetching performer data while processing your results.",
+            "There was an error in fetching performer data while loading your leaderboard.",
           details: res.error,
         });
 
@@ -63,7 +63,7 @@ const LeaderboardPage: React.FC<PageProps> = () => {
             setGameError({
               name: "Processing error",
               message:
-                "There was an error in fetching performer data while processing your results.",
+                "There was an error in fetching performer data while loading your leaderboard.",
               details: nextPage.error,
             });
 
@@ -105,6 +105,15 @@ const LeaderboardPage: React.FC<PageProps> = () => {
         <div className="container">
           <h1>Leaderboard</h1>
           <RankingList performers={performers} sessionHistory={[]} />
+          <nav>
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={() => props.setActivePage("HOME")}
+            >
+              Back
+            </button>
+          </nav>
         </div>
       </main>
       <GameErrorModal
