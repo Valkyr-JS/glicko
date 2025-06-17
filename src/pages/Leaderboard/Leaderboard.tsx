@@ -92,10 +92,39 @@ const LeaderboardPage: React.FC<PageProps> = (props) => {
     setShowGameErrorModal(false);
   };
 
-  if (processing || performers.length === 0)
+  if (processing)
     return (
       <main className={styles.Leaderboard}>
-        <div className="container">Loading...</div>
+        <div className="container">
+          <div>Loading...</div>
+          <nav>
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={() => props.setActivePage("HOME")}
+            >
+              Back
+            </button>
+          </nav>
+        </div>
+      </main>
+    );
+
+  if (performers.length === 0)
+    return (
+      <main className={styles.Leaderboard}>
+        <div className="container">
+          <div>No data currently available.</div>
+          <nav>
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={() => props.setActivePage("HOME")}
+            >
+              Back
+            </button>
+          </nav>
+        </div>
       </main>
     );
 
