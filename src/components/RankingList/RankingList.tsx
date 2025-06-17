@@ -207,6 +207,9 @@ const RankingList: React.FC<RankingListProps> = (props) => {
                 p.custom_fields?.glicko_match_history ?? "[]"
               );
               const link = getStashUrl("/performers/" + p.id);
+              const recentMatch = matchHistory.sort(
+                (a, b) => +new Date(b.s) - +new Date(a.s)
+              )[0];
               return (
                 <tr key={i}>
                   <th scope="row">
@@ -250,23 +253,22 @@ const RankingList: React.FC<RankingListProps> = (props) => {
                   </td>
                   <td>
                     {matchHistory.length
-                      ? props.performers.find(
-                          (p) => +p.id === +matchHistory[0].id
-                        )?.name
+                      ? props.performers.find((p) => +p.id === +recentMatch.id)
+                          ?.name
                       : "-"}
                   </td>
                   <td>
                     {matchHistory.length
-                      ? matchHistory[0].r === 1
+                      ? recentMatch.r === 1
                         ? "Won"
-                        : matchHistory[0].r === 0
+                        : recentMatch.r === 0
                         ? "Lost"
                         : "Tie"
                       : "-"}
                   </td>
                   <td>
                     {matchHistory.length
-                      ? new Date(matchHistory[0].s).toDateString()
+                      ? new Date(recentMatch.s).toDateString()
                       : "-"}
                   </td>
                 </tr>
@@ -422,7 +424,7 @@ const sortMethodMatches = {
 const sortByDate = (performers: StashPerformer[]): StashPerformer[] => {
   const newSort = performers.sort((a, b) => {
     const getRecord = (records: PerformerMatchRecord[]) =>
-      records.sort((c, d) => +new Date(c.s) - +new Date(d.s))[0];
+      records.sort((c, d) => +new Date(d.s) - +new Date(c.s))[0];
 
     const aDate = getRecord(
       JSON.parse(a.custom_fields?.glicko_match_history ?? "[]")
