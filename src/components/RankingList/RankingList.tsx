@@ -210,6 +210,20 @@ const RankingList: React.FC<RankingListProps> = (props) => {
               const recentMatch = matchHistory.sort(
                 (a, b) => +new Date(b.s) - +new Date(a.s)
               )[0];
+              const recentOpponent = props.performers.find(
+                (p) => +p.id === +recentMatch.id
+              );
+              const opponentData = recentOpponent ? (
+                <a
+                  href={getStashUrl("/performers/" + recentOpponent.id)}
+                  target="_blank"
+                >
+                  {recentOpponent.name}
+                </a>
+              ) : (
+                "-"
+              );
+
               return (
                 <tr key={i}>
                   <th scope="row">
@@ -251,12 +265,7 @@ const RankingList: React.FC<RankingListProps> = (props) => {
                   <td>
                     <span>{matchHistory.length}</span>
                   </td>
-                  <td>
-                    {matchHistory.length
-                      ? props.performers.find((p) => +p.id === +recentMatch.id)
-                          ?.name
-                      : "-"}
-                  </td>
+                  <td>{opponentData}</td>
                   <td>
                     {matchHistory.length
                       ? recentMatch.r === 1
