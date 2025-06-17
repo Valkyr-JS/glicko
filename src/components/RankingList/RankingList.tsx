@@ -5,6 +5,7 @@ import { default as cx } from "classnames";
 import type { StashPerformer } from "@/apollo/schema";
 import { GLICKO } from "@/constants";
 import styles from "./RankingList.module.scss";
+import { getStashUrl } from "@/helpers/stash";
 
 interface RankingListProps {
   /** The performer data including their glicko data. */
@@ -205,12 +206,17 @@ const RankingList: React.FC<RankingListProps> = (props) => {
               const matchHistory: PerformerMatchRecord[] = JSON.parse(
                 p.custom_fields?.glicko_match_history ?? "[]"
               );
+              const link = getStashUrl("/performers/" + p.id);
               return (
                 <tr key={i}>
                   <th scope="row">
                     <span>{allByRank.findIndex((r) => r.id === p.id) + 1}</span>
                   </th>
-                  <td>{p.name}</td>
+                  <td>
+                    <a href={link} target="_blank">
+                      {p.name}
+                    </a>
+                  </td>
                   <td>
                     <span>
                       {Math.round(
