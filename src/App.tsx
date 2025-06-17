@@ -39,6 +39,7 @@ import { Glicko2, Player } from "glicko2";
 import { SET_PERFORMER_DATA, SET_PLUGIN_CONFIG } from "./apollo/mutations";
 import SettingsPage from "./pages/Settings/Settings";
 import { getStashVersionBreakdown } from "./helpers/stash";
+import LeaderboardPage from "./pages/Leaderboard/Leaderboard";
 
 function App() {
   /* -------------------------------------- State management -------------------------------------- */
@@ -325,6 +326,8 @@ function App() {
 
     // Update the state
     setPerformerFilters(updatedFilters);
+
+    await queryStashConfiguration.refetch();
   };
 
   /** Handler for updating the user settings. */
@@ -345,6 +348,8 @@ function App() {
 
     // Update the state
     setUserSettings(updatedSettings);
+
+    await queryStashConfiguration.refetch();
   };
 
   /** Handler for scoring the match as a draw. */
@@ -521,10 +526,53 @@ function App() {
     // Update the session
     session.updateRatings(matches);
 
+    // Get the previous session records from the config
+    const sessionHistory: string[] = JSON.parse(
+      queryStashConfiguration.data?.configuration.plugins.glicko
+        ?.sessionHistory ?? "[]"
+    );
+
+    // Get the current ISO date and push it to the history
+    const sessionDatetime = new Date().toISOString();
+    const updatedHistory: string[] = [...sessionHistory, sessionDatetime];
+
+    // Update the plugin config with the new session history
+    await mutateStashPluginConfig({
+      variables: {
+        input: {
+          ...queryStashConfiguration.data?.configuration.plugins.glicko,
+          sessionHistory: JSON.stringify(updatedHistory),
+        },
+      },
+    });
+
+    await queryStashConfiguration.refetch();
+
     // Update Stash performer data with results unless the user is in read-only
     // mode or the Stash version doesn't support custom fields
     if (!userSettings.readOnly && !(stashVersion && stashVersion[1] < 28)) {
       allGlickoPerformers.forEach((p) => {
+        // Create match history for the performer
+        const performerResults = results.filter(
+          (r) => r[0] === p.id || r[1] === p.id
+        );
+
+        const sessionHistory: PerformerMatchRecord[] = performerResults.map(
+          (r) => ({
+            id: +r[0] === +p.id ? r[1] : r[0],
+            r: r[0] === p.id ? r[2] : r[2] === 1 ? 0 : 1,
+            s: sessionDatetime,
+          })
+        );
+
+        const previousHistory = p.custom_fields?.glicko_match_history
+          ? (JSON.parse(
+              p.custom_fields.glicko_match_history
+            ) as PerformerMatchRecord[])
+          : [];
+
+        const fullHistory = [...previousHistory, ...sessionHistory];
+
         mutateStashPerformer({
           variables: {
             input: {
@@ -532,6 +580,7 @@ function App() {
               custom_fields: {
                 partial: {
                   glicko_deviation: p.glicko.getRd(),
+                  glicko_match_history: JSON.stringify(fullHistory),
                   glicko_rating: p.glicko.getRating(),
                   glicko_volatility: p.glicko.getVol(),
                 },
@@ -573,6 +622,18 @@ function App() {
 
   /** Handle wiping all Glicko data from all Stash performers */
   const handleWipePerformerData = async () => {
+    // Update the plugin config with the new session history
+    await mutateStashPluginConfig({
+      variables: {
+        input: {
+          ...queryStashConfiguration.data?.configuration.plugins.glicko,
+          sessionHistory: JSON.stringify([]),
+        },
+      },
+    });
+
+    await queryStashConfiguration.refetch();
+
     // Fetch data for all performers to get all performers from Stash
     // Get ALL performers from Stash
     let page = 1;
@@ -745,6 +806,8 @@ function App() {
             versionLoading={queryStashVersionResult.loading}
           />
         );
+    case "LEADERBOARD":
+      return <LeaderboardPage setActivePage={setActivePage} />;
     case "SETTINGS":
       return (
         <SettingsPage

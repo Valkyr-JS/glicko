@@ -14,6 +14,32 @@ export const GET_ALL_PERFORMERS_BY_PAGE = gql`
   }
 `;
 
+export const GET_ALL_PERFORMERS_WITH_HISTORY_BY_PAGE = gql`
+  query GetPerformersWithHistoryByPage($page: Int, $perPage: Int) {
+    findPerformers(
+      filter: { page: $page, per_page: $perPage }
+      performer_filter: {
+        custom_fields: {
+          field: "glicko_match_history"
+          value: ["[]"]
+          modifier: NOT_EQUALS
+        }
+        AND: {
+          custom_fields: { field: "glicko_match_history", modifier: NOT_NULL }
+        }
+      }
+    ) {
+      count
+      performers {
+        custom_fields
+        id
+        image_path
+        name
+      }
+    }
+  }
+`;
+
 export const GET_ALL_PERFORMERS_BY_PAGE_NO_CUSTOM = gql`
   query GetPerformersByPage($page: Int, $perPage: Int) {
     findPerformers(filter: { page: $page, per_page: $perPage }) {

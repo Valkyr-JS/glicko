@@ -11,8 +11,9 @@ import { faStop } from "@fortawesome/pro-solid-svg-icons/faStop";
 import { faTrophy } from "@fortawesome/pro-solid-svg-icons/faTrophy";
 import { default as cx } from "classnames";
 import type { StashFindImagesResult, StashPerformer } from "@/apollo/schema";
-import styles from "./MatchBoard.module.scss";
 import { DEFAULT_BOARD_WIDTH, DEFAULT_IMAGE_QUALITY } from "@/constants";
+import { getStashUrl } from "@/helpers/stash";
+import styles from "./MatchBoard.module.scss";
 
 interface MatchBoardProps {
   /** The custom max-width of the match board. */
@@ -202,19 +203,14 @@ const PlayerProfile = (props: PlayerProfileProps) => {
     if (imageRef.current?.complete) setImageLoading(false);
   }, [imageRef.current?.complete]);
 
-  const baseUrl =
-    import.meta.env.MODE === "development"
-      ? import.meta.env.VITE_STASH_SERVER
-      : "";
-
   // When image change is detected, update the state
   useEffect(() => {
     const imgQuality =
       props.imageQuality === "original" ? "image" : DEFAULT_IMAGE_QUALITY;
     if (props.imageID)
-      setImageSource(baseUrl + "/image/" + props.imageID + "/" + imgQuality);
+      setImageSource(getStashUrl("/image/" + props.imageID + "/" + imgQuality));
     else setImageSource(props.coverImg);
-  }, [baseUrl, props.coverImg, props.imageID, props.imageQuality]);
+  }, [props.coverImg, props.imageID, props.imageQuality]);
 
   const imageButtonDisabled = imageLoading || !props.imagesAvailable;
   const coverButtonDisabled =

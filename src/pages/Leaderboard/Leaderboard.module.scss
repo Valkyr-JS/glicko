@@ -1,0 +1,10 @@
+@use "@/scss/pages";
+@use "@/scss/spacing";
+
+.Leaderboard {
+  @include pages.layout;
+
+  nav {
+    margin-top: spacing.$large;
+  }
+}

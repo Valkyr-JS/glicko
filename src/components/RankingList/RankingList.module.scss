@@ -1,0 +1,147 @@
+@use "@/scss/spacing";
+
+/** See for alignment principles - https://www.csescienceeditor.org/article/best-practices-in-table-design/ */
+
+$rank-index: 1;
+$performer-index: 2;
+$rating-index: 3;
+$wins-index: 4;
+$losses-index: 5;
+$ties-index: 6;
+$matches-index: 7;
+$recent-match-index: 8;
+$recent-outcome-index: 9;
+$recent-date-index: 10;
+
+.RankingList {
+  // Make links white so they're easier to read
+  th,
+  td {
+    a {
+      color: #f5f8fa;
+    }
+  }
+
+  // Center-align number column headings
+  th {
+    // Right-align number columns
+    &:nth-child(#{$rating-index}),
+    &:nth-child(#{$wins-index}),
+    &:nth-child(#{$losses-index}),
+    &:nth-child(#{$ties-index}),
+    &:nth-child(#{$matches-index}) {
+      text-align: center;
+    }
+  }
+  td {
+    // Right-align number columns
+    &:nth-child(#{$rating-index}),
+    &:nth-child(#{$wins-index}),
+    &:nth-child(#{$losses-index}),
+    &:nth-child(#{$ties-index}),
+    &:nth-child(#{$matches-index}) {
+      text-align: right;
+    }
+  }
+
+  th,
+  td {
+    // Hide all but the three most important columns at the lowest breakpoint
+    &:nth-child(#{$wins-index}),
+    &:nth-child(#{$losses-index}),
+    &:nth-child(#{$ties-index}),
+    &:nth-child(#{$matches-index}),
+    &:nth-child(#{$recent-match-index}),
+    &:nth-child(#{$recent-date-index}),
+    &:nth-child(#{$recent-outcome-index}) {
+      display: none;
+    }
+
+    @media (min-width: 576px) {
+      &:nth-child(#{$wins-index}),
+      &:nth-child(#{$losses-index}) {
+        display: table-cell;
+      }
+    }
+
+    @media (min-width: 768px) {
+      &:nth-child(#{$ties-index}),
+      &:nth-child(#{$matches-index}) {
+        display: table-cell;
+      }
+    }
+
+    @media (min-width: 992px) {
+      &:nth-child(#{$recent-match-index}),
+      &:nth-child(#{$recent-outcome-index}) {
+        display: table-cell;
+      }
+    }
+
+    @media (min-width: 1200px) {
+      &:nth-child(#{$recent-date-index}) {
+        display: table-cell;
+      }
+    }
+
+    // Don't wrap specific columns
+    &:nth-child(#{$recent-date-index}) {
+      white-space: pre;
+    }
+  }
+
+  // Reveal all columns if expanded
+  .expanded {
+    th,
+    td {
+      &:nth-child(#{$wins-index}),
+      &:nth-child(#{$losses-index}),
+      &:nth-child(#{$ties-index}),
+      &:nth-child(#{$matches-index}),
+      &:nth-child(#{$recent-match-index}),
+      &:nth-child(#{$recent-date-index}),
+      &:nth-child(#{$recent-outcome-index}) {
+        display: table-cell;
+      }
+
+      // Don't wrap any columns when expanded {
+      white-space: pre;
+    }
+  }
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: spacing.$small;
+}
+
+.collapse {
+  @media (min-width: 1200px) {
+    // Hide at the largest breakpoint
+    display: none !important;
+  }
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  gap: spacing.$small;
+  width: 100%;
+  margin-left: auto;
+
+  @media (min-width: 400px) {
+    width: auto;
+  }
+}
+
+.SortButton {
+  background: none;
+  color: inherit;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  outline: inherit;
+}

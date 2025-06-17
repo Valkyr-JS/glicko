@@ -87,6 +87,7 @@ enum PagesEnum {
   HOME = "HOME",
   FILTERS = "FILTERS",
   GAME = "GAME",
+  LEADERBOARD = "LEADERBOARD",
   SETTINGS = "SETTINGS",
 }
 
@@ -107,8 +108,6 @@ interface PerformerFilters {
 /** A record of a performer's past match. May need refinement. Keys are kept
  * short for storing as a string in custom fields. */
 interface PerformerMatchRecord {
-  /** The ISO datetime of the match. */
-  d: string;
   /** The Stash ID of the opposing performer. */
   id: number;
   /** The outcome of the match for the performer, where 1 is a win, 0 is a loss,
@@ -156,7 +155,7 @@ interface StashSlimPerformerData {
   name: MatchPerformer["name"];
 }
 
-type StashAppVersion = [major: number, minor: number, patch: number]
+type StashAppVersion = [major: number, minor: number, patch: number];
 
 /** The user's game settings. */
 interface UserSettings {

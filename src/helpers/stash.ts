@@ -5,3 +5,11 @@ export const getStashVersionBreakdown = (version: string): StashAppVersion => {
     .split(".")
     .map((s) => +s) as StashAppVersion;
 };
+
+export const getStashUrl = (path: string) => {
+  return (
+    (import.meta.env.MODE === "development"
+      ? import.meta.env.VITE_STASH_SERVER
+      : "") + path
+  );
+};
