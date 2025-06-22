@@ -130,7 +130,11 @@ export const ReadOnlyMode: Story = {
     const submitBtn = canvas.queryByRole<HTMLButtonElement>("button", {
       name: "Submit",
     });
+    const readOnlyBtn = canvas.queryByRole<HTMLButtonElement>("button", {
+      name: "Read-only mode active",
+    });
     expect(submitBtn).not.toBeInTheDocument();
+    expect(readOnlyBtn).toBeInTheDocument();
   },
 };
 
@@ -145,6 +149,10 @@ export const NotReadOnlyMode: Story = {
     const submitBtn = canvas.queryByRole<HTMLButtonElement>("button", {
       name: "Submit",
     });
+    const readOnlyBtn = canvas.queryByRole<HTMLButtonElement>("button", {
+      name: "Read-only mode active",
+    });
     expect(submitBtn).toBeInTheDocument();
+    expect(readOnlyBtn).not.toBeInTheDocument();
   },
 };
