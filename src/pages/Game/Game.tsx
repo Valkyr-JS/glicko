@@ -74,7 +74,10 @@ const GamePage: React.FC<GamePageProps> = (props) => {
 
   /** Handler for confirming abandonment of the current session. */
   const handleAbandonProgress = () => {
-    if (!props.userSettings.readOnly) setShowAbandonModal(true);
+    // Only open the modal if the user is not in read-only mode, and at least
+    // one match has been played.
+    if (!props.userSettings.readOnly && !!props.results.length)
+      setShowAbandonModal(true);
     else props.setActivePage("HOME");
   };
 
