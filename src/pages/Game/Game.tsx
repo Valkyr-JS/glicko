@@ -73,7 +73,10 @@ const GamePage: React.FC<GamePageProps> = (props) => {
   };
 
   /** Handler for confirming abandonment of the current session. */
-  const handleAbandonProgress = () => setShowAbandonModal(true);
+  const handleAbandonProgress = () => {
+    if (!props.userSettings.readOnly) setShowAbandonModal(true);
+    else props.setActivePage("HOME");
+  };
 
   /** Handler for cancelling abandonment of the current session. */
   const handleCancelAbandonProgress = () => setShowAbandonModal(false);
