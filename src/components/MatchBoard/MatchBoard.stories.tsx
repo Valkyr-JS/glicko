@@ -118,3 +118,33 @@ export const ResetCoverImageDisabled: Story = {
     expect(resetBtnB).toBeDisabled();
   },
 };
+
+export const ReadOnlyMode: Story = {
+  args: {
+    userSettings: {
+      readOnly: true,
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const submitBtn = canvas.queryByRole<HTMLButtonElement>("button", {
+      name: "Submit",
+    });
+    expect(submitBtn).not.toBeInTheDocument();
+  },
+};
+
+export const NotReadOnlyMode: Story = {
+  args: {
+    userSettings: {
+      readOnly: false,
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const submitBtn = canvas.queryByRole<HTMLButtonElement>("button", {
+      name: "Submit",
+    });
+    expect(submitBtn).toBeInTheDocument();
+  },
+};

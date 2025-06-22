@@ -139,17 +139,19 @@ const MatchBoard: React.FC<MatchBoardProps> = ({
           <FontAwesomeIcon icon={faForwardStep} />
         </button>
       </div>
-      <div className={styles["submit"]}>
-        <button
-          className="btn btn-primary"
-          disabled={loading || props.matchIndex === 0}
-          onClick={props.clickSubmitHandler}
-          type="button"
-        >
-          <FontAwesomeIcon icon={faSend} className="mr-2" />
-          <span>Submit</span>
-        </button>
-      </div>
+      {userSettings.readOnly ? null : (
+        <div className={styles["submit"]}>
+          <button
+            className="btn btn-primary"
+            disabled={loading || props.matchIndex === 0}
+            onClick={props.clickSubmitHandler}
+            type="button"
+          >
+            <FontAwesomeIcon icon={faSend} className="mr-2" />
+            <span>Submit</span>
+          </button>
+        </div>
+      )}
     </section>
   );
 };
