@@ -24,6 +24,14 @@ interface SettingsPageProps extends PageProps {
 const SettingsPage: React.FC<SettingsPageProps> = (props) => {
   const [settingsChanged, setSettingsChanged] = useState(false);
   const [showWipeDataModal, setShowWipeDataModal] = useState(false);
+
+  // This state is for reference between form items, e.g. for the wipe performer
+  // button to see the current read-only mode. It should not be used for
+  // submission purposes.
+  const [currentSettings, setCurrentSettings] = useState<UserSettings>(
+    props.settings
+  );
+
   const formRef = useRef<HTMLFormElement>(null);
 
   const classes = cx("container", styles.Settings);
@@ -34,12 +42,10 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
     if (!formRef.current) return props.setActivePage("HOME");
 
     const formData = new FormData(formRef.current);
-    const currentSettings = convertFormDataToUserSettings(formData);
-    const settingsHaveChanged = !compareSettings(
-      props.settings,
-      currentSettings
-    );
+    const newSettings = convertFormDataToUserSettings(formData);
+    const settingsHaveChanged = !compareSettings(props.settings, newSettings);
     setSettingsChanged(settingsHaveChanged);
+    setCurrentSettings(newSettings);
   };
 
   /* --------------------------------------- Cancel changes --------------------------------------- */
@@ -106,6 +112,7 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
             <div className="col-12 col-lg-6">
               <WipePerformerData
                 onClickHandler={() => setShowWipeDataModal(true)}
+                readOnly={!!currentSettings.readOnly}
               />
             </div>
           </div>
