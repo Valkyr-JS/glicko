@@ -14,6 +14,7 @@ import type { StashFindImagesResult, StashPerformer } from "@/apollo/schema";
 import { DEFAULT_BOARD_WIDTH, DEFAULT_IMAGE_QUALITY } from "@/constants";
 import { getStashUrl } from "@/helpers/stash";
 import styles from "./MatchBoard.module.scss";
+import { faBookOpen } from "@fortawesome/pro-solid-svg-icons/faBookOpen";
 
 interface MatchBoardProps {
   /** The custom max-width of the match board. */
@@ -83,6 +84,12 @@ const MatchBoard: React.FC<MatchBoardProps> = ({
     return () => document.removeEventListener("keyup", keyUpEvent);
   }, [loading, clickSelectHandler, userSettings]);
 
+  /* ---------------------------------------- Submit button --------------------------------------- */
+
+  const isReadOnly = !!userSettings.readOnly;
+  const submitIcon = isReadOnly ? faBookOpen : faSend;
+  const submitText = isReadOnly ? "Read-only mode active" : "Submit";
+
   /* ------------------------------------------ Component ----------------------------------------- */
   return (
     <section className={styles["one-vs-one-board"]}>
@@ -142,12 +149,12 @@ const MatchBoard: React.FC<MatchBoardProps> = ({
       <div className={styles["submit"]}>
         <button
           className="btn btn-primary"
-          disabled={loading || props.matchIndex === 0}
+          disabled={isReadOnly || loading || props.matchIndex === 0}
           onClick={props.clickSubmitHandler}
           type="button"
         >
-          <FontAwesomeIcon icon={faSend} className="mr-2" />
-          <span>Submit</span>
+          <FontAwesomeIcon icon={submitIcon} className="mr-2" />
+          <span>{submitText}</span>
         </button>
       </div>
     </section>

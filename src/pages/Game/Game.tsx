@@ -73,7 +73,13 @@ const GamePage: React.FC<GamePageProps> = (props) => {
   };
 
   /** Handler for confirming abandonment of the current session. */
-  const handleAbandonProgress = () => setShowAbandonModal(true);
+  const handleAbandonProgress = () => {
+    // Only open the modal if the user is not in read-only mode, and at least
+    // one match has been played.
+    if (!props.userSettings.readOnly && !!props.results.length)
+      setShowAbandonModal(true);
+    else props.setActivePage("HOME");
+  };
 
   /** Handler for cancelling abandonment of the current session. */
   const handleCancelAbandonProgress = () => setShowAbandonModal(false);
@@ -223,8 +229,8 @@ const SubmitProgressModal: React.FC<SubmitProgressModalProps> = (props) => {
     <>
       <p>
         It is recommended to submit at least {RECOMMENDED_MINIMUM_MATCHES}{" "}
-        matches per session, however you have only played {props.matchIndex + 1}{" "}
-        so far.
+        matches per session, however you have only played {props.matchIndex} so
+        far.
       </p>
       <p>Are you sure your want to submit results?</p>
     </>

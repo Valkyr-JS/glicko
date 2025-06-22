@@ -176,6 +176,7 @@ export const RecommendedMatchCountMet: Story = {
 export const AbandonSession: Story = {
   args: {
     matchIndex: RECOMMENDED_MINIMUM_MATCHES - 2,
+    results: [[1, 2, 1]],
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -188,5 +189,24 @@ export const AbandonSession: Story = {
       name: "Abandon session?",
     });
     await expect(modal).toBeInTheDocument();
+  },
+};
+
+export const AbandonSessionNoResults: Story = {
+  args: {
+    matchIndex: RECOMMENDED_MINIMUM_MATCHES - 2,
+    results: [],
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const abandonBtn = canvas.getByRole<HTMLButtonElement>("button", {
+      name: "Abandon progress",
+    });
+
+    await userEvent.click(abandonBtn);
+    const modal = canvas.queryByRole("dialog", {
+      name: "Abandon session?",
+    });
+    await expect(modal).not.toBeInTheDocument();
   },
 };
