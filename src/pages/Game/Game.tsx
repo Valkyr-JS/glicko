@@ -223,8 +223,8 @@ const SubmitProgressModal: React.FC<SubmitProgressModalProps> = (props) => {
     <>
       <p>
         It is recommended to submit at least {RECOMMENDED_MINIMUM_MATCHES}{" "}
-        matches per session, however you have only played {props.matchIndex + 1}{" "}
-        so far.
+        matches per session, however you have only played {props.matchIndex} so
+        far.
       </p>
       <p>Are you sure your want to submit results?</p>
     </>
