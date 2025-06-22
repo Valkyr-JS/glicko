@@ -98,13 +98,34 @@ export const SaveUnchangedSettings: Story = {
   },
 };
 
+export const NotReadOnly: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByRole<HTMLInputElement>("checkbox", {
+      name: 'Enable "read-only" mode',
+    });
+    const wipeBtn = canvas.getByRole<HTMLButtonElement>("button", {
+      name: "Wipe performer data",
+    });
+    expect(input).not.toBeChecked();
+    expect(wipeBtn).not.toBeDisabled();
+  },
+};
+
 export const ReadOnlyDefault: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const input = canvas.getByRole<HTMLInputElement>("checkbox", {
       name: 'Enable "read-only" mode',
     });
-    expect(input).not.toBeChecked();
+    const wipeBtn = canvas.getByRole<HTMLButtonElement>("button", {
+      name: "Wipe performer data",
+    });
+
+    await userEvent.click(input);
+
+    await expect(input).toBeChecked();
+    await expect(wipeBtn).toBeDisabled();
   },
 };
 

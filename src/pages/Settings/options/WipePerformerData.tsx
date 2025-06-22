@@ -6,6 +6,7 @@ import React, { useState } from "react";
 
 interface WipePerformerDataProps {
   onClickHandler: React.MouseEventHandler<HTMLButtonElement>;
+  readOnly: boolean;
 }
 
 const WipePerformerData: React.FC<WipePerformerDataProps> = (props) => {
@@ -13,6 +14,7 @@ const WipePerformerData: React.FC<WipePerformerDataProps> = (props) => {
     <button
       type="button"
       className="btn btn-danger w-100"
+      disabled={props.readOnly}
       onClick={props.onClickHandler}
     >
       Wipe performer data
