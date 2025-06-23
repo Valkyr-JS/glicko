@@ -11,6 +11,7 @@ import WipePerformerData, {
   WipePerformerDataModal,
 } from "./options/WipePerformerData";
 import styles from "./Settings.module.scss";
+import MinimalMatchHistory from "./options/MinimalMatchHistory";
 
 interface SettingsPageProps extends PageProps {
   /** The user's game settings. */
@@ -107,6 +108,11 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
             <div className="col-12 col-lg-6 mt-3">
               <BoardWidth width={props.settings.boardWidth} />
             </div>
+            <div className="col-12 col-lg-6 mt-3">
+              <MinimalMatchHistory
+                enabled={props.settings.minimalMatchHistory}
+              />
+            </div>
           </div>
           <div className="row mt-3">
             <div className="col-12 col-lg-6">
@@ -191,10 +197,16 @@ const convertFormDataToUserSettings = (data: FormData): UserSettings => {
   // Board width
   const boardWidth = +formJson["board-width"];
 
+  // Minimal match history
+  const minimalMatchHistory = !!formKeys.find(
+    (k) => k === "minimal-match-history"
+  );
+
   const updatedSettings: UserSettings = {
     arrowKeys,
     boardWidth,
     imageQuality,
+    minimalMatchHistory,
     progressMaxRows,
     readOnly,
   };
@@ -209,6 +221,7 @@ const compareSettings = (setA: UserSettings, setB: UserSettings): boolean => {
   if (setA.arrowKeys !== setB.arrowKeys) return false;
   if (setA.progressMaxRows !== setB.progressMaxRows) return false;
   if (setA.boardWidth !== setB.boardWidth) return false;
+  if (setA.minimalMatchHistory !== setB.minimalMatchHistory) return false;
 
   return true;
 };
