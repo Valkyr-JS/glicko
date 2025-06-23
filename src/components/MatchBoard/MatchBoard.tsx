@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import type { OperationVariables, QueryResult } from "@apollo/client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faForwardStep } from "@fortawesome/pro-solid-svg-icons/faForwardStep";
 import { faImage } from "@fortawesome/pro-solid-svg-icons/faImage";
 import { faImagePortrait } from "@fortawesome/pro-solid-svg-icons/faImagePortrait";
 import { faRotateLeft } from "@fortawesome/pro-solid-svg-icons/faRotateLeft";
@@ -116,6 +115,16 @@ const MatchBoard: React.FC<MatchBoardProps> = ({
           position={1}
           setLoading={setLoading}
         />
+        <span className={styles["tie-button"]}>
+          <button
+            className="btn btn-secondary"
+            disabled={loading}
+            onClick={props.clickSkipHandler}
+            type="button"
+          >
+            Tie
+          </button>
+        </span>
       </div>
       <div className={styles["tools"]}>
         <button
@@ -135,15 +144,6 @@ const MatchBoard: React.FC<MatchBoardProps> = ({
         >
           <span className="sr-only">Abandon progress</span>
           <FontAwesomeIcon icon={faStop} />
-        </button>
-        <button
-          className="btn btn-secondary"
-          disabled={loading}
-          onClick={props.clickSkipHandler}
-          type="button"
-        >
-          <span className="sr-only">Skip match</span>
-          <FontAwesomeIcon icon={faForwardStep} />
         </button>
       </div>
       <div className={styles["submit"]}>
