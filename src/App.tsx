@@ -574,7 +574,9 @@ function App() {
         let fullHistory: PerformerMatchRecord[] = [];
 
         if (isMinimal)
-          fullHistory = [sessionHistory[sessionHistory.length - 1]];
+          fullHistory = sessionHistory.length
+            ? [sessionHistory[sessionHistory.length - 1]]
+            : JSON.parse(p.custom_fields?.glicko_mini_history ?? "[]");
         else {
           const previousHistory = p.custom_fields?.glicko_match_history
             ? (JSON.parse(
