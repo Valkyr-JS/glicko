@@ -552,10 +552,18 @@ function App() {
     // mode or the Stash version doesn't support custom fields
     if (!userSettings.readOnly && !(stashVersion && stashVersion[1] < 28)) {
       allGlickoPerformers.forEach((p) => {
-        // Create match history for the performer
-        const performerResults = results.filter(
-          (r) => r[0] === p.id || r[1] === p.id
-        );
+        const isMinimal = !!userSettings.minimalMatchHistory;
+
+        const findEqualsPerformer = (r: GlickoMatchResult) =>
+          r[0] === p.id || r[1] === p.id;
+
+        // Create match history for the performer. If minimal history tracking
+        // is enabled, only get the performer's last played match result.
+        const performerResults = isMinimal
+          ? [results.findLast(findEqualsPerformer)].filter(
+              (r) => r !== undefined
+            )
+          : results.filter(findEqualsPerformer);
 
         const sessionHistory: PerformerMatchRecord[] = performerResults.map(
           (r) => ({
@@ -565,13 +573,20 @@ function App() {
           })
         );
 
-        const previousHistory = p.custom_fields?.glicko_match_history
-          ? (JSON.parse(
-              p.custom_fields.glicko_match_history
-            ) as PerformerMatchRecord[])
-          : [];
+        // Override the previous history if minimal history tracking is enabled.
+        // Otherwise, include it in the update.
+        let fullHistory: PerformerMatchRecord[] = [];
 
-        const fullHistory = [...previousHistory, ...sessionHistory];
+        if (isMinimal) fullHistory = [...sessionHistory];
+        else {
+          const previousHistory = p.custom_fields?.glicko_match_history
+            ? (JSON.parse(
+                p.custom_fields.glicko_match_history
+              ) as PerformerMatchRecord[])
+            : [];
+
+          fullHistory = [...previousHistory, ...sessionHistory];
+        }
 
         mutateStashPerformer({
           variables: {
