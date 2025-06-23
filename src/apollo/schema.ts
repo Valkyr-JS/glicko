@@ -13,6 +13,9 @@ export const StashGlickoCustomFieldsSchema = z.object({
   glicko_volatility: z.number().positive().optional(),
   /** A stringified array of performer match records. */
   glicko_match_history: z.string().optional(),
+  /** A stringified array showing wins, losses and ties. Only tracked if the
+   * minimal match history user setting is enabled. */
+  glicko_mini_history: z.string().optional(),
   /** A stringified array of performer session records. */
   glicko_session_history: z.string().optional(),
 });

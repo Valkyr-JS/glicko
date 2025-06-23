@@ -23,6 +23,7 @@ import {
   type StashConfigResult,
   type StashFindImagesResult,
   type StashFindPerformersResult,
+  type StashGlickoCustomFields,
   type StashImage,
   type StashPerformer,
   type StashVersionResult,
@@ -557,13 +558,8 @@ function App() {
         const findEqualsPerformer = (r: GlickoMatchResult) =>
           r[0] === p.id || r[1] === p.id;
 
-        // Create match history for the performer. If minimal history tracking
-        // is enabled, only get the performer's last played match result.
-        const performerResults = isMinimal
-          ? [results.findLast(findEqualsPerformer)].filter(
-              (r) => r !== undefined
-            )
-          : results.filter(findEqualsPerformer);
+        // Create match history for the performer.
+        const performerResults = results.filter(findEqualsPerformer);
 
         const sessionHistory: PerformerMatchRecord[] = performerResults.map(
           (r) => ({
@@ -577,7 +573,8 @@ function App() {
         // Otherwise, include it in the update.
         let fullHistory: PerformerMatchRecord[] = [];
 
-        if (isMinimal) fullHistory = [...sessionHistory];
+        if (isMinimal)
+          fullHistory = [sessionHistory[sessionHistory.length - 1]];
         else {
           const previousHistory = p.custom_fields?.glicko_match_history
             ? (JSON.parse(
@@ -588,17 +585,40 @@ function App() {
           fullHistory = [...previousHistory, ...sessionHistory];
         }
 
+        const partial: StashGlickoCustomFields = {
+          glicko_deviation: p.glicko.getRd(),
+          glicko_match_history: JSON.stringify(fullHistory),
+          glicko_rating: p.glicko.getRating(),
+          glicko_volatility: p.glicko.getVol(),
+        };
+
+        // If minimal tracking is enabled, tally the total wins/losses/draws. This isn't needed otherwise as all relevant data is stored in `glicko_match_history`
+        if (isMinimal) {
+          const miniHistory: PerformerMiniRecord = p.custom_fields
+            ?.glicko_mini_history
+            ? JSON.parse(p.custom_fields.glicko_mini_history)
+            : [0, 0, 0];
+
+          performerResults.forEach((r) => {
+            // If a tie, note it
+            if (r[2] === 0.5) miniHistory[2]++;
+            // Check if the performer is player 1
+            else if (r[0] === p.id) {
+              return r[2] === 0 ? miniHistory[1]++ : miniHistory[0]++;
+            } else {
+              return r[2] === 0 ? miniHistory[0]++ : miniHistory[1]++;
+            }
+          });
+
+          partial.glicko_mini_history = JSON.stringify(miniHistory);
+        }
+
         mutateStashPerformer({
           variables: {
             input: {
               id: p.id,
               custom_fields: {
-                partial: {
-                  glicko_deviation: p.glicko.getRd(),
-                  glicko_match_history: JSON.stringify(fullHistory),
-                  glicko_rating: p.glicko.getRating(),
-                  glicko_volatility: p.glicko.getVol(),
-                },
+                partial,
               },
             },
           },
@@ -713,6 +733,7 @@ function App() {
       "glicko_rating",
       "glicko_volatility",
       "glicko_match_history",
+      "glicko_mini_history",
       "glicko_session_history",
     ];
 

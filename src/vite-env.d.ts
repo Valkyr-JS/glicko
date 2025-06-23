@@ -118,6 +118,10 @@ interface PerformerMatchRecord {
   s: string;
 }
 
+/** A record of total wins, losses and ties. Only tracked if minimal match
+ * history is enabled in user settings. */
+type PerformerMiniRecord = [wins: number, losses: number, ties: number];
+
 /** A record of a performer's past sessions. May need refinement. Keys are kept
  * short for storing as a string in custom fields. */
 interface PerformerSessionRecord {
