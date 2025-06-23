@@ -47,6 +47,18 @@
     margin-right: auto;
   }
 
+  // Center the tie button between the performer image buttons
+  .tie-button {
+    grid-column: profiles-start/profiles-end;
+    grid-row: select-button-top/select-button-bottom;
+    justify-self: center;
+    align-self: center;
+
+    button {
+      @include buttons.minimum-size;
+    }
+  }
+
   .tools {
     grid-row: tools-top/tools-bottom;
     display: flex;
@@ -60,6 +72,7 @@
   }
 
   .submit {
+    grid-row: select-button-top/select-button-bottom;
     display: flex;
     justify-content: center;
 
@@ -119,8 +132,10 @@
 
   .rating-button {
     grid-row: select-button-top/select-button-bottom;
+    width: calc(100% - math.div(buttons.$accessible-size, 2));
 
     button {
+      @include buttons.minimum-size;
       width: 100%;
     }
   }
@@ -135,6 +150,21 @@
       &:not(:last-child) {
         margin-right: spacing.$small;
       }
+    }
+  }
+
+  // Explicitly place the profiles on the grid so that the tie button placement
+  // works.
+  &:nth-child(1) {
+    grid-column: profile-1-start/profile-1-end;
+  }
+
+  &:nth-child(2) {
+    grid-column: profile-2-start/profile-2-end;
+
+    // Right-align the right-hand performer selection button
+    .rating-button {
+      margin-left: auto;
     }
   }
 }
