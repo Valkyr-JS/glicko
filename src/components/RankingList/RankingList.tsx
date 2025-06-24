@@ -6,6 +6,7 @@ import type { StashPerformer } from "@/apollo/schema";
 import { GLICKO } from "@/constants";
 import styles from "./RankingList.module.scss";
 import { getStashUrl } from "@/helpers/stash";
+import TextUtils from "@/utils/text";
 
 interface RankingListProps {
   /** The performer data including their glicko data. */
@@ -277,7 +278,7 @@ const RankingList: React.FC<RankingListProps> = (props) => {
                   </td>
                   <td>
                     {matchHistory.length
-                      ? new Date(recentMatch.s).toDateString()
+                      ? TextUtils.dateTimeToString(new Date(recentMatch.s))
                       : "-"}
                   </td>
                 </tr>
