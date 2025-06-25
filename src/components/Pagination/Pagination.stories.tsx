@@ -70,9 +70,28 @@ export const NonCompactButtons: Story = {
     const page3Btn = canvas.getByRole<HTMLButtonElement>("button", {
       name: "Load page 3",
     });
+    const prevBtn = canvas.queryByRole<HTMLButtonElement>("button", {
+      name: "Load previous page",
+    });
 
     expect(page1Btn).not.toBeDisabled();
     expect(page2Btn).toBeDisabled();
     expect(page3Btn).not.toBeDisabled();
+    expect(prevBtn).not.toBeInTheDocument();
+  },
+};
+
+export const CompactButtons: Story = {
+  args: {
+    count: 5,
+    current: 2,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const prevBtn = canvas.getByRole<HTMLButtonElement>("button", {
+      name: "Load previous page",
+    });
+
+    expect(prevBtn).toBeInTheDocument();
   },
 };

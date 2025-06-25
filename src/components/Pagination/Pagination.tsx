@@ -1,3 +1,4 @@
+import { faChevronLeft } from "@fortawesome/pro-solid-svg-icons/faChevronLeft";
 import { faChevronsLeft } from "@fortawesome/pro-solid-svg-icons/faChevronsLeft";
 import { faChevronsRight } from "@fortawesome/pro-solid-svg-icons/faChevronsRight";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -45,7 +46,11 @@ const Pagination: React.FC<PaginationProps> = (props) => {
         <span className="sr-only">Load first page</span>
         <FontAwesomeIcon icon={faChevronsLeft} />
       </button>
-      {props.count < minPagesForCompact ? <PageButtons {...props} /> : null}
+      {props.count < minPagesForCompact ? (
+        <PageButtons {...props} />
+      ) : (
+        <CompactButtons {...props} />
+      )}
       <button
         type="button"
         className="btn btn-secondary"
@@ -91,4 +96,26 @@ const PageButtons: React.FC<PaginationProps> = (props) => {
     i++;
   }
   return <>{...buttons}</>;
+};
+
+const CompactButtons: React.FC<PaginationProps> = (props) => {
+  /* ------------------------------------ Previous page button ------------------------------------ */
+
+  const prevButtonDisabled = props.current === 1;
+  const handlePrevButtonClick: React.MouseEventHandler = () =>
+    props.setCurrent(props.current - 1);
+
+  return (
+    <>
+      <button
+        type="button"
+        className="btn btn-secondary"
+        disabled={prevButtonDisabled}
+        onClick={handlePrevButtonClick}
+      >
+        <span className="sr-only">Load previous page</span>
+        <FontAwesomeIcon icon={faChevronLeft} />
+      </button>
+    </>
+  );
 };
