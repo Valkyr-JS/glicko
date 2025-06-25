@@ -80,8 +80,7 @@ const PageButtons: React.FC<PaginationProps> = (props) => {
     HTMLButtonElement
   >[] = [];
 
-  let i = 1;
-  while (i <= props.count) {
+  for (let i = 1; i <= props.count; i++) {
     const btn: React.DetailedHTMLProps<
       React.ButtonHTMLAttributes<HTMLButtonElement>,
       HTMLButtonElement
@@ -90,14 +89,16 @@ const PageButtons: React.FC<PaginationProps> = (props) => {
         type="button"
         className="btn btn-secondary"
         disabled={i === props.current}
-        onClick={() => props.setCurrent(i)}
+        onClick={() => {
+          console.log("click", i);
+          props.setCurrent(i);
+        }}
       >
         <span className="sr-only">Load page {i}</span>
         <span aria-hidden={true}>{i}</span>
       </button>
     );
     buttons.push(btn);
-    i++;
   }
   return <>{...buttons}</>;
 };
