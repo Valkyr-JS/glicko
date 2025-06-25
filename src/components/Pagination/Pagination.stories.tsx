@@ -84,14 +84,56 @@ export const NonCompactButtons: Story = {
 export const CompactButtons: Story = {
   args: {
     count: 5,
-    current: 2,
+    current: 3,
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const prevBtn = canvas.getByRole<HTMLButtonElement>("button", {
       name: "Load previous page",
     });
+    const nextBtn = canvas.getByRole<HTMLButtonElement>("button", {
+      name: "Load next page",
+    });
 
-    expect(prevBtn).toBeInTheDocument();
+    expect(prevBtn).not.toBeDisabled();
+    expect(nextBtn).not.toBeDisabled();
+  },
+};
+
+export const CompactButtonsFirstPage: Story = {
+  args: {
+    count: 5,
+    current: 1,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const prevBtn = canvas.getByRole<HTMLButtonElement>("button", {
+      name: "Load previous page",
+    });
+    const nextBtn = canvas.getByRole<HTMLButtonElement>("button", {
+      name: "Load next page",
+    });
+
+    expect(prevBtn).toBeDisabled();
+    expect(nextBtn).not.toBeDisabled();
+  },
+};
+
+export const CompactButtonsLastPage: Story = {
+  args: {
+    count: 5,
+    current: 5,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const prevBtn = canvas.getByRole<HTMLButtonElement>("button", {
+      name: "Load previous page",
+    });
+    const nextBtn = canvas.getByRole<HTMLButtonElement>("button", {
+      name: "Load next page",
+    });
+
+    expect(prevBtn).not.toBeDisabled();
+    expect(nextBtn).toBeDisabled();
   },
 };
