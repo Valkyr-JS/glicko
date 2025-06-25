@@ -1,8 +1,9 @@
 @use "@/scss/spacing";
 
 .page-input {
-  position: absolute;
+  position: absolute !important;
   top: 100%;
   margin-top: spacing.$small;
   width: auto;
+  background-color: #394b59;
 }
