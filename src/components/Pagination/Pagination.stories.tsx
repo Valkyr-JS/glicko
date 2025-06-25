@@ -26,22 +26,30 @@ export const FirstPageActive: Story = {
     const firstBtn = canvas.getByRole<HTMLButtonElement>("button", {
       name: "Load first page",
     });
+    const lastBtn = canvas.getByRole<HTMLButtonElement>("button", {
+      name: "Load last page",
+    });
 
     expect(firstBtn).toBeDisabled();
+    expect(lastBtn).not.toBeDisabled();
   },
 };
 
-export const FirstPageNotActive: Story = {
+export const LastPageActive: Story = {
   args: {
     count: 3,
-    current: 2,
+    current: 3,
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const firstBtn = canvas.getByRole<HTMLButtonElement>("button", {
       name: "Load first page",
     });
+    const lastBtn = canvas.getByRole<HTMLButtonElement>("button", {
+      name: "Load last page",
+    });
 
     expect(firstBtn).not.toBeDisabled();
+    expect(lastBtn).toBeDisabled();
   },
 };

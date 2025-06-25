@@ -1,4 +1,5 @@
 import { faChevronsLeft } from "@fortawesome/pro-solid-svg-icons/faChevronsLeft";
+import { faChevronsRight } from "@fortawesome/pro-solid-svg-icons/faChevronsRight";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 
@@ -20,6 +21,12 @@ const Pagination: React.FC<PaginationProps> = (props) => {
   const handleFirstButtonClick: React.MouseEventHandler = () =>
     props.setCurrent(1);
 
+  /* -------------------------------------- Last page button -------------------------------------- */
+
+  const lastButtonDisabled = props.current === props.count;
+  const handleLastButtonClick: React.MouseEventHandler = () =>
+    props.setCurrent(props.count);
+
   /* ------------------------------------------ Component ----------------------------------------- */
 
   return (
@@ -32,6 +39,15 @@ const Pagination: React.FC<PaginationProps> = (props) => {
       >
         <span className="sr-only">Load first page</span>
         <FontAwesomeIcon icon={faChevronsLeft} />
+      </button>
+      <button
+        type="button"
+        className="btn btn-secondary"
+        disabled={lastButtonDisabled}
+        onClick={handleLastButtonClick}
+      >
+        <span className="sr-only">Load last page</span>
+        <FontAwesomeIcon icon={faChevronsRight} />
       </button>
     </div>
   );
