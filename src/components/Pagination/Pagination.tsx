@@ -18,8 +18,6 @@ interface PaginationProps {
 }
 
 const Pagination: React.FC<PaginationProps> = (props) => {
-  console.log(props);
-
   /* -------------------------------------- First page button ------------------------------------- */
 
   const firstButtonDisabled = props.current === 1;
@@ -37,7 +35,7 @@ const Pagination: React.FC<PaginationProps> = (props) => {
   // If the page count is less than the stated amount, render a button for each
   const minPagesForCompact = 4;
 
-  const classes = cx("pagination", "btn-group", styles.pagination)
+  const classes = cx("pagination", "btn-group", styles.pagination);
 
   return (
     <div className={classes}>
@@ -89,10 +87,7 @@ const PageButtons: React.FC<PaginationProps> = (props) => {
         type="button"
         className="btn btn-secondary"
         disabled={i === props.current}
-        onClick={() => {
-          console.log("click", i);
-          props.setCurrent(i);
-        }}
+        onClick={() => props.setCurrent(i)}
       >
         <span className="sr-only">Load page {i}</span>
         <span aria-hidden={true}>{i}</span>
