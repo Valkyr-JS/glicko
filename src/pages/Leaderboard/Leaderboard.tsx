@@ -92,20 +92,26 @@ const LeaderboardPage: React.FC<PageProps> = (props) => {
     setShowGameErrorModal(false);
   };
 
+  /* ----------------------------------------- Navigation ----------------------------------------- */
+
+  const navigation = (
+    <nav className={styles["button-container"]}>
+      <button
+        type="button"
+        className="btn btn-secondary ml-auto"
+        onClick={() => props.setActivePage("HOME")}
+      >
+        Back
+      </button>
+    </nav>
+  );
+
   if (processing)
     return (
       <main className={styles.Leaderboard}>
         <div className="container">
           <div>Loading...</div>
-          <nav>
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={() => props.setActivePage("HOME")}
-            >
-              Back
-            </button>
-          </nav>
+          {navigation}
         </div>
       </main>
     );
@@ -115,34 +121,20 @@ const LeaderboardPage: React.FC<PageProps> = (props) => {
       <main className={styles.Leaderboard}>
         <div className="container">
           <div>No data currently available.</div>
-          <nav>
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={() => props.setActivePage("HOME")}
-            >
-              Back
-            </button>
-          </nav>
+          {navigation}
         </div>
       </main>
     );
 
+    /* -------------------------------------- Loaded component -------------------------------------- */
+    
   return (
     <>
       <main className={styles.Leaderboard}>
         <div className="container">
           <h1>Leaderboard</h1>
           <RankingList performers={performers} sessionHistory={[]} />
-          <nav>
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={() => props.setActivePage("HOME")}
-            >
-              Back
-            </button>
-          </nav>
+          {navigation}
         </div>
       </main>
       <GameErrorModal
