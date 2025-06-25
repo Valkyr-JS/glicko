@@ -1,5 +1,9 @@
 @use "@/scss/spacing";
 
+.pagination {
+  margin: 0;
+}
+
 .page-input {
   position: absolute !important;
   top: 100%;

@@ -32,15 +32,15 @@ const Pagination: React.FC<PaginationProps> = (props) => {
   const handleLastButtonClick: React.MouseEventHandler = () =>
     props.setCurrent(props.count);
 
-  /* ---------------------------------- Non-compact page buttons ---------------------------------- */
+  /* ------------------------------------------ Component ----------------------------------------- */
 
   // If the page count is less than the stated amount, render a button for each
   const minPagesForCompact = 4;
 
-  /* ------------------------------------------ Component ----------------------------------------- */
+  const classes = cx("pagination", "btn-group", styles.pagination)
 
   return (
-    <div className="pagination btn-group">
+    <div className={classes}>
       <button
         type="button"
         className="btn btn-secondary"
