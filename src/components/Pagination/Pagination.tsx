@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { faChevronLeft } from "@fortawesome/pro-solid-svg-icons/faChevronLeft";
 import { faChevronRight } from "@fortawesome/pro-solid-svg-icons/faChevronRight";
 import { faChevronsLeft } from "@fortawesome/pro-solid-svg-icons/faChevronsLeft";
 import { faChevronsRight } from "@fortawesome/pro-solid-svg-icons/faChevronsRight";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { default as cx } from "classnames";
+import styles from "./Pagination.module.scss";
 
 interface PaginationProps {
   /** The total number of pages. */
@@ -100,6 +102,9 @@ const PageButtons: React.FC<PaginationProps> = (props) => {
 };
 
 const CompactButtons: React.FC<PaginationProps> = (props) => {
+  const [selectorActive, setSelectorActive] = useState(false);
+  const [selection, setSelection] = useState(props.current);
+
   const prevButtonDisabled = props.current === 1;
   const handlePrevButtonClick: React.MouseEventHandler = () =>
     props.setCurrent(props.current - 1);
@@ -107,6 +112,18 @@ const CompactButtons: React.FC<PaginationProps> = (props) => {
   const nextButtonDisabled = props.current === props.count;
   const handleNextButtonClick: React.MouseEventHandler = () =>
     props.setCurrent(props.current + 1);
+
+  const handleClickSelector: React.MouseEventHandler = () =>
+    setSelectorActive(!selectorActive);
+
+  const handleChangePageInput: React.ChangeEventHandler<HTMLInputElement> = (
+    e
+  ) => {
+    const val = +e.target.value;
+    setSelection(val);
+  };
+
+  const inputGroupClasses = cx("input-group", styles["page-input"]);
 
   return (
     <>
@@ -119,6 +136,31 @@ const CompactButtons: React.FC<PaginationProps> = (props) => {
         <span className="sr-only">Load previous page</span>
         <FontAwesomeIcon icon={faChevronLeft} />
       </button>
+      <button
+        type="button"
+        className="btn btn-secondary"
+        onClick={handleClickSelector}
+      >
+        <span className="sr-only">Select page. Currently on page</span>
+        {props.current} of {props.count}
+      </button>
+      {selectorActive ? (
+        <span className={inputGroupClasses}>
+          <input
+            type="number"
+            aria-labelledby="pagination-set-page"
+            className="text-input form-control"
+            min={1}
+            max={props.count}
+            name="set-page"
+            onChange={handleChangePageInput}
+            value={selection}
+          />
+          <span id="pagination-set-page" className="sr-only">
+            Set the page
+          </span>
+        </span>
+      ) : null}
       <button
         type="button"
         className="btn btn-secondary"

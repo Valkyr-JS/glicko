@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import Pagination from "./Pagination";
-import { expect, fn, within } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
 
 const meta = {
   title: "Components/Pagination",
@@ -135,5 +135,31 @@ export const CompactButtonsLastPage: Story = {
 
     expect(prevBtn).not.toBeDisabled();
     expect(nextBtn).toBeDisabled();
+  },
+};
+
+export const CompactButtonsSelectPage: Story = {
+  args: {
+    count: 5,
+    current: 3,
+  },
+  play: async ({ args, canvasElement }) => {
+    const canvas = within(canvasElement);
+    const selectBtn = canvas.getByRole<HTMLButtonElement>("button", {
+      name:
+        "Select page. Currently on page " + args.current + " of " + args.count,
+    });
+
+    const inputA = canvas.queryByRole<HTMLInputElement>("spinbutton", {
+      name: "Set the page",
+    });
+    expect(inputA).not.toBeInTheDocument();
+
+    await userEvent.click(selectBtn);
+
+    const inputB = canvas.getByRole<HTMLInputElement>("spinbutton", {
+      name: "Set the page",
+    });
+    expect(inputB).toBeInTheDocument();
   },
 };

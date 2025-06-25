@@ -1,0 +1,8 @@
+@use "@/scss/spacing";
+
+.page-input {
+  position: absolute;
+  top: 100%;
+  margin-top: spacing.$small;
+  width: auto;
+}
