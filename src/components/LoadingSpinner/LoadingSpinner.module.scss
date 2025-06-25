@@ -1,0 +1,15 @@
+@use "@/scss/spacing";
+
+.loading {
+  --fa-animation-duration: 0.75s;
+  display: flex;
+  flex-direction: column;
+  font-size: 3rem;
+
+  span {
+    margin-top: spacing.$small;
+    margin-right: auto;
+    margin-left: auto;
+    font-size: 1.75rem;
+  }
+}

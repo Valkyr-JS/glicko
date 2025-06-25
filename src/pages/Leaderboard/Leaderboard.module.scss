@@ -4,7 +4,7 @@
 .Leaderboard {
   @include pages.layout;
 
-  nav {
-    margin-top: spacing.$large;
+  .button-container {
+    display: flex;
   }
 }

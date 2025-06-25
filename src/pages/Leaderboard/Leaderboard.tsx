@@ -8,6 +8,7 @@ import type {
 } from "@/apollo/schema";
 import { GET_ALL_PERFORMERS_WITH_HISTORY_BY_PAGE } from "@/apollo/queries";
 import { GameErrorModal } from "@/components/Modal/Modal";
+import LoadingSpinner from "@/components/LoadingSpinner/LoadingSpinner";
 
 const LeaderboardPage: React.FC<PageProps> = (props) => {
   const [gameError, setGameError] = useState<GameError | null>(null);
@@ -87,57 +88,38 @@ const LeaderboardPage: React.FC<PageProps> = (props) => {
     });
   }, [queryAllStashPerformers]);
 
+  /** Handler for closing the error modal. */
   const handleCloseErrorModal = () => {
     setGameError(null);
     setShowGameErrorModal(false);
   };
 
-  if (processing)
-    return (
-      <main className={styles.Leaderboard}>
-        <div className="container">
-          <div>Loading...</div>
-          <nav>
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={() => props.setActivePage("HOME")}
-            >
-              Back
-            </button>
-          </nav>
-        </div>
-      </main>
-    );
+  /* --------------------------------------- Body component --------------------------------------- */
 
-  if (performers.length === 0)
-    return (
-      <main className={styles.Leaderboard}>
-        <div className="container">
-          <div>No data currently available.</div>
-          <nav>
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={() => props.setActivePage("HOME")}
-            >
-              Back
-            </button>
-          </nav>
-        </div>
-      </main>
-    );
+  // The component that is rendered depends on the loading status and makeup of
+  // the data
+  const bodyComponent = processing ? (
+    <LoadingSpinner />
+  ) : gameError ? (
+    <div>An error occured.</div>
+  ) : performers.length === 0 ? (
+    <div>No data currently available.</div>
+  ) : (
+    <RankingList performers={performers} sessionHistory={[]} />
+  );
+
+  /* ------------------------------------------ Component ----------------------------------------- */
 
   return (
     <>
       <main className={styles.Leaderboard}>
         <div className="container">
           <h1>Leaderboard</h1>
-          <RankingList performers={performers} sessionHistory={[]} />
-          <nav>
+          {bodyComponent}
+          <nav className={styles["button-container"]}>
             <button
               type="button"
-              className="btn btn-secondary"
+              className="btn btn-secondary ml-auto"
               onClick={() => props.setActivePage("HOME")}
             >
               Back
