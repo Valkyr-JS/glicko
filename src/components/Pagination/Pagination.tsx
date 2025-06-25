@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { faChevronLeft } from "@fortawesome/pro-solid-svg-icons/faChevronLeft";
 import { faChevronRight } from "@fortawesome/pro-solid-svg-icons/faChevronRight";
 import { faChevronsLeft } from "@fortawesome/pro-solid-svg-icons/faChevronsLeft";
@@ -106,6 +106,10 @@ const CompactButtons: React.FC<PaginationProps> = (props) => {
   const [selectorActive, setSelectorActive] = useState(false);
   const [selection, setSelection] = useState(props.current);
   const [isValid, setIsValid] = useState(true);
+
+  useEffect(() => {
+    setSelection(props.current);
+  }, [props]);
 
   const prevButtonDisabled = props.current === 1;
   const handlePrevButtonClick: React.MouseEventHandler = () =>
