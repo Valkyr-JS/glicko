@@ -96,7 +96,7 @@ const RankingList: React.FC<RankingListProps> = (props) => {
     setCurrentData(pageData);
   };
 
-  const collapseClasses = cx("btn", "btn-secondary", styles.collapse);
+  const collapseClasses = cx("btn", "btn-primary", styles.collapse);
 
   const toolbar = (
     <div className={styles.toolbar}>
