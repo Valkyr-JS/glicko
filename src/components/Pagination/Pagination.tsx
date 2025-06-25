@@ -27,6 +27,11 @@ const Pagination: React.FC<PaginationProps> = (props) => {
   const handleLastButtonClick: React.MouseEventHandler = () =>
     props.setCurrent(props.count);
 
+  /* ---------------------------------- Non-compact page buttons ---------------------------------- */
+
+  // If the page count is less than the stated amount, render a button for each
+  const minPagesForCompact = 4;
+
   /* ------------------------------------------ Component ----------------------------------------- */
 
   return (
@@ -40,6 +45,7 @@ const Pagination: React.FC<PaginationProps> = (props) => {
         <span className="sr-only">Load first page</span>
         <FontAwesomeIcon icon={faChevronsLeft} />
       </button>
+      {props.count < minPagesForCompact ? <PageButtons {...props} /> : null}
       <button
         type="button"
         className="btn btn-secondary"
@@ -54,3 +60,35 @@ const Pagination: React.FC<PaginationProps> = (props) => {
 };
 
 export default Pagination;
+
+/* ---------------------------------------------------------------------------------------------- */
+/*                                       Non-compact buttons                                      */
+/* ---------------------------------------------------------------------------------------------- */
+
+const PageButtons: React.FC<PaginationProps> = (props) => {
+  const buttons: React.DetailedHTMLProps<
+    React.ButtonHTMLAttributes<HTMLButtonElement>,
+    HTMLButtonElement
+  >[] = [];
+
+  let i = 1;
+  while (i <= props.count) {
+    const btn: React.DetailedHTMLProps<
+      React.ButtonHTMLAttributes<HTMLButtonElement>,
+      HTMLButtonElement
+    > = (
+      <button
+        type="button"
+        className="btn btn-secondary"
+        disabled={i === props.current}
+        onClick={() => props.setCurrent(i)}
+      >
+        <span className="sr-only">Load page {i}</span>
+        <span aria-hidden={true}>{i}</span>
+      </button>
+    );
+    buttons.push(btn);
+    i++;
+  }
+  return <>{...buttons}</>;
+};
