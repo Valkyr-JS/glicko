@@ -4,6 +4,9 @@ import LoadingSpinner from "./LoadingSpinner";
 const meta = {
   title: "Components/LoadingSpinner",
   component: LoadingSpinner,
+  parameters: {
+    layout: "padded",
+  },
 } satisfies Meta<typeof LoadingSpinner>;
 
 export default meta;
