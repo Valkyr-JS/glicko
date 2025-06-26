@@ -11,9 +11,10 @@ export const StashGlickoCustomFieldsSchema = z.object({
   glicko_deviation: z.number().positive().optional(),
   glicko_rating: z.number().positive().optional(),
   glicko_volatility: z.number().positive().optional(),
-  /** A stringified array of performer match records. */
+  glicko_wins: z.number().positive().optional(),
+  glicko_losses: z.number().positive().optional(),
+  glicko_ties: z.number().positive().optional(),
   glicko_match_history: z.string().optional(),
-  /** A stringified array of performer session records. */
   glicko_session_history: z.string().optional(),
 });
 

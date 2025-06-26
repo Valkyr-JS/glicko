@@ -173,3 +173,36 @@ interface UserSettings {
    * be saved to the config. */
   readOnly?: boolean;
 }
+
+/** A Stash performer's custom fields data, after fields have been parsed from
+ * stringified JSON. */
+interface StashPerformerCustomFieldsParsed {
+  /** The performer's glicko rating deviation. `undefined` if they have not yet
+   * been rated. */
+  glicko_deviation?: number;
+  /** The performer's glicko rating. `undefined` if they have not yet been
+   * rated. */
+  glicko_rating?: number;
+  /** The performer's glicko rating volatility. `undefined` if they have not yet
+   * been rated. */
+  glicko_volatility?: number;
+  /** The performer's total glicko match wins. `undefined` if they have not yet
+   * been rated. */
+  glicko_wins?: number;
+  /** The performer's total glicko match losses. `undefined` if they have not yet
+   * been rated. */
+  glicko_losses?: number;
+  /** The performer's total glicko match ties. `undefined` if they have not yet
+   * been rated. */
+  glicko_ties?: number;
+  /** The performer's match history data after being parsed from a string.
+   * `undefined` if they have not yet been rated. Only one item will be saved if
+   * minimal match history is active, in order to support the recent match
+   * columns in the leaderboard */
+  glicko_match_history?: GlickoMatchResult[];
+  /** The performer's session history after being parsed from a string.
+   * `undefined` if they have not yet been rated. A maximum of two items will be
+   * saved if minimal match history is active, in order to support leaderboard
+   * position changes. */
+  glicko_session_history?: PerformerSessionRecord[];
+}
