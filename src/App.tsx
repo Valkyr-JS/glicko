@@ -82,7 +82,8 @@ function App() {
   // unlikely occurance, but better to be safe.
   const [queryAllStashPerformers] = useLazyQuery<StashFindPerformersResult>(
     stashVersion && stashVersion?.[1] < 28
-      ? GET_ALL_PERFORMERS_BY_PAGE_NO_CUSTOM
+      ? // TODO - Only get performers who have history
+        GET_ALL_PERFORMERS_BY_PAGE_NO_CUSTOM
       : GET_ALL_PERFORMERS_BY_PAGE,
 
     {
@@ -244,6 +245,7 @@ function App() {
     // Process the response
     const matchPerformers: Promise<MatchPerformer>[] =
       matchResponse.data.findPerformers.performers.map(async (p) => {
+        // TODO - error handling
         const imagesAvailable =
           (await queryStashPerformerImage({
             variables: { performerID: p.id, currentImageID: 0 },
@@ -275,6 +277,8 @@ function App() {
       }
     });
 
+    // TODO - Remove performers that are no longer included in the progress
+    // board, to avoid bloating
     if (additionalSlimData.length)
       setSlimPerformerData([...slimPerformerData, ...additionalSlimData]);
 
@@ -286,6 +290,7 @@ function App() {
     performerID: StashPerformer["id"],
     currentImageID: StashImage["id"]
   ) => {
+    // TODO - Error handling
     return queryStashPerformerImage({
       variables: { performerID, currentImageID },
     }).then((res) => {
@@ -320,6 +325,7 @@ function App() {
     };
 
     // Update the config
+    // TODO - Error handling
     await mutateStashPluginConfig({
       variables: { input: updatedPluginConfig },
     });
@@ -342,6 +348,7 @@ function App() {
     };
 
     // Update the config
+    // TODO - Error handling
     await mutateStashPluginConfig({
       variables: { input: updatedPluginConfig },
     });
@@ -496,6 +503,20 @@ function App() {
 
     await getRemainingPages();
 
+    // TODO --------------------------- Rework fetching and updating -------------------------------- */
+
+    /**
+     * Don't get all performers at once.
+     *
+     * * Updating ratings - get performers and update them immediately on a
+     *   per-page basis.
+     * * When dealing with performers who were involved in the session, fetch
+     *   their data when needed and cache it to an array for future use
+     *
+     */
+
+    // TODO ---------------------------------------- End -------------------------------------------- */
+
     // Create Glicko players from ALL performers in Stash
     const allGlickoPerformers = allStashPerformers.map((p) => {
       const rating = p.custom_fields?.glicko_rating ?? GLICKO.RATING_DEFAULT;
@@ -537,6 +558,7 @@ function App() {
     const updatedHistory: string[] = [...sessionHistory, sessionDatetime];
 
     // Update the plugin config with the new session history
+    // TODO - Error handling
     await mutateStashPluginConfig({
       variables: {
         input: {
@@ -573,6 +595,7 @@ function App() {
 
         const fullHistory = [...previousHistory, ...sessionHistory];
 
+        // TODO - Error handling
         mutateStashPerformer({
           variables: {
             input: {
@@ -623,6 +646,7 @@ function App() {
   /** Handle wiping all Glicko data from all Stash performers */
   const handleWipePerformerData = async () => {
     // Update the plugin config with the new session history
+    // TODO - Error handling
     await mutateStashPluginConfig({
       variables: {
         input: {
@@ -640,9 +664,19 @@ function App() {
     const perPage = 25;
 
     // Get the first page of performers
+    // TODO - Error handling
     const firstPage = await queryAllStashPerformers({
       variables: { page, perPage },
     });
+
+    // TODO --------------------------- Rework fetching and updating -------------------------------- */
+
+    /**
+     * Don't get all performers at once. Get performers and update them
+     * immediately once on a per-page basis.
+     */
+
+    // TODO ---------------------------------------- End -------------------------------------------- */
 
     if (!firstPage.data || firstPage.error) {
       // Throw an error
