@@ -82,10 +82,8 @@ function App() {
   // unlikely occurance, but better to be safe.
   const [queryAllStashPerformers] = useLazyQuery<StashFindPerformersResult>(
     stashVersion && stashVersion?.[1] < 28
-      ? // TODO - Only get performers who have history
-        GET_ALL_PERFORMERS_BY_PAGE_NO_CUSTOM
+      ? GET_ALL_PERFORMERS_BY_PAGE_NO_CUSTOM
       : GET_ALL_PERFORMERS_BY_PAGE,
-
     {
       fetchPolicy: "no-cache",
     }
@@ -445,6 +443,16 @@ function App() {
     // Create a session
     const session = new Glicko2();
 
+    // TODO --------------------------- Rework fetching and updating -------------------------------- */
+
+    /**
+     * Get only the required performers, not all of them. These are:
+     * * Performers involved in the session.
+     * * Performers that have session history
+     */
+
+    // TODO ---------------------------------------- End -------------------------------------------- */
+
     // Get ALL performers from Stash
     let page = 1;
     const perPage = 25;
@@ -674,6 +682,10 @@ function App() {
     /**
      * Don't get all performers at once. Get performers and update them
      * immediately once on a per-page basis.
+     *
+     * Get only the required performers, not all of them. These are:
+     * * Performers involved in the session.
+     * * Performers that have session history
      */
 
     // TODO ---------------------------------------- End -------------------------------------------- */
