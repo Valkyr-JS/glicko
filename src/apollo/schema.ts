@@ -8,12 +8,12 @@ export const StashBoxSchema = z.object({
 export type StashBox = z.infer<typeof StashBoxSchema>;
 
 export const StashGlickoCustomFieldsSchema = z.object({
-  glicko_deviation: z.number().positive().optional(),
-  glicko_rating: z.number().positive().optional(),
-  glicko_volatility: z.number().positive().optional(),
-  glicko_wins: z.number().positive().optional(),
-  glicko_losses: z.number().positive().optional(),
-  glicko_ties: z.number().positive().optional(),
+  glicko_deviation: z.number().min(0).optional(),
+  glicko_rating: z.number().min(0).optional(),
+  glicko_volatility: z.number().min(0).optional(),
+  glicko_wins: z.number().min(0).optional(),
+  glicko_losses: z.number().min(0).optional(),
+  glicko_ties: z.number().min(0).optional(),
   glicko_match_history: z.string().optional(),
   glicko_session_history: z.string().optional(),
 });
@@ -95,7 +95,7 @@ export type StashConfigResult = z.infer<typeof StashConfigResultSchema>;
 
 export const StashFindImagesSchema = z.object({
   findImages: z.object({
-    count: z.number().positive(),
+    count: z.number().min(0),
     images: z.array(z.object({ ...StashImageSchema.shape })),
   }),
 });
@@ -104,7 +104,7 @@ export type StashFindImagesResult = z.infer<typeof StashFindImagesSchema>;
 
 export const StashFindPerformersResultSchema = z.object({
   findPerformers: z.object({
-    count: z.number().positive(),
+    count: z.number().min(0),
     performers: z.array(z.object({ ...StashPerformerSchema.shape })),
   }),
 });

@@ -18,6 +18,7 @@ import {
   GET_STASH_VERSION,
 } from "./apollo/queries";
 import {
+  StashFindImagesSchema,
   StashPluginPerformerFiltersParsed,
   StashPluginUserSettingsParsed,
   type StashConfigResult,
@@ -243,11 +244,40 @@ function App() {
     // Process the response
     const matchPerformers: Promise<MatchPerformer>[] =
       matchResponse.data.findPerformers.performers.map(async (p) => {
-        // TODO - error handling
-        const imagesAvailable =
-          (await queryStashPerformerImage({
-            variables: { performerID: p.id, currentImageID: 0 },
-          }).then((res) => res.data && res.data.findImages.count > 1)) ?? false;
+        let imagesError = false;
+
+        const findImages = await queryStashPerformerImage({
+          variables: { performerID: p.id, currentImageID: 0 },
+        });
+
+        if (findImages.error) {
+          setGameError({ ...findImages.error, details: findImages.error });
+          imagesError = true;
+        }
+
+        if (!findImages.data) {
+          setGameError({
+            name: "Image data could not be found.",
+            message: "Image data could not be retrieved from Stash.",
+            details: findImages,
+          });
+          imagesError = true;
+        }
+
+        StashFindImagesSchema.safeParseAsync(findImages.data).then((res) => {
+          if (res.error) {
+            setGameError({
+              name: res.error.name,
+              message: res.error.message,
+              details: res.error,
+            });
+            imagesError = true;
+          }
+        });
+
+        const imagesAvailable = imagesError
+          ? false
+          : (findImages.data && findImages.data.findImages.count > 1) ?? false;
 
         return {
           coverImg: p.image_path,
