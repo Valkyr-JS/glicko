@@ -32,7 +32,7 @@ interface WipePerformerDataModalProps {
   /** Handler for closing the modal. */
   closeHandler: () => void;
   /** Handler for confirming the wipe action. */
-  confirmHandler: () => Promise<void>;
+  confirmHandler: () => Promise<null | undefined>;
   /** Whether the modal is currently being rendered. */
   show: boolean;
 }

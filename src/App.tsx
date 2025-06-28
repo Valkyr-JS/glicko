@@ -726,8 +726,7 @@ function App() {
   /** Handle wiping all Glicko data from all Stash performers */
   const handleWipePerformerData = async () => {
     // Update the plugin config with the new session history
-    // TODO - Error handling
-    await mutateStashPluginConfig({
+    const mutationResponse = await mutateStashPluginConfig({
       variables: {
         input: {
           ...queryStashConfiguration.data?.configuration.plugins.glicko,
@@ -735,6 +734,15 @@ function App() {
         },
       },
     });
+
+    // Check for errors
+    const mutationResponseVerified = handleStashMutationError(
+      mutationResponse,
+      setGameError,
+      "Plugin session history"
+    );
+
+    if (mutationResponseVerified === null) return null;
 
     await queryStashConfiguration.refetch();
 
@@ -744,7 +752,6 @@ function App() {
     const perPage = 25;
 
     // Get the first page of performers
-    // TODO - Error handling
     const firstPage = await queryAllStashPerformers({
       variables: { page, perPage },
     });

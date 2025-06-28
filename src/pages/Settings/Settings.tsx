@@ -20,7 +20,7 @@ interface SettingsPageProps extends PageProps {
     updatedSettings: UserSettings
   ) => Promise<null | undefined>;
   /** The handler for wiping all Glicko data from all Stash performers */
-  wipeDataHandler: () => Promise<void>;
+  wipeDataHandler: () => Promise<null | undefined>;
 }
 
 const SettingsPage: React.FC<SettingsPageProps> = (props) => {
