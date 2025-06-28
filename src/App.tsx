@@ -376,7 +376,7 @@ function App() {
     const mutationResponseVerified = handleStashMutationError(
       mutationResponse,
       setGameError,
-      "Performer filters "
+      "Plugin performer filters"
     );
 
     if (mutationResponseVerified === null) return null;
@@ -626,8 +626,7 @@ function App() {
     const updatedHistory: string[] = [...sessionHistory, sessionDatetime];
 
     // Update the plugin config with the new session history
-    // TODO - Error handling
-    await mutateStashPluginConfig({
+    const mutationResponse = await mutateStashPluginConfig({
       variables: {
         input: {
           ...queryStashConfiguration.data?.configuration.plugins.glicko,
@@ -636,12 +635,19 @@ function App() {
       },
     });
 
+    // Check for errors, but don't exit the function if it fails.
+    handleStashMutationError(
+      mutationResponse,
+      setGameError,
+      "Plugin session history"
+    );
+
     await queryStashConfiguration.refetch();
 
     // Update Stash performer data with results unless the user is in read-only
     // mode or the Stash version doesn't support custom fields
     if (!userSettings.readOnly && !(stashVersion && stashVersion[1] < 28)) {
-      allGlickoPerformers.forEach((p) => {
+      allGlickoPerformers.forEach(async (p) => {
         // Create match history for the performer
         const performerResults = results.filter(
           (r) => r[0] === p.id || r[1] === p.id
@@ -663,8 +669,7 @@ function App() {
 
         const fullHistory = [...previousHistory, ...sessionHistory];
 
-        // TODO - Error handling
-        mutateStashPerformer({
+        const performerMutationResponse = await mutateStashPerformer({
           variables: {
             input: {
               id: p.id,
@@ -679,6 +684,13 @@ function App() {
             },
           },
         });
+
+        // Check for errors, but don't exit the function if it fails.
+        handleStashMutationError(
+          performerMutationResponse,
+          setGameError,
+          "Performer custom field"
+        );
       });
     }
 
