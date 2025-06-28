@@ -189,7 +189,7 @@ function App() {
 
   /* --------------------------------------- Stash mutations -------------------------------------- */
 
-  const [mutateStashPluginConfig, stashPluginConfigResponse] =
+  const [mutateStashPluginConfig] =
     useMutation<StashConfigResult>(SET_PLUGIN_CONFIG);
 
   const [mutateStashPerformer] =
