@@ -399,10 +399,17 @@ function App() {
     };
 
     // Update the config
-    // TODO - Error handling
-    await mutateStashPluginConfig({
+    const mutationResponse = await mutateStashPluginConfig({
       variables: { input: updatedPluginConfig },
     });
+
+    const mutationResponseVerified = handleStashMutationError(
+      mutationResponse,
+      setGameError,
+      "Performer filters "
+    );
+
+    if (mutationResponseVerified === null) return null;
 
     // Update the state
     setUserSettings(updatedSettings);
