@@ -39,7 +39,10 @@ import {
 import { Glicko2, Player } from "glicko2";
 import { SET_PERFORMER_DATA, SET_PLUGIN_CONFIG } from "./apollo/mutations";
 import SettingsPage from "./pages/Settings/Settings";
-import { getStashVersionBreakdown } from "./helpers/stash";
+import {
+  getStashVersionBreakdown,
+  handleStashQueryError,
+} from "./helpers/stash";
 import LeaderboardPage from "./pages/Leaderboard/Leaderboard";
 
 function App() {
@@ -219,20 +222,15 @@ function App() {
           variables: { ...performerFilters, exclude: excludedName },
         });
 
-    if (matchResponse.error) {
-      setGameError({ ...matchResponse.error, details: matchResponse.error });
-      return null;
-    }
+    // Check for errors
+    const matchResponseVerified = handleStashQueryError(
+      matchResponse,
+      setGameError,
+      "Performer data"
+    );
+    if (!matchResponseVerified) return null;
 
-    if (!matchResponse.data) {
-      setGameError({
-        name: "Performer data could not be found.",
-        message: "Performer data could not be retrieved from Stash.",
-      });
-      return null;
-    }
-
-    if (matchResponse.data.findPerformers.count < 2) {
+    if (matchResponseVerified.findPerformers.count < 2) {
       setGameError({
         name: "Not enough performers",
         message:
@@ -243,7 +241,7 @@ function App() {
 
     // Process the response
     const matchPerformers: Promise<MatchPerformer>[] =
-      matchResponse.data.findPerformers.performers.map(async (p) => {
+      matchResponseVerified.findPerformers.performers.map(async (p) => {
         let imagesError = false;
 
         const findImages = await queryStashPerformerImage({
@@ -305,8 +303,6 @@ function App() {
       }
     });
 
-    // TODO - Remove performers that are no longer included in the progress
-    // board, to avoid bloating
     if (additionalSlimData.length)
       setSlimPerformerData([...slimPerformerData, ...additionalSlimData]);
 
@@ -318,24 +314,42 @@ function App() {
     performerID: StashPerformer["id"],
     currentImageID: StashImage["id"]
   ) => {
-    // TODO - Error handling
-    return queryStashPerformerImage({
+    const imageResponse = await queryStashPerformerImage({
       variables: { performerID, currentImageID },
-    }).then((res) => {
-      // Process the value
-      const updatedMatch = (currentMatch ?? []).map((p) => {
-        return +p.id === performerID
-          ? { ...p, imageID: res.data?.findImages.images[0].id }
-          : p;
-      });
-
-      // Update state
-      setCurrentMatch(updatedMatch as Match);
-
-      // Refetch in preparation for the next request
-      res.refetch();
-      return res;
     });
+
+    // Check for errors
+    const imageResponseVerified = handleStashQueryError(
+      imageResponse,
+      setGameError,
+      "Performer image data"
+    );
+    if (!imageResponseVerified) return null;
+
+    StashFindImagesSchema.safeParseAsync(imageResponseVerified).then((res) => {
+      if (res.error) {
+        setGameError({
+          name: res.error.name,
+          message: res.error.message,
+          details: res.error,
+        });
+        return null;
+      }
+    });
+
+    // Process the value
+    const updatedMatch = (currentMatch ?? []).map((p) => {
+      return +p.id === performerID
+        ? { ...p, imageID: imageResponseVerified.findImages.images[0].id }
+        : p;
+    });
+
+    // Update state
+    setCurrentMatch(updatedMatch as Match);
+
+    // Refetch in preparation for the next request
+    imageResponse.refetch();
+    return imageResponse;
   };
 
   /** Handle resetting the error state */
