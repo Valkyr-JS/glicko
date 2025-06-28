@@ -41,6 +41,7 @@ import { SET_PERFORMER_DATA, SET_PLUGIN_CONFIG } from "./apollo/mutations";
 import SettingsPage from "./pages/Settings/Settings";
 import {
   getStashVersionBreakdown,
+  handleStashMutationError,
   handleStashQueryError,
 } from "./helpers/stash";
 import LeaderboardPage from "./pages/Leaderboard/Leaderboard";
@@ -188,7 +189,7 @@ function App() {
 
   /* --------------------------------------- Stash mutations -------------------------------------- */
 
-  const [mutateStashPluginConfig] =
+  const [mutateStashPluginConfig, stashPluginConfigResponse] =
     useMutation<StashConfigResult>(SET_PLUGIN_CONFIG);
 
   const [mutateStashPerformer] =
@@ -367,10 +368,18 @@ function App() {
     };
 
     // Update the config
-    // TODO - Error handling
-    await mutateStashPluginConfig({
+    const mutationResponse = await mutateStashPluginConfig({
       variables: { input: updatedPluginConfig },
     });
+
+    // Check for errors
+    const mutationResponseVerified = handleStashMutationError(
+      mutationResponse,
+      setGameError,
+      "Performer filters "
+    );
+
+    if (mutationResponseVerified === null) return null;
 
     // Update the state
     setPerformerFilters(updatedFilters);
