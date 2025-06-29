@@ -9,6 +9,7 @@ import {
 import {
   GET_ALL_PERFORMERS_BY_PAGE,
   GET_ALL_PERFORMERS_BY_PAGE_NO_CUSTOM,
+  GET_ALL_PERFORMERS_WITH_HISTORY_BY_PAGE,
   GET_MATCH_PERFORMERS,
   GET_MATCH_PERFORMERS_NO_CUSTOM,
   GET_PERFORMER_IMAGE,
@@ -95,6 +96,15 @@ function App() {
       fetchPolicy: "no-cache",
     }
   );
+
+  const [queryAllStashPerformersWithHistory] =
+    useLazyQuery<StashFindPerformersResult>(
+      GET_ALL_PERFORMERS_WITH_HISTORY_BY_PAGE,
+      {
+        fetchPolicy: "no-cache",
+      }
+    );
+
   const [queryStashPerformerMatch, stashPerformerMatchResponse] =
     useLazyQuery<StashFindPerformersResult>(
       stashVersion && stashVersion?.[1] < 28
@@ -749,8 +759,8 @@ function App() {
     const perPage = 25;
 
     // Get the first page of performers
-    const firstPage = await queryAllStashPerformers({
-      variables: { page, perPage },
+    const firstPage = await queryAllStashPerformersWithHistory({
+      variables: { page: 1, perPage },
     });
 
     // Check for errors
@@ -789,8 +799,10 @@ function App() {
     page++;
 
     while (page <= pageLimit) {
-      const nextPage = await queryAllStashPerformers({
-        variables: { page, perPage },
+      // Always query for the first page of results - as data is being removed,
+      // there are fewer pages of results in the next query.
+      const nextPage = await queryAllStashPerformersWithHistory({
+        variables: { page: 1, perPage },
       });
 
       // Check for errors
