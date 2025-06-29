@@ -1,4 +1,8 @@
-import type { StashPerformer } from "@/apollo/schema";
+import {
+  StashFindPerformersResultSchema,
+  type StashFindPerformersResult,
+  type StashPerformer,
+} from "@/apollo/schema";
 import type {
   FetchResult,
   MutationFunction,
@@ -111,4 +115,36 @@ export const wipePerformerCustomFields = (
       },
     },
   });
+};
+
+export const queryStashPerformersPage = async (
+  res: QueryResult<StashFindPerformersResult, OperationVariables>,
+  setGameError: (value: React.SetStateAction<GameError | null>) => void,
+  setProcessing: (value: React.SetStateAction<boolean>) => void
+): Promise<StashFindPerformersResult | null> => {
+  // Check for errors
+  const resVerified = handleStashQueryError(
+    res,
+    setGameError,
+    "Bulk performer data"
+  );
+  if (!resVerified) {
+    // Update the processing state
+    setProcessing(false);
+    return null;
+  }
+
+  StashFindPerformersResultSchema.safeParseAsync(resVerified).then((res) => {
+    if (res.error) {
+      setGameError({
+        name: res.error.name,
+        message: res.error.message,
+        details: res.error,
+      });
+      setProcessing(false);
+      return null;
+    }
+  });
+
+  return resVerified;
 };

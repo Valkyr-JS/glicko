@@ -7,8 +7,6 @@ import {
   type QueryResult,
 } from "@apollo/client";
 import {
-  GET_ALL_PERFORMERS_BY_PAGE,
-  GET_ALL_PERFORMERS_BY_PAGE_NO_CUSTOM,
   GET_ALL_PERFORMERS_WITH_HISTORY_BY_PAGE,
   GET_MATCH_PERFORMERS,
   GET_MATCH_PERFORMERS_NO_CUSTOM,
@@ -45,6 +43,7 @@ import {
   getStashVersionBreakdown,
   handleStashMutationError,
   handleStashQueryError,
+  queryStashPerformersPage,
   wipePerformerCustomFields,
 } from "./helpers/stash";
 import LeaderboardPage from "./pages/Leaderboard/Leaderboard";
@@ -88,15 +87,6 @@ function App() {
   // custom field to a performer, then wiped their performer data via the button
   // in settings. The new data wouldn't be cached, so would be lost. It's an
   // unlikely occurance, but better to be safe.
-  const [queryAllStashPerformers] = useLazyQuery<StashFindPerformersResult>(
-    stashVersion && stashVersion?.[1] < 28
-      ? GET_ALL_PERFORMERS_BY_PAGE_NO_CUSTOM
-      : GET_ALL_PERFORMERS_BY_PAGE,
-    {
-      fetchPolicy: "no-cache",
-    }
-  );
-
   const [queryAllStashPerformersWithHistory] =
     useLazyQuery<StashFindPerformersResult>(
       GET_ALL_PERFORMERS_WITH_HISTORY_BY_PAGE,
@@ -523,58 +513,50 @@ function App() {
      * * Performers that have session history
      */
 
+    // Get all performers from this session which didn't have history
+
     // TODO ---------------------------------------- End -------------------------------------------- */
 
-    // Get ALL performers from Stash
+    // Get performers with history from Stash
     let page = 1;
     const perPage = 25;
 
-    // Get the first page of performers
-    const firstPage = await queryAllStashPerformers({
+    // Get the first page of performers with history
+    const firstPage = await queryAllStashPerformersWithHistory({
       variables: { page, perPage },
     });
 
-    if (!firstPage.data || firstPage.error) {
-      // Throw an error
-      setGameError({
-        name: "Processing error",
-        message:
-          "There was an error in fetching performer data while processing your results.",
-        details: firstPage.error,
-      });
+    const firstPageVerified = await queryStashPerformersPage(
+      firstPage,
+      setGameError,
+      setProcessing
+    );
+    if (!firstPageVerified) return null;
 
-      // Update the processing state
-      setProcessing(false);
-      return;
-    }
+    let allStashPerformers: StashPerformer[] =
+      firstPageVerified.findPerformers.performers;
 
-    let allStashPerformers = firstPage.data.findPerformers.performers;
-
-    const pageLimit = Math.ceil(firstPage.data.findPerformers.count / perPage);
+    const pageLimit = Math.ceil(
+      firstPageVerified.findPerformers.count / perPage
+    );
     page++;
 
+    // Get the remaining pages of performers
     while (page <= pageLimit) {
-      const nextPage = await queryAllStashPerformers({
+      const nextPage = await queryAllStashPerformersWithHistory({
         variables: { page, perPage },
       });
 
-      if (!nextPage.data || nextPage.error) {
-        // Throw an error
-        setGameError({
-          name: "Processing error",
-          message:
-            "There was an error in fetching performer data while processing your results.",
-          details: nextPage.error,
-        });
-
-        // Update the processing state
-        setProcessing(false);
-        return;
-      }
+      const nextPageVerified = await queryStashPerformersPage(
+        nextPage,
+        setGameError,
+        setProcessing
+      );
+      if (!nextPageVerified) return null;
 
       allStashPerformers = [
         ...allStashPerformers,
-        ...nextPage.data.findPerformers.performers,
+        ...nextPageVerified.findPerformers.performers,
       ];
       page++;
     }
