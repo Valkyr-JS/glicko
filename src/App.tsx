@@ -19,6 +19,7 @@ import {
 } from "./apollo/queries";
 import {
   StashFindImagesSchema,
+  StashFindPerformersResultSchema,
   StashPluginPerformerFiltersParsed,
   StashPluginUserSettingsParsed,
   type StashConfigResult,
@@ -541,35 +542,31 @@ function App() {
     const pageLimit = Math.ceil(firstPage.data.findPerformers.count / perPage);
     page++;
 
-    const getRemainingPages = async () => {
-      while (page <= pageLimit) {
-        const nextPage = await queryAllStashPerformers({
-          variables: { page, perPage },
+    while (page <= pageLimit) {
+      const nextPage = await queryAllStashPerformers({
+        variables: { page, perPage },
+      });
+
+      if (!nextPage.data || nextPage.error) {
+        // Throw an error
+        setGameError({
+          name: "Processing error",
+          message:
+            "There was an error in fetching performer data while processing your results.",
+          details: nextPage.error,
         });
 
-        if (!nextPage.data || nextPage.error) {
-          // Throw an error
-          setGameError({
-            name: "Processing error",
-            message:
-              "There was an error in fetching performer data while processing your results.",
-            details: nextPage.error,
-          });
-
-          // Update the processing state
-          setProcessing(false);
-          return;
-        }
-
-        allStashPerformers = [
-          ...allStashPerformers,
-          ...nextPage.data.findPerformers.performers,
-        ];
-        page++;
+        // Update the processing state
+        setProcessing(false);
+        return;
       }
-    };
 
-    await getRemainingPages();
+      allStashPerformers = [
+        ...allStashPerformers,
+        ...nextPage.data.findPerformers.performers,
+      ];
+      page++;
+    }
 
     // TODO --------------------------- Rework fetching and updating -------------------------------- */
 
@@ -756,67 +753,74 @@ function App() {
       variables: { page, perPage },
     });
 
-    // TODO --------------------------- Rework fetching and updating -------------------------------- */
-
-    /**
-     * Don't get all performers at once. Get performers and update them
-     * immediately once on a per-page basis.
-     *
-     * Get only the required performers, not all of them. These are:
-     * * Performers involved in the session.
-     * * Performers that have session history
-     */
-
-    // TODO ---------------------------------------- End -------------------------------------------- */
-
-    if (!firstPage.data || firstPage.error) {
-      // Throw an error
-      setGameError({
-        name: "Processing error",
-        message:
-          "There was an error in fetching performer data while wiping your performer data.",
-        details: firstPage.error,
-      });
-
-      // Update the processing state
+    // Check for errors
+    const firstPageVerified = handleStashQueryError(
+      firstPage,
+      setGameError,
+      "All performers"
+    );
+    if (!firstPageVerified) {
       setProcessing(false);
-      return;
+      return null;
     }
 
-    let allStashPerformers = firstPage.data.findPerformers.performers;
+    StashFindPerformersResultSchema.safeParseAsync(firstPageVerified).then(
+      (res) => {
+        if (res.error) {
+          setGameError({
+            name: res.error.name,
+            message: res.error.message,
+            details: res.error,
+          });
+          setProcessing(false);
+          return null;
+        }
+      }
+    );
 
-    const pageLimit = Math.ceil(firstPage.data.findPerformers.count / perPage);
+    let allStashPerformers = firstPageVerified.findPerformers.performers;
+
+    const pageLimit = Math.ceil(
+      firstPageVerified.findPerformers.count / perPage
+    );
     page++;
 
-    const getRemainingPages = async () => {
-      while (page <= pageLimit) {
-        const nextPage = await queryAllStashPerformers({
-          variables: { page, perPage },
-        });
+    while (page <= pageLimit) {
+      const nextPage = await queryAllStashPerformers({
+        variables: { page, perPage },
+      });
 
-        if (!nextPage.data || nextPage.error) {
-          // Throw an error
-          setGameError({
-            name: "Processing error",
-            message:
-              "There was an error in fetching performer data while wiping your performer data.",
-            details: nextPage.error,
-          });
-
-          // Update the processing state
-          setProcessing(false);
-          return;
-        }
-
-        allStashPerformers = [
-          ...allStashPerformers,
-          ...nextPage.data.findPerformers.performers,
-        ];
-        page++;
+      // Check for errors
+      const nextPageVerified = handleStashQueryError(
+        nextPage,
+        setGameError,
+        "All performers"
+      );
+      if (!nextPageVerified) {
+        setProcessing(false);
+        return null;
       }
-    };
 
-    await getRemainingPages();
+      StashFindPerformersResultSchema.safeParseAsync(nextPageVerified).then(
+        (res) => {
+          if (res.error) {
+            setGameError({
+              name: res.error.name,
+              message: res.error.message,
+              details: res.error,
+            });
+            setProcessing(false);
+            return null;
+          }
+        }
+      );
+
+      allStashPerformers = [
+        ...allStashPerformers,
+        ...nextPageVerified.findPerformers.performers,
+      ];
+      page++;
+    }
 
     const disallowedKeys = [
       "glicko_deviation",
