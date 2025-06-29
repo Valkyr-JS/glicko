@@ -11,6 +11,7 @@ import {
   GET_MATCH_PERFORMERS,
   GET_MATCH_PERFORMERS_NO_CUSTOM,
   GET_PERFORMER_IMAGE,
+  GET_PERFORMERS_BY_ID,
   GET_SPECIFIC_MATCH_PERFORMERS,
   GET_SPECIFIC_MATCH_PERFORMERS_NO_CUSTOM,
   GET_STASH_CONFIGURATION,
@@ -94,6 +95,13 @@ function App() {
         fetchPolicy: "no-cache",
       }
     );
+
+  const [queryStashPerformersByID] = useLazyQuery<StashFindPerformersResult>(
+    GET_PERFORMERS_BY_ID,
+    {
+      fetchPolicy: "no-cache",
+    }
+  );
 
   const [queryStashPerformerMatch, stashPerformerMatchResponse] =
     useLazyQuery<StashFindPerformersResult>(
@@ -505,18 +513,6 @@ function App() {
     // Create a session
     const session = new Glicko2();
 
-    // TODO --------------------------- Rework fetching and updating -------------------------------- */
-
-    /**
-     * Get only the required performers, not all of them. These are:
-     * * Performers involved in the session.
-     * * Performers that have session history
-     */
-
-    // Get all performers from this session which didn't have history
-
-    // TODO ---------------------------------------- End -------------------------------------------- */
-
     // Get performers with history from Stash
     let page = 1;
     const perPage = 25;
@@ -561,19 +557,53 @@ function App() {
       page++;
     }
 
-    // TODO --------------------------- Rework fetching and updating -------------------------------- */
+    // Create an array of performer IDs from the session that haven't yet been
+    // pulled.
+    const newPerformerIDs: StashPerformer["id"][] = [];
+    for (const r of results) {
+      if (allStashPerformers.findIndex((d) => +d.id === +r[0]) === -1)
+        newPerformerIDs.push(+r[0]);
+      if (allStashPerformers.findIndex((d) => +d.id === +r[1]) === -1)
+        newPerformerIDs.push(+r[1]);
+    }
 
-    /**
-     * Don't get all performers at once.
-     *
-     * * Updating ratings - get performers and update them immediately on a
-     *   per-page basis.
-     * * When dealing with performers who were involved in the session, fetch
-     *   their data when needed and cache it to an array for future use
-     *
-     */
+    if (newPerformerIDs.length) {
+      // Can't paginate Stash queries for performers by performer_ids, so do it
+      // manually.
+      const paginatedNewPerformerIDs: StashPerformer["id"][][] = [];
+      const paginateLimit = Math.ceil(newPerformerIDs.length / perPage);
+      for (let pg = 0; pg < paginateLimit; pg++) {
+        const pageIDs: StashPerformer["id"][] = [];
+        for (let i = 0; i < perPage; i++) {
+          const idIndex = pg * perPage + i;
+          if (newPerformerIDs[idIndex]) pageIDs.push(newPerformerIDs[idIndex]);
+          else break;
+        }
+        paginatedNewPerformerIDs.push(pageIDs);
+      }
 
-    // TODO ---------------------------------------- End -------------------------------------------- */
+      // Get each page of new performers and add it to the all performers array.
+      for (let pg = 0; pg < paginatedNewPerformerIDs.length; pg++) {
+        const newPage = await queryStashPerformersByID({
+          variables: { ids: paginatedNewPerformerIDs[pg] },
+        });
+
+        // Check for errors
+        const newPageVerified = await queryStashPerformersPage(
+          newPage,
+          setGameError,
+          setProcessing
+        );
+
+        if (!newPageVerified) return null;
+
+        // Add it to the array
+        allStashPerformers = [
+          ...allStashPerformers,
+          ...newPageVerified.findPerformers.performers,
+        ];
+      }
+    }
 
     // Create Glicko players from ALL performers in Stash
     const allGlickoPerformers = allStashPerformers.map((p) => {
@@ -592,8 +622,8 @@ function App() {
     // Loop through results and create session matches using the IDs
     const matches = results.map((r) => {
       // Get players
-      const player1 = allGlickoPerformers.find((p) => p.id === r[0]);
-      const player2 = allGlickoPerformers.find((p) => p.id === r[1]);
+      const player1 = allGlickoPerformers.find((p) => +p.id === +r[0]);
+      const player2 = allGlickoPerformers.find((p) => +p.id === +r[1]);
 
       return [player1?.glicko, player2?.glicko, r[2]] as [
         Player,
