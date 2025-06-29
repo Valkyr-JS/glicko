@@ -44,6 +44,7 @@ import {
   getStashVersionBreakdown,
   handleStashMutationError,
   handleStashQueryError,
+  wipePerformerCustomFields,
 } from "./helpers/stash";
 import LeaderboardPage from "./pages/Leaderboard/Leaderboard";
 
@@ -740,7 +741,6 @@ function App() {
     );
 
     if (mutationResponseVerified === null) return null;
-
     await queryStashConfiguration.refetch();
 
     // Fetch data for all performers to get all performers from Stash
@@ -778,7 +778,10 @@ function App() {
       }
     );
 
-    let allStashPerformers = firstPageVerified.findPerformers.performers;
+    // Wipe the data from performers in the first page
+    firstPageVerified.findPerformers.performers.forEach((p) =>
+      wipePerformerCustomFields(p, mutateStashPerformer)
+    );
 
     const pageLimit = Math.ceil(
       firstPageVerified.findPerformers.count / perPage
@@ -815,53 +818,11 @@ function App() {
         }
       );
 
-      allStashPerformers = [
-        ...allStashPerformers,
-        ...nextPageVerified.findPerformers.performers,
-      ];
+      nextPageVerified.findPerformers.performers.forEach((p) =>
+        wipePerformerCustomFields(p, mutateStashPerformer)
+      );
       page++;
     }
-
-    const disallowedKeys = [
-      "glicko_deviation",
-      "glicko_rating",
-      "glicko_volatility",
-      "glicko_match_history",
-      "glicko_session_history",
-    ];
-
-    // Loop through each performer
-    allStashPerformers.forEach((p) => {
-      // If the performer doesn't have any custom fields in the first place, skip
-      if (!Object.keys(p.custom_fields ?? {}).length) return;
-
-      // Get the performer's custom fields, filtering out any Glicko-related
-      // fields.
-      const validKeys = Object.keys(p.custom_fields ?? {}).filter(
-        (k) => !disallowedKeys.includes(k)
-      );
-      const custom_fields = validKeys.reduce(
-        (obj, key) => ({
-          ...obj,
-          [key]: (p.custom_fields as { [key: string]: unknown })[key],
-        }),
-        {}
-      );
-
-      // Update the performer's custom fields with the filtered data
-      mutateStashPerformer({
-        variables: {
-          input: {
-            id: p.id,
-            custom_fields: {
-              full: {
-                ...custom_fields,
-              },
-            },
-          },
-        },
-      });
-    });
   };
 
   /** Handle clearing all results */

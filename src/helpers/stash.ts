@@ -1,5 +1,7 @@
+import type { StashPerformer } from "@/apollo/schema";
 import type {
   FetchResult,
+  MutationFunction,
   OperationVariables,
   QueryResult,
 } from "@apollo/client";
@@ -65,4 +67,48 @@ export const handleStashQueryError = <T>(
   }
 
   return res.data;
+};
+
+const disallowedKeys = [
+  "glicko_deviation",
+  "glicko_rating",
+  "glicko_volatility",
+  "glicko_match_history",
+  "glicko_session_history",
+];
+
+/** Helper function for wiping a performer's glicko custom field data. */
+export const wipePerformerCustomFields = (
+  p: StashPerformer,
+  mutateStashPerformer: MutationFunction<StashPerformer>
+) => {
+  // If the performer doesn't have any custom fields in the first place, skip
+  if (!Object.keys(p.custom_fields ?? {}).length) return;
+
+  // Get the performer's custom fields, filtering out any Glicko-related
+  // fields.
+  const validKeys = Object.keys(p.custom_fields ?? {}).filter(
+    (k) => !disallowedKeys.includes(k)
+  );
+  const custom_fields = validKeys.reduce(
+    (obj, key) => ({
+      ...obj,
+      [key]: (p.custom_fields as { [key: string]: unknown })[key],
+    }),
+    {}
+  );
+
+  // Update the performer's custom fields with the filtered data
+  mutateStashPerformer({
+    variables: {
+      input: {
+        id: p.id,
+        custom_fields: {
+          full: {
+            ...custom_fields,
+          },
+        },
+      },
+    },
+  });
 };
