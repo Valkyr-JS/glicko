@@ -75,10 +75,13 @@ export const handleStashQueryError = <T>(
 
 const disallowedKeys = [
   "glicko_deviation",
-  "glicko_rating",
-  "glicko_volatility",
+  "glicko_losses",
   "glicko_match_history",
+  "glicko_rating",
   "glicko_session_history",
+  "glicko_ties",
+  "glicko_volatility",
+  "glicko_wins",
 ];
 
 /** Helper function for wiping a performer's glicko custom field data. */

@@ -605,19 +605,31 @@ function App() {
       }
     }
 
-    // Create Glicko players from ALL performers in Stash
-    const allGlickoPerformers = allStashPerformers.map((p) => {
-      const rating = p.custom_fields?.glicko_rating ?? GLICKO.RATING_DEFAULT;
-      const deviation =
-        p.custom_fields?.glicko_deviation ?? GLICKO.DEVIATION_DEFAULT;
-      const volatility =
-        p.custom_fields?.glicko_volatility ?? GLICKO.VOLATILITY_DEFAULT;
+    // Create Glicko players from ALL performers in Stash, then sort them by
+    // name then rating.
+    const allGlickoPerformers = allStashPerformers
+      .map((p) => {
+        const rating = p.custom_fields?.glicko_rating ?? GLICKO.RATING_DEFAULT;
+        const deviation =
+          p.custom_fields?.glicko_deviation ?? GLICKO.DEVIATION_DEFAULT;
+        const volatility =
+          p.custom_fields?.glicko_volatility ?? GLICKO.VOLATILITY_DEFAULT;
 
-      return {
-        ...p,
-        glicko: session.makePlayer(rating, deviation, volatility),
-      };
-    });
+        return {
+          ...p,
+          glicko: session.makePlayer(rating, deviation, volatility),
+        };
+      })
+      .sort((a, b) => {
+        const nameA = a.name.toLowerCase();
+        const nameB = b.name.toLowerCase();
+        return nameA < nameB ? -1 : nameA > nameB ? 1 : 0;
+      })
+      .sort(
+        (a, b) =>
+          (b.custom_fields?.glicko_rating ?? GLICKO.RATING_DEFAULT) -
+          (a.custom_fields?.glicko_rating ?? GLICKO.RATING_DEFAULT)
+      );
 
     // Loop through results and create session matches using the IDs
     const matches = results.map((r) => {
@@ -673,22 +685,29 @@ function App() {
           (r) => r[0] === p.id || r[1] === p.id
         );
 
-        const sessionHistory: PerformerMatchRecord[] = performerResults.map(
-          (r) => ({
+        const sessionMatchHistory: PerformerMatchRecord[] =
+          performerResults.map((r) => ({
             id: +r[0] === +p.id ? r[1] : r[0],
             r: r[0] === p.id ? r[2] : r[2] === 1 ? 0 : 1,
             s: sessionDatetime,
-          })
-        );
+          }));
 
-        const previousHistory = p.custom_fields?.glicko_match_history
+        const previousMatchHistory = p.custom_fields?.glicko_match_history
           ? (JSON.parse(
               p.custom_fields.glicko_match_history
             ) as PerformerMatchRecord[])
           : [];
 
-        const fullHistory = [...previousHistory, ...sessionHistory];
+        const glicko_match_history = JSON.stringify([
+          ...previousMatchHistory,
+          ...sessionMatchHistory,
+        ]);
 
+        const glicko_deviation = p.glicko.getRd();
+        const glicko_rating = p.glicko.getRating();
+        const glicko_volatility = p.glicko.getVol();
+
+        // Create wins, losses and ties
         const glicko_wins =
           p.custom_fields?.glicko_wins ??
           0 + performerResults.filter((r) => r[2] === 1).length;
@@ -705,12 +724,12 @@ function App() {
               id: p.id,
               custom_fields: {
                 partial: {
-                  glicko_deviation: p.glicko.getRd(),
+                  glicko_deviation,
                   glicko_losses,
-                  glicko_match_history: JSON.stringify(fullHistory),
-                  glicko_rating: p.glicko.getRating(),
+                  glicko_match_history,
+                  glicko_rating,
                   glicko_ties,
-                  glicko_volatility: p.glicko.getVol(),
+                  glicko_volatility,
                   glicko_wins,
                 },
               },

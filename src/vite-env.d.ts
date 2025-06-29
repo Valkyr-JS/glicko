@@ -126,7 +126,7 @@ interface PerformerSessionRecord {
   /** The Glicko rating of the performer at the end of the session. */
   g: number;
   /** The rank of the performer at the end of the session. */
-  r: number;
+  n: number;
 }
 
 interface StashConfigResult {
