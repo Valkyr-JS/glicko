@@ -689,6 +689,16 @@ function App() {
 
         const fullHistory = [...previousHistory, ...sessionHistory];
 
+        const glicko_wins =
+          p.custom_fields?.glicko_wins ??
+          0 + performerResults.filter((r) => r[2] === 1).length;
+        const glicko_losses =
+          p.custom_fields?.glicko_losses ??
+          0 + performerResults.filter((r) => r[2] === 0).length;
+        const glicko_ties =
+          p.custom_fields?.glicko_ties ??
+          0 + performerResults.filter((r) => r[2] === 0.5).length;
+
         const performerMutationResponse = await mutateStashPerformer({
           variables: {
             input: {
@@ -696,9 +706,12 @@ function App() {
               custom_fields: {
                 partial: {
                   glicko_deviation: p.glicko.getRd(),
+                  glicko_losses,
                   glicko_match_history: JSON.stringify(fullHistory),
                   glicko_rating: p.glicko.getRating(),
+                  glicko_ties,
                   glicko_volatility: p.glicko.getVol(),
+                  glicko_wins,
                 },
               },
             },
