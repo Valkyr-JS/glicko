@@ -6,6 +6,9 @@ import styles from "./RankingList.module.scss";
 import { getStashUrl } from "@/helpers/stash";
 import TextUtils from "@/utils/text";
 import Pagination from "../Pagination/Pagination";
+import { faChevronsUp } from "@fortawesome/pro-solid-svg-icons/faChevronsUp";
+import { faChevronsDown } from "@fortawesome/pro-solid-svg-icons/faChevronsDown";
+import { faPlus } from "@fortawesome/pro-solid-svg-icons/faPlus";
 
 interface RankingListProps {
   /** The ranked performer performer data. */
@@ -172,6 +175,10 @@ const RankingList: React.FC<RankingListProps> = (props) => {
                 <tr key={i}>
                   <th scope="row">
                     <span>{p.rank}</span>
+                    <RankChangeIcon
+                      new={p.sessions[0].n}
+                      prev={p.sessions[1]?.n}
+                    />
                   </th>
                   <td>
                     <a href={link} target="_blank">
@@ -320,3 +327,41 @@ const sortMethodDate = {
   name: "date",
   sorter: sortByDate,
 } as const;
+
+/* ---------------------------------------------------------------------------------------------- */
+/*                                        Rank change icon                                        */
+/* ---------------------------------------------------------------------------------------------- */
+
+interface RankChangeIconProps {
+  new: number;
+  prev?: number;
+}
+
+const RankChangeIcon: React.FC<RankChangeIconProps> = (props) => {
+  // New entry
+  if (!props.prev)
+    return (
+      <FontAwesomeIcon icon={faPlus} className="ml-1 small text-warning" />
+    );
+
+  // Lower rank
+  if (props.prev < props.new)
+    return (
+      <FontAwesomeIcon
+        icon={faChevronsDown}
+        className="ml-1 small text-danger"
+      />
+    );
+
+  // Higher rank
+  if (props.prev > props.new)
+    return (
+      <FontAwesomeIcon
+        icon={faChevronsUp}
+        className="ml-1 small text-success"
+      />
+    );
+
+  // No change in rank
+  return null;
+};
