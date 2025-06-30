@@ -48,6 +48,7 @@ import {
   wipePerformerCustomFields,
 } from "./helpers/stash";
 import LeaderboardPage from "./pages/Leaderboard/Leaderboard";
+import { getPerformerOutcomeFromRecord } from "./helpers/gameplay";
 
 function App() {
   /* -------------------------------------- State management -------------------------------------- */
@@ -714,10 +715,17 @@ function App() {
             ) as PerformerMatchRecord[])
           : [];
 
-        const glicko_match_history = JSON.stringify([
+        // If the user has set to record minimal match history, reduce the
+        // match history to a maximum of one record.
+        const fullMatchHistory = [
           ...previousMatchHistory,
           ...sessionMatchHistory,
-        ]);
+        ];
+        const sizedMatchHistory = userSettings.minimalHistory
+          ? fullMatchHistory.slice(Math.max(fullMatchHistory.length - 1, 0))
+          : fullMatchHistory;
+
+        const glicko_match_history = JSON.stringify(sizedMatchHistory);
 
         const glicko_deviation = p.glicko.getRd();
         const glicko_rating = p.glicko.getRating();
@@ -726,13 +734,19 @@ function App() {
         // Create wins, losses and ties
         const glicko_wins =
           (p.custom_fields?.glicko_wins ?? 0) +
-          [...performerResults].filter((r) => r[2] === 1).length;
+          [...performerResults].filter(
+            (r) => getPerformerOutcomeFromRecord(+p.id, r) === 1
+          ).length;
         const glicko_losses =
           (p.custom_fields?.glicko_losses ?? 0) +
-          [...performerResults].filter((r) => r[2] === 0).length;
+          [...performerResults].filter(
+            (r) => getPerformerOutcomeFromRecord(+p.id, r) === 0
+          ).length;
         const glicko_ties =
           (p.custom_fields?.glicko_ties ?? 0) +
-          [...performerResults].filter((r) => r[2] === 0.5).length;
+          [...performerResults].filter(
+            (r) => getPerformerOutcomeFromRecord(+p.id, r) === 0.5
+          ).length;
 
         // Create session history
         const previousSessionHistory = p.custom_fields?.glicko_session_history
@@ -749,14 +763,24 @@ function App() {
           }
         }
 
-        const glicko_session_history = JSON.stringify([
+        // If the user has set to record minimal match history, reduce the
+        // session history to a maximum of two records.
+        const fullSessionHistory = [
           ...previousSessionHistory,
           {
             d: sessionDatetime,
             g: glicko_rating,
             n: rank,
           },
-        ]);
+        ];
+        console.log("fullSessionHistory", fullSessionHistory);
+        const sizedSessionHistory = userSettings.minimalHistory
+          ? fullSessionHistory.slice(Math.max(fullSessionHistory.length - 2, 0))
+          : fullSessionHistory;
+
+        console.log("sizedSessionHistory", sizedSessionHistory);
+
+        const glicko_session_history = JSON.stringify(sizedSessionHistory);
 
         const performerMutationResponse = await mutateStashPerformer({
           variables: {

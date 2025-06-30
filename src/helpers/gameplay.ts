@@ -69,3 +69,15 @@ export const formatPerformersToRanked = (
 
   return rankedPerformers;
 };
+
+/** Get the result of a match as it relates to the given performer. */
+export const getPerformerOutcomeFromRecord = (
+  id: StashPerformer["id"],
+  match: GlickoMatchResult
+): 0 | 1 | 0.5 => {
+  // If the performer is player 1, return the result.
+  if (id === +match[0]) return match[2];
+
+  // If the performer is player 2, translate the result as it relates to them
+  return match[2] === 0 ? 1 : match[2] === 1 ? 0 : 0.5;
+};

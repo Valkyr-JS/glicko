@@ -8,7 +8,14 @@ const stashPerformers = allPerformers.data.findPerformers.performers.map(p => ({
         id: +p.id
     }))
 
-const rankedPerformers = formatPerformersToRanked(stashPerformers)
+const rankedPerformers = formatPerformersToRanked(stashPerformers).map(p => ({
+  ...p,
+  recentOpponent: {
+    ...p.recentOpponent,
+    // Add static name to fulfil accessibility report.
+    name: "Opponent name"
+  }
+}))
 
 const meta = {
   title: "Components/RankingList",
