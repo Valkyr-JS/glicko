@@ -196,6 +196,10 @@ interface UserSettings {
   boardWidth?: number;
   /** The quality of the image taken from Stash. */
   imageQuality?: "original" | "thumbnail";
+  /** When enabled, only a performer's most recent match will be saved to
+   * `glicko_match_history` and two most recent sessions will be saved to
+   * `glicko_session_history`. */
+  minimalHistory?: boolean;
   /** The maximum number of rows to display in the progress board shown
    * underneath the match board. */
   progressMaxRows?: number;
