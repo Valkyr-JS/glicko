@@ -341,15 +341,22 @@ const RankChangeIcon: React.FC<RankChangeIconProps> = (props) => {
   // New entry
   if (!props.prev)
     return (
-      <FontAwesomeIcon icon={faPlus} className="ml-1 small text-warning" />
+      <FontAwesomeIcon
+        icon={faPlus}
+        className="ml-2 small text-warning"
+        title="New entry"
+      />
     );
+
+  const changeValue = props.prev - props.new;
 
   // Lower rank
   if (props.prev < props.new)
     return (
       <FontAwesomeIcon
         icon={faChevronsDown}
-        className="ml-1 small text-danger"
+        className="ml-2 small text-danger"
+        title={changeValue.toString()}
       />
     );
 
@@ -358,7 +365,8 @@ const RankChangeIcon: React.FC<RankChangeIconProps> = (props) => {
     return (
       <FontAwesomeIcon
         icon={faChevronsUp}
-        className="ml-1 small text-success"
+        className="ml-2 small text-success"
+        title={"+" + changeValue}
       />
     );
 
