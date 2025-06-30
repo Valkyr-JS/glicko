@@ -129,6 +129,37 @@ interface PerformerSessionRecord {
   n: number;
 }
 
+interface RankedPerformer {
+  /** The performer's Stash ID. */
+  id: number;
+  /** The total number of matches lost. */
+  losses: number;
+  /** The total number of matches played. */
+  matches: number;
+  /** The performer's name. */
+  name: string;
+  /** The performer's current rank. */
+  rank: number;
+  /** The performer's glicko rating. */
+  rating: number;
+  /** Data on the most recent match the performer played. */
+  recentOpponent: {
+    /** The ISO datetime string */
+    date: Date;
+    /** The opponent's Stash ID. */
+    id: StashPerformer["id"];
+    /** The opponent's name */
+    name: StashPerformer["name"];
+    /** The performer's outcome of the match, where 0 is a loss, 1 is a win, and
+     * 0.5 is a tie. */
+    outcome: 0 | 1 | 0.5;
+  };
+  /** The total number of matches tied. */
+  ties: number;
+  /** The total number of matches won. */
+  wins: number;
+}
+
 interface StashConfigResult {
   general: {
     stashBoxes: StashBox[];

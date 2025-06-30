@@ -2,70 +2,34 @@ import React, { useState } from "react";
 import { faSort } from "@fortawesome/pro-solid-svg-icons/faSort";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { default as cx } from "classnames";
-import type { StashPerformer } from "@/apollo/schema";
-import { GLICKO } from "@/constants";
 import styles from "./RankingList.module.scss";
 import { getStashUrl } from "@/helpers/stash";
 import TextUtils from "@/utils/text";
 import Pagination from "../Pagination/Pagination";
 
-interface RankedPerformer {
-  /** The performer's Stash ID. */
-  id: StashPerformer["id"];
-  /** The total number of matches lost. */
-  losses: number;
-  /** The total number of matches played. */
-  matches: number;
-  /** The performer's name. */
-  name: StashPerformer["name"];
-  /** The performer's current rank. */
-  rank: number;
-  /** The performer's glicko rating. */
-  rating: number;
-  /** Data on the most recent match the performer played. */
-  recentOpponent: {
-    /** The ISO datetime string */
-    date: Date;
-    /** The opponent's Stash ID. */
-    id: StashPerformer["id"];
-    /** The opponent's name */
-    name: StashPerformer["name"];
-    /** The performer's outcome of the match, where 0 is a loss, 1 is a win, and
-     * 0.5 is a tie. */
-    outcome: 0 | 1 | 0.5;
-  };
-  /** The total number of matches tied. */
-  ties: number;
-  /** The total number of matches won. */
-  wins: number;
-}
-
 interface RankingListProps {
-  /** The performer data including their glicko data. */
-  performers: StashPerformer[];
+  /** The ranked performer performer data. */
+  performers: RankedPerformer[];
   /** The array of ISO datetime strings of when each session concluded. */
   sessionHistory: Date[];
 }
 
 interface SortMethod {
   name: "date" | "losses" | "matches" | "name" | "rating" | "ties" | "wins";
-  sorter: (performers: StashPerformer[]) => StashPerformer[];
+  sorter: (performers: RankedPerformer[]) => RankedPerformer[];
 }
 
 const RankingList: React.FC<RankingListProps> = (props) => {
   /* ------------------------------------------- Sorting ------------------------------------------ */
 
   const perPage = 25;
-  const [currentData, setCurrentData] = useState<StashPerformer[]>(
+  const [currentData, setCurrentData] = useState<RankedPerformer[]>(
     sortByRating(props.performers).filter((_p, i) => i < perPage)
   );
   const [collapsed, setCollapsed] = useState(true);
   const [method, setMethod] = useState<SortMethod>(sortMethodRating);
   const [reverse, setReverse] = useState(false);
   const [page, setPage] = useState(1);
-
-  // Used for rank placement
-  const allByRank = sortByRating(props.performers);
 
   const filterForPage = (i: number, page: number) =>
     i < page * perPage && i >= (page - 1) * perPage;
@@ -192,22 +156,13 @@ const RankingList: React.FC<RankingListProps> = (props) => {
           </thead>
           <tbody>
             {currentData.map((p, i) => {
-              const matchHistory: PerformerMatchRecord[] = JSON.parse(
-                p.custom_fields?.glicko_match_history ?? "[]"
-              );
               const link = getStashUrl("/performers/" + p.id);
-              const recentMatch = matchHistory.sort(
-                (a, b) => +new Date(b.s) - +new Date(a.s)
-              )[0];
-              const recentOpponent = props.performers.find(
-                (p) => +p.id === +recentMatch.id
-              );
-              const opponentData = recentOpponent ? (
+              const opponentData = p.recentOpponent ? (
                 <a
-                  href={getStashUrl("/performers/" + recentOpponent.id)}
+                  href={getStashUrl("/performers/" + p.recentOpponent.id)}
                   target="_blank"
                 >
-                  {recentOpponent.name}
+                  {p.recentOpponent.name}
                 </a>
               ) : (
                 "-"
@@ -216,7 +171,7 @@ const RankingList: React.FC<RankingListProps> = (props) => {
               return (
                 <tr key={i}>
                   <th scope="row">
-                    <span>{allByRank.findIndex((r) => r.id === p.id) + 1}</span>
+                    <span>{p.rank}</span>
                   </th>
                   <td>
                     <a href={link} target="_blank">
@@ -224,50 +179,32 @@ const RankingList: React.FC<RankingListProps> = (props) => {
                     </a>
                   </td>
                   <td>
-                    <span>
-                      {Math.round(
-                        p.custom_fields?.glicko_rating ?? GLICKO.RATING_DEFAULT
-                      )}
-                    </span>
+                    <span>{Math.floor(p.rating)}</span>
                   </td>
                   <td>
-                    <span>
-                      {matchHistory.length
-                        ? matchHistory.filter((m) => m.r === 1).length
-                        : "-"}
-                    </span>
+                    <span>{p.wins}</span>
                   </td>
                   <td>
-                    <span>
-                      {matchHistory.length
-                        ? matchHistory.filter((m) => m.r === 0).length
-                        : "-"}
-                    </span>
+                    <span>{p.losses}</span>
                   </td>
                   <td>
-                    <span>
-                      {matchHistory.length
-                        ? matchHistory.filter((m) => m.r === 0.5).length
-                        : "-"}
-                    </span>
+                    <span>{p.ties}</span>
                   </td>
                   <td>
-                    <span>{matchHistory.length}</span>
+                    <span> {p.matches}</span>
                   </td>
                   <td>{opponentData}</td>
                   <td>
-                    {matchHistory.length
-                      ? recentMatch.r === 1
-                        ? "Won"
-                        : recentMatch.r === 0
-                        ? "Lost"
-                        : "Tie"
-                      : "-"}
+                    {p.recentOpponent.outcome === 1
+                      ? "Won"
+                      : p.recentOpponent.outcome === 0
+                      ? "Lost"
+                      : "Tie"}
                   </td>
                   <td>
-                    {matchHistory.length
-                      ? TextUtils.dateTimeToString(new Date(recentMatch.s))
-                      : "-"}
+                    {TextUtils.dateTimeToString(
+                      new Date(p.recentOpponent.date)
+                    )}
                   </td>
                 </tr>
               );
@@ -300,7 +237,7 @@ const SortButton: React.FC<
   );
 };
 
-const sortByName = (performers: StashPerformer[]): StashPerformer[] => {
+const sortByName = (performers: RankedPerformer[]): RankedPerformer[] => {
   const newSort = performers.sort((a, b) => {
     const nameA = a.name.toLowerCase();
     const nameB = b.name.toLowerCase();
@@ -314,12 +251,8 @@ const sortMethodName = {
   sorter: sortByName,
 } as const;
 
-const sortByRating = (performers: StashPerformer[]): StashPerformer[] => {
-  const newSort = performers.sort(
-    (a, b) =>
-      (b.custom_fields?.glicko_rating ?? GLICKO.RATING_DEFAULT) -
-      (a.custom_fields?.glicko_rating ?? GLICKO.RATING_DEFAULT)
-  );
+const sortByRating = (performers: RankedPerformer[]): RankedPerformer[] => {
+  const newSort = performers.sort((a, b) => b.rating - a.rating);
   return newSort;
 };
 
@@ -328,20 +261,9 @@ const sortMethodRating = {
   sorter: sortByRating,
 } as const;
 
-const sortByWins = (performers: StashPerformer[]): StashPerformer[] => {
+const sortByWins = (performers: RankedPerformer[]): RankedPerformer[] => {
   const newSort = performers.sort((a, b) => {
-    const getRecord = (records: PerformerMatchRecord[]) =>
-      records.filter((m) => m.r === 1).length;
-
-    const aWins = getRecord(
-      JSON.parse(a.custom_fields?.glicko_match_history ?? "[]")
-    );
-
-    const bWins = getRecord(
-      JSON.parse(b.custom_fields?.glicko_match_history ?? "[]")
-    );
-
-    return bWins - aWins;
+    return b.wins - a.wins;
   });
   return newSort;
 };
@@ -351,20 +273,9 @@ const sortMethodWins = {
   sorter: sortByWins,
 } as const;
 
-const sortByLosses = (performers: StashPerformer[]): StashPerformer[] => {
+const sortByLosses = (performers: RankedPerformer[]): RankedPerformer[] => {
   const newSort = performers.sort((a, b) => {
-    const getRecord = (records: PerformerMatchRecord[]) =>
-      records.filter((m) => m.r === 0).length;
-
-    const aLosses = getRecord(
-      JSON.parse(a.custom_fields?.glicko_match_history ?? "[]")
-    );
-
-    const bLosses = getRecord(
-      JSON.parse(b.custom_fields?.glicko_match_history ?? "[]")
-    );
-
-    return bLosses - aLosses;
+    return b.losses - a.losses;
   });
   return newSort;
 };
@@ -374,20 +285,9 @@ const sortMethodLosses = {
   sorter: sortByLosses,
 } as const;
 
-const sortByTies = (performers: StashPerformer[]): StashPerformer[] => {
+const sortByTies = (performers: RankedPerformer[]): RankedPerformer[] => {
   const newSort = performers.sort((a, b) => {
-    const getRecord = (records: PerformerMatchRecord[]) =>
-      records.filter((m) => m.r === 0.5).length;
-
-    const aTies = getRecord(
-      JSON.parse(a.custom_fields?.glicko_match_history ?? "[]")
-    );
-
-    const bTies = getRecord(
-      JSON.parse(b.custom_fields?.glicko_match_history ?? "[]")
-    );
-
-    return bTies - aTies;
+    return b.ties - a.ties;
   });
   return newSort;
 };
@@ -397,19 +297,9 @@ const sortMethodTies = {
   sorter: sortByTies,
 } as const;
 
-const sortByMatches = (performers: StashPerformer[]): StashPerformer[] => {
+const sortByMatches = (performers: RankedPerformer[]): RankedPerformer[] => {
   const newSort = performers.sort((a, b) => {
-    const getRecord = (records: PerformerMatchRecord[]) => records.length;
-
-    const aCount = getRecord(
-      JSON.parse(a.custom_fields?.glicko_match_history ?? "[]")
-    );
-
-    const bCount = getRecord(
-      JSON.parse(b.custom_fields?.glicko_match_history ?? "[]")
-    );
-
-    return bCount - aCount;
+    return b.matches - a.matches;
   });
   return newSort;
 };
@@ -419,20 +309,9 @@ const sortMethodMatches = {
   sorter: sortByMatches,
 } as const;
 
-const sortByDate = (performers: StashPerformer[]): StashPerformer[] => {
+const sortByDate = (performers: RankedPerformer[]): RankedPerformer[] => {
   const newSort = performers.sort((a, b) => {
-    const getRecord = (records: PerformerMatchRecord[]) =>
-      records.sort((c, d) => +new Date(d.s) - +new Date(c.s))[0];
-
-    const aDate = getRecord(
-      JSON.parse(a.custom_fields?.glicko_match_history ?? "[]")
-    );
-
-    const bDate = getRecord(
-      JSON.parse(b.custom_fields?.glicko_match_history ?? "[]")
-    );
-
-    return +new Date(bDate.s) - +new Date(aDate.s);
+    return +new Date(b.recentOpponent.date) - +new Date(a.recentOpponent.date);
   });
   return newSort;
 };
