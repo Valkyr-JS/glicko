@@ -10,6 +10,7 @@ import { GET_ALL_PERFORMERS_WITH_HISTORY_BY_PAGE } from "@/apollo/queries";
 import { GameErrorModal } from "@/components/Modal/Modal";
 import LoadingSpinner from "@/components/LoadingSpinner/LoadingSpinner";
 import { queryStashPerformersPage } from "@/helpers/stash";
+import { formatPerformersToRanked } from "@/helpers/gameplay";
 
 const LeaderboardPage: React.FC<PageProps> = (props) => {
   const [gameError, setGameError] = useState<GameError | null>(null);
@@ -83,46 +84,6 @@ const LeaderboardPage: React.FC<PageProps> = (props) => {
 
   /* --------------------------------------- Body component --------------------------------------- */
 
-  const formatData = (): RankedPerformer[] => {
-    // Convert performer data to RankedPerformer
-    const rankedPerformers: RankedPerformer[] = performers.map((p) => {
-      const losses = p.custom_fields?.glicko_losses ?? 0;
-      const ties = p.custom_fields?.glicko_ties ?? 0;
-      const wins = p.custom_fields?.glicko_wins ?? 0;
-
-      const matchHistory = JSON.parse(
-        p.custom_fields?.glicko_match_history ?? "[]"
-      ) as PerformerMatchRecord[];
-      const lastMatch = matchHistory[matchHistory.length - 1];
-
-      const sessionHistory = JSON.parse(
-        p.custom_fields?.glicko_session_history ?? "[]"
-      ) as PerformerSessionRecord[];
-      const lastSession = sessionHistory[sessionHistory.length - 1];
-
-      const opponent = performers.find((p) => p.id === lastMatch.id)?.name;
-
-      return {
-        id: p.id,
-        losses,
-        matches: losses + ties + wins,
-        name: p.name,
-        rank: lastSession.n,
-        rating: p.custom_fields?.glicko_rating ?? 0,
-        recentOpponent: {
-          date: new Date(lastMatch.s),
-          id: lastMatch.id,
-          name: opponent ?? "",
-          outcome: lastMatch.r,
-        },
-        ties,
-        wins,
-      };
-    });
-
-    return rankedPerformers;
-  };
-
   // The component that is rendered depends on the loading status and makeup of
   // the data
   const bodyComponent = processing ? (
@@ -132,7 +93,10 @@ const LeaderboardPage: React.FC<PageProps> = (props) => {
   ) : performers.length === 0 ? (
     <div>No data currently available.</div>
   ) : (
-    <RankingList performers={formatData()} sessionHistory={[]} />
+    <RankingList
+      performers={formatPerformersToRanked(performers)}
+      sessionHistory={[]}
+    />
   );
 
   /* ------------------------------------------ Component ----------------------------------------- */
