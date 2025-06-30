@@ -11,6 +11,7 @@ import WipePerformerData, {
   WipePerformerDataModal,
 } from "./options/WipePerformerData";
 import styles from "./Settings.module.scss";
+import MinimalHistory from "./options/MinimalHistory";
 
 interface SettingsPageProps extends PageProps {
   /** The user's game settings. */
@@ -94,8 +95,11 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
         >
           <h1>Settings</h1>
           <div className="row">
-            <div className="col-12 mt-3">
+            <div className="col-12 col-lg-6 mt-3">
               <ReadOnlyMode enabled={props.settings.readOnly} />
+            </div>
+            <div className="col-12 col-lg-6 mt-3">
+              <MinimalHistory enabled={props.settings.minimalHistory} />
             </div>
             <div className="col-12 col-lg-6 mt-3">
               <ImageQuality imageQuality={props.settings.imageQuality} />
@@ -180,6 +184,9 @@ const convertFormDataToUserSettings = (data: FormData): UserSettings => {
   // Read-only mode
   const readOnly = !!formKeys.find((k) => k === "read-only");
 
+  // Minimal match history
+  const minimalHistory = !!formKeys.find((k) => k === "minimal-history");
+
   // Image quality
   const imageQuality =
     formJson["image-quality"] === "original" ? "original" : "thumbnail";
@@ -197,6 +204,7 @@ const convertFormDataToUserSettings = (data: FormData): UserSettings => {
     arrowKeys,
     boardWidth,
     imageQuality,
+    minimalHistory,
     progressMaxRows,
     readOnly,
   };
@@ -207,6 +215,7 @@ const convertFormDataToUserSettings = (data: FormData): UserSettings => {
 /** Compares two sets of user settings for equality. */
 const compareSettings = (setA: UserSettings, setB: UserSettings): boolean => {
   if (setA.readOnly !== setB.readOnly) return false;
+  if (setA.minimalHistory !== setB.minimalHistory) return false;
   if (setA.imageQuality !== setB.imageQuality) return false;
   if (setA.arrowKeys !== setB.arrowKeys) return false;
   if (setA.progressMaxRows !== setB.progressMaxRows) return false;

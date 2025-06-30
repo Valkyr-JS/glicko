@@ -16,7 +16,7 @@ const MinimalHistory: React.FC<MinimalHistoryProps> = (props) => {
               ? DEFAULT_MINIMAL_HISTORY
               : props.enabled,
           id: "minimalHistory",
-          label: "Enable minimal history",
+          label: "Enable minimal match history",
           labelAsHeading: true,
           name: "minimal-history",
         },
