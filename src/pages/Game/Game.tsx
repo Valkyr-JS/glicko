@@ -21,7 +21,7 @@ interface GamePageProps extends PageProps {
   changeImageHandler: (
     performerID: StashPerformer["id"],
     currentImageID: StashImage["id"]
-  ) => Promise<QueryResult<StashFindImagesResult, OperationVariables>>;
+  ) => Promise<QueryResult<StashFindImagesResult, OperationVariables> | null>;
   /** Any kind of game error that stop the user from playing. */
   gameError: GameError | null;
   /** The quality of the performer images as set by the user. */

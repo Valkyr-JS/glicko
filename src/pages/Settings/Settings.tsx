@@ -16,9 +16,11 @@ interface SettingsPageProps extends PageProps {
   /** The user's game settings. */
   settings: UserSettings;
   /** The handler for updating the user settings. */
-  saveSettingsHandler: (updatedSettings: UserSettings) => Promise<void>;
+  saveSettingsHandler: (
+    updatedSettings: UserSettings
+  ) => Promise<null | undefined>;
   /** The handler for wiping all Glicko data from all Stash performers */
-  wipeDataHandler: () => Promise<void>;
+  wipeDataHandler: () => Promise<null | undefined>;
 }
 
 const SettingsPage: React.FC<SettingsPageProps> = (props) => {

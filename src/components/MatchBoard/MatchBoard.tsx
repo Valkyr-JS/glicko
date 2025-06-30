@@ -22,7 +22,7 @@ interface MatchBoardProps {
   changeImageHandler: (
     performerID: StashPerformer["id"]
   ) =>
-    | Promise<QueryResult<StashFindImagesResult, OperationVariables>>
+    | Promise<QueryResult<StashFindImagesResult, OperationVariables> | null>
     | undefined;
   /** Executes when the user selects the winning player. */
   clickSelectHandler: (winner: 0 | 1) => Promise<void>;
@@ -168,7 +168,7 @@ interface PlayerProfileProps extends MatchPerformer {
   changeImageHandler: (
     performerID: StashPerformer["id"]
   ) =>
-    | Promise<QueryResult<StashFindImagesResult, OperationVariables>>
+    | Promise<QueryResult<StashFindImagesResult, OperationVariables> | null>
     | undefined;
   /** Executes when the user selects the winning player. */
   clickSelectHandler: (winner: 0 | 1) => void;

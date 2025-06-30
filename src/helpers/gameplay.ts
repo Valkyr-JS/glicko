@@ -1,3 +1,4 @@
+import type { StashPerformer } from "@/apollo/schema";
 import { shuffle } from "@/utils/math";
 
 /** Creates an array of player index tuples from the given number of players in
@@ -23,4 +24,48 @@ export const createRoundRobinMatchList = (
 
   // Randomise the matchups before returning
   return shuffle(mixedMatchups);
+};
+
+/** Convert an array of StashPerformer entries to an array of RankedPerformer
+ * entries. */
+export const formatPerformersToRanked = (
+  performers: StashPerformer[]
+): RankedPerformer[] => {
+  // Convert performer data to RankedPerformer
+  const rankedPerformers: RankedPerformer[] = performers.map((p) => {
+    const losses = p.custom_fields?.glicko_losses ?? 0;
+    const ties = p.custom_fields?.glicko_ties ?? 0;
+    const wins = p.custom_fields?.glicko_wins ?? 0;
+
+    const matchHistory = JSON.parse(
+      p.custom_fields?.glicko_match_history ?? "[]"
+    ) as PerformerMatchRecord[];
+    const lastMatch = matchHistory[matchHistory.length - 1];
+
+    const sessionHistory = JSON.parse(
+      p.custom_fields?.glicko_session_history ?? "[]"
+    ) as PerformerSessionRecord[];
+    const lastSession = sessionHistory[sessionHistory.length - 1];
+
+    const opponent = performers.find((p) => p.id === lastMatch.id)?.name;
+
+    return {
+      id: p.id,
+      losses,
+      matches: losses + ties + wins,
+      name: p.name,
+      rank: lastSession.n,
+      rating: p.custom_fields?.glicko_rating ?? 0,
+      recentOpponent: {
+        date: new Date(lastMatch.s),
+        id: lastMatch.id,
+        name: opponent ?? "",
+        outcome: lastMatch.r,
+      },
+      ties,
+      wins,
+    };
+  });
+
+  return rankedPerformers;
 };

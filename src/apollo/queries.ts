@@ -53,6 +53,20 @@ export const GET_ALL_PERFORMERS_BY_PAGE_NO_CUSTOM = gql`
   }
 `;
 
+export const GET_PERFORMERS_BY_ID = gql`
+  query GetPerformersById($ids: [Int!]) {
+    findPerformers(performer_ids: $ids) {
+      count
+      performers {
+        custom_fields
+        id
+        image_path
+        name
+      }
+    }
+  }
+`;
+
 export const GET_PERFORMER_IMAGE = gql`
   query GetPerformerImage($performerID: ID!, $currentImageID: Int!) {
     findImages(

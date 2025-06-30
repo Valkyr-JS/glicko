@@ -126,7 +126,38 @@ interface PerformerSessionRecord {
   /** The Glicko rating of the performer at the end of the session. */
   g: number;
   /** The rank of the performer at the end of the session. */
-  r: number;
+  n: number;
+}
+
+interface RankedPerformer {
+  /** The performer's Stash ID. */
+  id: number;
+  /** The total number of matches lost. */
+  losses: number;
+  /** The total number of matches played. */
+  matches: number;
+  /** The performer's name. */
+  name: string;
+  /** The performer's current rank. */
+  rank: number;
+  /** The performer's glicko rating. */
+  rating: number;
+  /** Data on the most recent match the performer played. */
+  recentOpponent: {
+    /** The ISO datetime string */
+    date: Date;
+    /** The opponent's Stash ID. */
+    id: StashPerformer["id"];
+    /** The opponent's name */
+    name: StashPerformer["name"];
+    /** The performer's outcome of the match, where 0 is a loss, 1 is a win, and
+     * 0.5 is a tie. */
+    outcome: 0 | 1 | 0.5;
+  };
+  /** The total number of matches tied. */
+  ties: number;
+  /** The total number of matches won. */
+  wins: number;
 }
 
 interface StashConfigResult {
@@ -172,4 +203,37 @@ interface UserSettings {
    * custom fields in the Stash database. Plugin settings and filters will still
    * be saved to the config. */
   readOnly?: boolean;
+}
+
+/** A Stash performer's custom fields data, after fields have been parsed from
+ * stringified JSON. */
+interface StashPerformerCustomFieldsParsed {
+  /** The performer's glicko rating deviation. `undefined` if they have not yet
+   * been rated. */
+  glicko_deviation?: number;
+  /** The performer's glicko rating. `undefined` if they have not yet been
+   * rated. */
+  glicko_rating?: number;
+  /** The performer's glicko rating volatility. `undefined` if they have not yet
+   * been rated. */
+  glicko_volatility?: number;
+  /** The performer's total glicko match wins. `undefined` if they have not yet
+   * been rated. */
+  glicko_wins?: number;
+  /** The performer's total glicko match losses. `undefined` if they have not yet
+   * been rated. */
+  glicko_losses?: number;
+  /** The performer's total glicko match ties. `undefined` if they have not yet
+   * been rated. */
+  glicko_ties?: number;
+  /** The performer's match history data after being parsed from a string.
+   * `undefined` if they have not yet been rated. Only one item will be saved if
+   * minimal match history is active, in order to support the recent match
+   * columns in the leaderboard */
+  glicko_match_history?: GlickoMatchResult[];
+  /** The performer's session history after being parsed from a string.
+   * `undefined` if they have not yet been rated. A maximum of two items will be
+   * saved if minimal match history is active, in order to support leaderboard
+   * position changes. */
+  glicko_session_history?: PerformerSessionRecord[];
 }
