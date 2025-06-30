@@ -9,6 +9,7 @@ import type {
 import { GET_ALL_PERFORMERS_WITH_HISTORY_BY_PAGE } from "@/apollo/queries";
 import { GameErrorModal } from "@/components/Modal/Modal";
 import LoadingSpinner from "@/components/LoadingSpinner/LoadingSpinner";
+import { queryStashPerformersPage } from "@/helpers/stash";
 
 const LeaderboardPage: React.FC<PageProps> = (props) => {
   const [gameError, setGameError] = useState<GameError | null>(null);
@@ -33,24 +34,16 @@ const LeaderboardPage: React.FC<PageProps> = (props) => {
     // Get the first page of performers
     queryAllStashPerformers({
       variables: { page, perPage },
-    }).then((res) => {
-      if (!res.data || res.error) {
-        // Throw an error
-        setGameError({
-          name: "Processing error",
-          message:
-            "There was an error in fetching performer data while loading your leaderboard.",
-          details: res.error,
-        });
+    }).then(async (res) => {
+      const resVerified = await queryStashPerformersPage(
+        res,
+        setGameError,
+        setProcessing
+      );
+      if (!resVerified) return null;
 
-        // Update the processing state
-        setProcessing(false);
-        return;
-      }
-
-      let allStashPerformers = res.data.findPerformers.performers;
-
-      const pageLimit = Math.ceil(res.data.findPerformers.count / perPage);
+      let allStashPerformers = resVerified.findPerformers.performers;
+      const pageLimit = Math.ceil(resVerified.findPerformers.count / perPage);
       page++;
 
       const getRemainingPages = async () => {
@@ -59,23 +52,17 @@ const LeaderboardPage: React.FC<PageProps> = (props) => {
             variables: { page, perPage },
           });
 
-          if (!nextPage.data || nextPage.error) {
-            // Throw an error
-            setGameError({
-              name: "Processing error",
-              message:
-                "There was an error in fetching performer data while loading your leaderboard.",
-              details: nextPage.error,
-            });
+          const nextVerified = await queryStashPerformersPage(
+            nextPage,
+            setGameError,
+            setProcessing
+          );
 
-            // Update the processing state
-            setProcessing(false);
-            return;
-          }
+          if (!nextVerified) return null;
 
           allStashPerformers = [
             ...allStashPerformers,
-            ...nextPage.data.findPerformers.performers,
+            ...nextVerified.findPerformers.performers,
           ];
           page++;
         }

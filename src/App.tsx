@@ -758,7 +758,6 @@ function App() {
           },
         ]);
 
-
         const performerMutationResponse = await mutateStashPerformer({
           variables: {
             input: {
