@@ -154,6 +154,11 @@ interface RankedPerformer {
      * 0.5 is a tie. */
     outcome: 0 | 1 | 0.5;
   };
+  /** The performer's two most recent session records. */
+  sessions: [
+    latest: PerformerSessionRecord,
+    prev: PerformerSessionRecord | undefined
+  ];
   /** The total number of matches tied. */
   ties: number;
   /** The total number of matches won. */

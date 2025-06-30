@@ -45,7 +45,14 @@ export const formatPerformersToRanked = (
     const sessionHistory = JSON.parse(
       p.custom_fields?.glicko_session_history ?? "[]"
     ) as PerformerSessionRecord[];
-    const lastSession = sessionHistory[sessionHistory.length - 1];
+    const latestSession =
+      sessionHistory.length === 1 ? sessionHistory[0] : sessionHistory[1];
+    const previousSession =
+      sessionHistory.length === 1 ? undefined : sessionHistory[0];
+    const sessions: RankedPerformer["sessions"] = [
+      latestSession,
+      previousSession,
+    ];
 
     const opponent = performers.find((p) => p.id === lastMatch.id)?.name;
 
@@ -54,7 +61,7 @@ export const formatPerformersToRanked = (
       losses,
       matches: losses + ties + wins,
       name: p.name,
-      rank: lastSession.n,
+      rank: latestSession.n,
       rating: p.custom_fields?.glicko_rating ?? 0,
       recentOpponent: {
         date: new Date(lastMatch.s),
@@ -62,6 +69,7 @@ export const formatPerformersToRanked = (
         name: opponent ?? "",
         outcome: lastMatch.r,
       },
+      sessions,
       ties,
       wins,
     };
