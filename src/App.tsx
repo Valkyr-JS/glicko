@@ -561,9 +561,15 @@ function App() {
     // pulled.
     const newPerformerIDs: StashPerformer["id"][] = [];
     for (const r of results) {
-      if (allStashPerformers.findIndex((d) => +d.id === +r[0]) === -1)
+      if (
+        allStashPerformers.findIndex((d) => +d.id === +r[0]) === -1 &&
+        !newPerformerIDs.includes(+r[0])
+      )
         newPerformerIDs.push(+r[0]);
-      if (allStashPerformers.findIndex((d) => +d.id === +r[1]) === -1)
+      if (
+        allStashPerformers.findIndex((d) => +d.id === +r[1]) === -1 &&
+        !newPerformerIDs.includes(+r[1])
+      )
         newPerformerIDs.push(+r[1]);
     }
 
@@ -602,6 +608,7 @@ function App() {
           ...allStashPerformers,
           ...newPageVerified.findPerformers.performers,
         ];
+        newPage.refetch();
       }
     }
 
@@ -679,7 +686,16 @@ function App() {
     // Update Stash performer data with results unless the user is in read-only
     // mode or the Stash version doesn't support custom fields
     if (!userSettings.readOnly && !(stashVersion && stashVersion[1] < 28)) {
-      allGlickoPerformers.forEach(async (p) => {
+      // Session history requires the performers to be sorted by rating in order
+      // to get their rank. Once sorted, the rank can be assigned. Performers with
+      // equal ratings should have an equal rank; compare the current and previous
+      // performer.
+      const allSortedPerformers = allGlickoPerformers.sort(
+        (a, b) => b.glicko.getRating() - a.glicko.getRating()
+      );
+
+      let rank = 1;
+      allSortedPerformers.forEach(async (p, i) => {
         // Create match history for the performer
         const performerResults = results.filter(
           (r) => r[0] === p.id || r[1] === p.id
@@ -709,14 +725,39 @@ function App() {
 
         // Create wins, losses and ties
         const glicko_wins =
-          p.custom_fields?.glicko_wins ??
-          0 + performerResults.filter((r) => r[2] === 1).length;
+          (p.custom_fields?.glicko_wins ?? 0) +
+          [...performerResults].filter((r) => r[2] === 1).length;
         const glicko_losses =
-          p.custom_fields?.glicko_losses ??
-          0 + performerResults.filter((r) => r[2] === 0).length;
+          (p.custom_fields?.glicko_losses ?? 0) +
+          [...performerResults].filter((r) => r[2] === 0).length;
         const glicko_ties =
-          p.custom_fields?.glicko_ties ??
-          0 + performerResults.filter((r) => r[2] === 0.5).length;
+          (p.custom_fields?.glicko_ties ?? 0) +
+          [...performerResults].filter((r) => r[2] === 0.5).length;
+
+        // Create session history
+        const previousSessionHistory = p.custom_fields?.glicko_session_history
+          ? (JSON.parse(
+              p.custom_fields.glicko_session_history
+            ) as PerformerSessionRecord[])
+          : [];
+
+        const previousPerformer = allSortedPerformers[i - 1];
+        if (previousPerformer) {
+          const previousRating = previousPerformer.glicko.getRating();
+          if (previousRating !== glicko_rating) {
+            rank = i + 1;
+          }
+        }
+
+        const glicko_session_history = JSON.stringify([
+          ...previousSessionHistory,
+          {
+            d: sessionDatetime,
+            g: glicko_rating,
+            n: rank,
+          },
+        ]);
+
 
         const performerMutationResponse = await mutateStashPerformer({
           variables: {
@@ -728,6 +769,7 @@ function App() {
                   glicko_losses,
                   glicko_match_history,
                   glicko_rating,
+                  glicko_session_history,
                   glicko_ties,
                   glicko_volatility,
                   glicko_wins,
