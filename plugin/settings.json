@@ -1,1 +1,7 @@
-{}
+{
+  "ratingInCardFooter": {
+    "displayName": "Show rating in card footer",
+    "description": "When enabled, the performer's Glicko rating is displayed in their card footer.",
+    "type": "BOOLEAN"
+  }
+}
