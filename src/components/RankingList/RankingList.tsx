@@ -187,6 +187,14 @@ const RankingList: React.FC<RankingListProps> = (props) => {
                   </td>
                   <td>
                     <span>{Math.floor(p.rating)}</span>
+                    <DataChange
+                      new={Math.floor(p.rating)}
+                      prev={
+                        p.sessions[1]?.g
+                          ? Math.floor(p.sessions[1].g)
+                          : undefined
+                      }
+                    />
                   </td>
                   <td>
                     <span>{p.wins}</span>
@@ -369,6 +377,33 @@ const RankChangeIcon: React.FC<RankChangeIconProps> = (props) => {
         title={"+" + changeValue}
       />
     );
+
+  // No change in rank
+  return null;
+};
+
+/* ---------------------------------------------------------------------------------------------- */
+/*                                        Rank change data                                        */
+/* ---------------------------------------------------------------------------------------------- */
+
+interface DataChangeProps {
+  new: number;
+  prev?: number;
+}
+
+const DataChange: React.FC<DataChangeProps> = (props) => {
+  // New entry
+  if (!props.prev) return null;
+
+  const changeValue = props.new - props.prev;
+
+  // Increased value
+  if (props.prev < props.new)
+    return <div className="small text-success">+{changeValue.toString()}</div>;
+
+  // Decreased value
+  if (props.prev > props.new)
+    return <div className="small text-danger">{changeValue.toString()}</div>;
 
   // No change in rank
   return null;
