@@ -3253,7 +3253,7 @@ enum CircumisedEnum {
   Uncut = "UNCUT",
 }
 
-type Performer = {
+export type Performer = {
   __typename?: "Performer";
   id: Scalars["ID"];
   name: Scalars["String"];

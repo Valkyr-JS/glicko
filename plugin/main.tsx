@@ -5,7 +5,7 @@ import * as FontAwesomeRegular from "@fortawesome/free-regular-svg-icons";
 import * as FontAwesomeSolid from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { JSXElementConstructor } from "react";
-import { ConfigResult } from "./stashGQL";
+import { ConfigResult, Performer } from "./stashGQL";
 
 const PluginApi = window.PluginApi;
 const FAIcon = PluginApi.components.Icon;
@@ -46,7 +46,7 @@ PluginApi.patch.instead(
 PluginApi.patch.instead(
   "PerformerCard.Popovers",
   function (props, _, Original) {
-    console.log(fetchPluginOptions());
+    // console.log(fetchPluginOptions());
     console.log(props);
 
     // Add the button to the navbar
@@ -63,11 +63,7 @@ const fetchPluginOptions = async () => {
     ? (JSON.parse(optionsString) as PluginOptions)
     : null;
 
-  if (options) {
-    console.log("exists");
-
-    return options;
-  }
+  if (options) return options;
 
   // Otherwise call API to get data, then remove from session storage after 3
   // seconds so it doesn't stay cached too long and user changes aren't picked
@@ -75,11 +71,8 @@ const fetchPluginOptions = async () => {
   const configResult = PluginApi.GQL.useConfigurationQuery();
 
   if (!configResult.error && !configResult.loading) {
-    console.log(configResult);
     const pluginOptions = configResult.data?.configuration.plugins.glicko;
-    console.log(pluginOptions);
     sessionStorage.setItem("glickoConfig", JSON.stringify(pluginOptions));
-    console.log("added");
 
     setTimeout(() => {
       console.log("removed");
@@ -114,6 +107,11 @@ declare global {
         FontAwesomeSolid: typeof FontAwesomeSolid;
       };
       patch: {
+        before<T>(component: string, fn: (props: T) => [T]): void;
+        before(
+          component: "PerformerCard.Popovers",
+          fn: (props: PerformerCardProps) => [PerformerCardProps]
+        ): void;
         instead: {
           (
             component: "MainNavBar.MenuItems",
@@ -126,9 +124,9 @@ declare global {
           (
             component: "PerformerCard.Popovers",
             fn: (
-              props: React.PropsWithChildren,
+              props: PerformerCardProps,
               _: object,
-              Original: JSXElementConstructor<React.PropsWithChildren>
+              Original: JSXElementConstructor<PerformerCardProps>
             ) => React.JSX.Element[]
           ): void;
         };
@@ -136,4 +134,19 @@ declare global {
       React: typeof StashReact;
     };
   }
+}
+
+interface PerformerCardProps {
+  performer: Performer & {
+    custom_fields: {
+      glicko_deviation?: number;
+      glicko_rating?: number;
+      glicko_volatility?: number;
+      glicko_wins?: number;
+      glicko_losses?: number;
+      glicko_ties?: number;
+      glicko_match_history?: string;
+      glicko_session_history?: string;
+    };
+  };
 }
