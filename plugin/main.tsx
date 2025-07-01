@@ -53,6 +53,35 @@ PluginApi.patch.instead(
 );
 
 PluginApi.patch.instead(
+  "PerformerCard.Overlays",
+  function (props, _, Original) {
+    // If there is no rank, return the original component.
+    if (!props.performer.custom_fields.glicko_session_history)
+      return [<Original {...props} />];
+
+    // If the glicko_session_history does not resolve to valid data, return the
+    // original component.
+    const { glicko_session_history } = props.performer.custom_fields;
+    const sessionHistory = resolveJSON<PerformerSessionRecord[]>(
+      glicko_session_history ?? ""
+    );
+
+    if (!sessionHistory) return [<Original {...props} />];
+
+    const rank = "#" + sessionHistory[sessionHistory.length - 1].n;
+
+    return [
+      <>
+        <Original {...props} />
+        <div className="rating-banner rating-100-20 glicko-rating-banner">
+          <FAIcon icon={faChessRook} /> <span>{rank}</span>
+        </div>
+      </>,
+    ];
+  }
+);
+
+PluginApi.patch.instead(
   "PerformerCard.Popovers",
   function (props, _, Original) {
     const [config, setConfig] = React.useState<PluginOptions | null>(null);
