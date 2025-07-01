@@ -47,10 +47,23 @@ PluginApi.patch.instead(
   "PerformerCard.Popovers",
   function (props, _, Original) {
     // console.log(fetchPluginOptions());
-    console.log(props);
+    console.log(Original);
 
-    // Add the button to the navbar
-    return [<Original {...props} />];
+    if (!props.performer.custom_fields.glicko_rating)
+      return [<Original {...props} />];
+
+    return [
+      <>
+        <Original {...props} />
+        <div className="d-flex justify-content-center align-items-center">
+          <FAIcon
+            className="fa-icon nav-menu-icon d-block d-xl-inline mb-2 mb-xl-0"
+            icon={faChessRook}
+          />
+          <span>{Math.floor(props.performer.custom_fields.glicko_rating)}</span>
+        </div>
+      </>,
+    ];
   }
 );
 
