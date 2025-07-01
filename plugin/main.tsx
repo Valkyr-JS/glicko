@@ -1,16 +1,13 @@
 import { type OperationVariables, type QueryResult } from "@apollo/client";
-import { default as StashReact } from "react";
+import { default as React, type JSXElementConstructor } from "react";
 import { faChessRook } from "@fortawesome/free-solid-svg-icons";
 import * as FontAwesomeRegular from "@fortawesome/free-regular-svg-icons";
 import * as FontAwesomeSolid from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import type { JSXElementConstructor } from "react";
 import { ConfigResult, Performer } from "./stashGQL";
-import { PerformerSessionRecord } from "./plugin";
 
 const PluginApi = window.PluginApi;
 const FAIcon = PluginApi.components.Icon;
-const React = PluginApi.React;
 
 const resolveJSON: <T>(string: string) => T | null = (str: string) => {
   let json = null;
@@ -57,7 +54,15 @@ PluginApi.patch.instead(
 PluginApi.patch.instead(
   "PerformerCard.Popovers",
   function (props, _, Original) {
-    // console.log(fetchPluginOptions());
+    const [config, setConfig] = React.useState<PluginOptions | null>(null);
+    const configResult = PluginApi.GQL.useConfigurationQuery();
+
+    React.useEffect(() => {
+      setConfig(configResult.data?.configuration.plugins.glicko ?? null);
+    }, [configResult]);
+
+    // If plugin options have not yet loaded, or the user has not enabled footer rating
+    if (!config || !config.rankInCardFooter) return [<Original {...props} />];
 
     // If there is no rank, return the original component.
     if (!props.performer.custom_fields.glicko_session_history)
@@ -67,7 +72,7 @@ PluginApi.patch.instead(
     // original component.
     const { glicko_session_history } = props.performer.custom_fields;
     const sessionHistory = resolveJSON<PerformerSessionRecord[]>(
-      glicko_session_history
+      glicko_session_history ?? ""
     );
 
     if (!sessionHistory) return [<Original {...props} />];
@@ -90,40 +95,23 @@ PluginApi.patch.instead(
   }
 );
 
-/** Gets the Glicko user options and caches them to session storage for 5
- * seconds to reduce calls to the database. */
-const fetchPluginOptions = async () => {
-  // First check if the plugin options are already saved to session storage.
-  const optionsString = sessionStorage.getItem("glickoConfig");
-  const options = optionsString
-    ? (JSON.parse(optionsString) as PluginOptions)
-    : null;
+/* ---------------------------------------------------------------------------------------------- */
+/*                                              Types                                             */
+/* ---------------------------------------------------------------------------------------------- */
 
-  if (options) return options;
-
-  // Otherwise call API to get data, then remove from session storage after 3
-  // seconds so it doesn't stay cached too long and user changes aren't picked
-  // up.
-  const configResult = PluginApi.GQL.useConfigurationQuery();
-
-  if (!configResult.error && !configResult.loading) {
-    const pluginOptions = configResult.data?.configuration.plugins.glicko;
-    sessionStorage.setItem("glickoConfig", JSON.stringify(pluginOptions));
-
-    setTimeout(() => {
-      console.log("removed");
-      sessionStorage.removeItem("glickoConfig");
-    }, 3000);
-
-    return pluginOptions;
-  }
-  return null;
-};
+interface PerformerSessionRecord {
+  /** The ISO datetime of the session. */
+  d: string;
+  /** The Glicko rating of the performer at the end of the session. */
+  g: number;
+  /** The rank of the performer at the end of the session. */
+  n: number;
+}
 
 interface PluginOptions {
-  /** When enabled, the performer's Glicko rating is displayed in their card
+  /** When enabled, the performer's Glicko rank is displayed in their card
    * footer. */
-  ratingInCardFooter?: boolean;
+  rankInCardFooter?: boolean;
 }
 
 declare global {
@@ -167,7 +155,7 @@ declare global {
           ): void;
         };
       };
-      React: typeof StashReact;
+      React: typeof React;
     };
   }
 }

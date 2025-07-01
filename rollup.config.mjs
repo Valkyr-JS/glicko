@@ -35,6 +35,7 @@ const banner = `window.require = function(name) {
 }`;
 
 export default {
+  external: ["react"],
   input: "plugin/main.tsx",
   output: {
     banner,
