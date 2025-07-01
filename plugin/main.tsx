@@ -55,6 +55,16 @@ PluginApi.patch.instead(
 PluginApi.patch.instead(
   "PerformerCard.Overlays",
   function (props, _, Original) {
+    const [config, setConfig] = React.useState<PluginOptions | null>(null);
+    const configResult = PluginApi.GQL.useConfigurationQuery();
+
+    React.useEffect(() => {
+      setConfig(configResult.data?.configuration.plugins.glicko ?? null);
+    }, [configResult]);
+
+    // If plugin options have not yet loaded, or the user has not enabled footer rating
+    if (!config || !config.rankInBanner) return [<Original {...props} />];
+
     // If there is no rank, return the original component.
     if (!props.performer.custom_fields.glicko_session_history)
       return [<Original {...props} />];
