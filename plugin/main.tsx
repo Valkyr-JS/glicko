@@ -6,10 +6,21 @@ import * as FontAwesomeSolid from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { JSXElementConstructor } from "react";
 import { ConfigResult, Performer } from "./stashGQL";
+import { PerformerSessionRecord } from "./plugin";
 
 const PluginApi = window.PluginApi;
 const FAIcon = PluginApi.components.Icon;
 const React = PluginApi.React;
+
+const resolveJSON: <T>(string: string) => T | null = (str: string) => {
+  let json = null;
+  try {
+    json = JSON.parse(str);
+  } catch (e) {
+    console.log(e);
+  }
+  return json;
+};
 
 // Wait for the navbar to load, as this contains the
 PluginApi.patch.instead(
@@ -47,20 +58,32 @@ PluginApi.patch.instead(
   "PerformerCard.Popovers",
   function (props, _, Original) {
     // console.log(fetchPluginOptions());
-    console.log(Original);
 
-    if (!props.performer.custom_fields.glicko_rating)
+    // If there is no rank, return the original component.
+    if (!props.performer.custom_fields.glicko_session_history)
       return [<Original {...props} />];
+
+    // If the glicko_session_history does not resolve to valid data, return the
+    // original component.
+    const { glicko_session_history } = props.performer.custom_fields;
+    const sessionHistory = resolveJSON<PerformerSessionRecord[]>(
+      glicko_session_history
+    );
+
+    if (!sessionHistory) return [<Original {...props} />];
+
+    const rank = "#" + sessionHistory[sessionHistory.length - 1].n;
 
     return [
       <>
         <Original {...props} />
-        <div className="d-flex justify-content-center align-items-center">
-          <FAIcon
-            className="fa-icon nav-menu-icon d-block d-xl-inline mb-2 mb-xl-0"
-            icon={faChessRook}
-          />
-          <span>{Math.floor(props.performer.custom_fields.glicko_rating)}</span>
+        <div className="card-popovers btn-group">
+          <div>
+            <button type="button" className="minimal btn btn-primary">
+              <FAIcon icon={faChessRook} />
+              <span>{rank}</span>
+            </button>
+          </div>
         </div>
       </>,
     ];
