@@ -1,5 +1,6 @@
 import { type OperationVariables, type QueryResult } from "@apollo/client";
 import { default as React, type JSXElementConstructor } from "react";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { faChessRook } from "@fortawesome/free-solid-svg-icons";
 import * as FontAwesomeRegular from "@fortawesome/free-regular-svg-icons";
 import * as FontAwesomeSolid from "@fortawesome/free-solid-svg-icons";
@@ -78,16 +79,23 @@ PluginApi.patch.instead(
     if (!sessionHistory) return [<Original {...props} />];
 
     const rank = "#" + sessionHistory[sessionHistory.length - 1].n;
+    const rating = props.performer.custom_fields.glicko_rating
+      ? "Rating: " + Math.floor(props.performer.custom_fields.glicko_rating)
+      : "Error getting rating";
+
+    const tooltip = <Tooltip id="glicko-rating-tooltip">{rating}</Tooltip>;
 
     return [
       <>
         <Original {...props} />
         <div className="card-popovers btn-group">
           <div>
-            <button type="button" className="minimal btn btn-primary">
-              <FAIcon icon={faChessRook} />
-              <span>{rank}</span>
-            </button>
+            <OverlayTrigger placement="bottom" overlay={tooltip}>
+              <button type="button" className="minimal btn btn-primary">
+                <FAIcon icon={faChessRook} />
+                <span>{rank}</span>
+              </button>
+            </OverlayTrigger>
           </div>
         </div>
       </>,
