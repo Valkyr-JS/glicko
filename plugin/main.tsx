@@ -117,6 +117,9 @@ interface PerformerSessionRecord {
 }
 
 interface PluginOptions {
+  /** When enabled, the performer's Glicko rank is displayed in place of their
+   * Stash rating. */
+  rankInBanner?: boolean;
   /** When enabled, the performer's Glicko rank is displayed in their card
    * footer. */
   rankInCardFooter?: boolean;
@@ -141,8 +144,12 @@ declare global {
       patch: {
         before<T>(component: string, fn: (props: T) => [T]): void;
         before(
+          component: "PerformerCard.Overlays",
+          fn: (props: IPerformerCardProps) => [IPerformerCardProps]
+        ): void;
+        before(
           component: "PerformerCard.Popovers",
-          fn: (props: PerformerCardProps) => [PerformerCardProps]
+          fn: (props: IPerformerCardProps) => [IPerformerCardProps]
         ): void;
         instead: {
           (
@@ -156,9 +163,17 @@ declare global {
           (
             component: "PerformerCard.Popovers",
             fn: (
-              props: PerformerCardProps,
+              props: IPerformerCardProps,
               _: object,
-              Original: JSXElementConstructor<PerformerCardProps>
+              Original: JSXElementConstructor<IPerformerCardProps>
+            ) => React.JSX.Element[]
+          ): void;
+          (
+            component: "PerformerCard.Overlays",
+            fn: (
+              props: IPerformerCardProps,
+              _: object,
+              Original: JSXElementConstructor<IPerformerCardProps>
             ) => React.JSX.Element[]
           ): void;
         };
@@ -168,7 +183,7 @@ declare global {
   }
 }
 
-interface PerformerCardProps {
+interface IPerformerCardProps {
   performer: Performer & {
     custom_fields: {
       glicko_deviation?: number;
@@ -181,4 +196,10 @@ interface PerformerCardProps {
       glicko_session_history?: string;
     };
   };
+  cardWidth?: number;
+  ageFromDate?: string;
+  selecting?: boolean;
+  selected?: boolean;
+  zoomIndex?: number;
+  onSelectedChanged?: (selected: boolean, shiftKey: boolean) => void;
 }

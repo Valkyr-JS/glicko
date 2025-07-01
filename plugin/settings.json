@@ -1,4 +1,9 @@
 {
+  "rankInBanner": {
+    "displayName": "Show rank in card banner",
+    "description": "When enabled, the performer's Glicko rank is displayed in place of their Stash rating.",
+    "type": "BOOLEAN"
+  },
   "rankInCardFooter": {
     "displayName": "Show rank in card footer",
     "description": "When enabled, the performer's Glicko rank is displayed in their card footer.",
