@@ -18,6 +18,11 @@ interface PaginationProps {
 }
 
 const Pagination: React.FC<PaginationProps> = (props) => {
+  /* ----------------------------- Don't render single page pagination ---------------------------- */
+
+  // If pagination is only one page long, don't render the component
+  if (props.count < 2) return null;
+
   /* -------------------------------------- First page button ------------------------------------- */
 
   const firstButtonDisabled = props.current === 1;

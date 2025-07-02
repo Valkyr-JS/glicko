@@ -163,3 +163,22 @@ export const CompactButtonsSelectPage: Story = {
     expect(inputB).toBeInTheDocument();
   },
 };
+
+export const DontRenderOnePage: Story = {
+  args: {
+    count: 1,
+    current: 1,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const firstBtn = canvas.queryByRole<HTMLButtonElement>("button", {
+      name: "Load first page",
+    });
+    const lastBtn = canvas.queryByRole<HTMLButtonElement>("button", {
+      name: "Load last page",
+    });
+
+    expect(firstBtn).not.toBeInTheDocument();
+    expect(lastBtn).not.toBeInTheDocument();
+  },
+};
