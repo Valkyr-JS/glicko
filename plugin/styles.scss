@@ -1,0 +1,24 @@
+.performer-card {
+  .glicko-rating-banner {
+    display: block !important;
+    background-color: black;
+    padding-left: 60px;
+    padding-right: 60px;
+
+    & ~ .rating-banner {
+      display: none;
+    }
+  }
+
+  .glicko-rating-overlay {
+    position: absolute;
+    bottom: 1rem;
+    left: 1rem;
+
+    padding: 0.4rem 0.5rem 0.4rem 0.25rem;
+    border-radius: 3px;
+
+    line-height: 1;
+    background-color: rgba(black, 0.8);
+  }
+}
