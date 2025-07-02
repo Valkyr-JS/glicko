@@ -11,7 +11,7 @@
   },
   "ratingNotRank": {
     "displayName": "Show rating instead of rank",
-    "description": "When enabled, the performer's Glicko rating is displayed in Stash in place of their rank.",
+    "description": "When enabled, the performer's Glicko rating is displayed in place of their rank in the Stash UI.",
     "type": "BOOLEAN"
   }
 }
