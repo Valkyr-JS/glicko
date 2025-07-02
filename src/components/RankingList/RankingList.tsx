@@ -1,14 +1,13 @@
 import React, { useState } from "react";
+import { faChevronsDown } from "@fortawesome/pro-solid-svg-icons/faChevronsDown";
+import { faChevronsUp } from "@fortawesome/pro-solid-svg-icons/faChevronsUp";
 import { faSort } from "@fortawesome/pro-solid-svg-icons/faSort";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { default as cx } from "classnames";
-import styles from "./RankingList.module.scss";
 import { getStashUrl } from "@/helpers/stash";
 import TextUtils from "@/utils/text";
 import Pagination from "../Pagination/Pagination";
-import { faChevronsUp } from "@fortawesome/pro-solid-svg-icons/faChevronsUp";
-import { faChevronsDown } from "@fortawesome/pro-solid-svg-icons/faChevronsDown";
-import { faPlus } from "@fortawesome/pro-solid-svg-icons/faPlus";
+import styles from "./RankingList.module.scss";
 
 interface RankingListProps {
   /** The ranked performer performer data. */
@@ -346,36 +345,37 @@ interface RankChangeIconProps {
 }
 
 const RankChangeIcon: React.FC<RankChangeIconProps> = (props) => {
+  const commonClasses = (color: string) => cx("small", "text-" + color);
+  const commonIconClasses = (color: string) =>
+    cx("ml-1", "small", "text-" + color);
+
   // New entry
-  if (!props.prev)
-    return (
-      <FontAwesomeIcon
-        icon={faPlus}
-        className="ml-2 small text-warning"
-        title="New entry"
-      />
-    );
+  if (!props.prev) return <div className={commonClasses("warning")}>*New*</div>;
 
   const changeValue = props.prev - props.new;
 
   // Lower rank
   if (props.prev < props.new)
     return (
-      <FontAwesomeIcon
-        icon={faChevronsDown}
-        className="ml-2 small text-danger"
-        title={changeValue.toString()}
-      />
+      <div className={commonClasses("danger")}>
+        <span>{changeValue}</span>
+        <FontAwesomeIcon
+          icon={faChevronsDown}
+          className={commonIconClasses("danger")}
+        />
+      </div>
     );
 
   // Higher rank
   if (props.prev > props.new)
     return (
-      <FontAwesomeIcon
-        icon={faChevronsUp}
-        className="ml-2 small text-success"
-        title={"+" + changeValue}
-      />
+      <div className={commonClasses("success")}>
+        <span>+{changeValue}</span>
+        <FontAwesomeIcon
+          icon={faChevronsUp}
+          className={commonIconClasses("success")}
+        />
+      </div>
     );
 
   // No change in rank
