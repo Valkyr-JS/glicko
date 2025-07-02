@@ -8,16 +8,7 @@ const filename =  pkg.default.name + ".yml"
 // Only import the entry file. If you there are multiple entrypoints, you'll
 // need to list them all here. 
 const jsFiles = [pkg.default.name + ".js"]
-
-// Check if CSS has been generated
-const cssFiles = []
-
-fs.readdir('dist/', (_err, files) => {
-  files.forEach(file => {
-    const isCss = file.split(".")[file.split(".").length -1] === "css"
-    if (isCss) cssFiles.push(file)
-  });
-});
+const cssFiles = [pkg.default.name + ".css"]
 
 const json = {
   name: pkg.default.name,
@@ -27,7 +18,7 @@ const json = {
   ui: {
     assets: { "/": "." },
     javascript: jsFiles,
-    css: cssFiles.length ? cssFiles : undefined
+    css: cssFiles
   },
   settings: Object.keys(pluginSettings).length ? pluginSettings : undefined
 }

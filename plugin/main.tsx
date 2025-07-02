@@ -6,6 +6,7 @@ import * as FontAwesomeRegular from "@fortawesome/free-regular-svg-icons";
 import * as FontAwesomeSolid from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ConfigResult, Performer } from "./stashGQL";
+import "./styles.scss"
 
 const PluginApi = window.PluginApi;
 const FAIcon = PluginApi.components.Icon;
@@ -62,7 +63,8 @@ PluginApi.patch.instead(
       setConfig(configResult.data?.configuration.plugins.glicko ?? null);
     }, [configResult]);
 
-    // If plugin options have not yet loaded, or the user has not enabled footer rating
+    // If plugin options have not yet loaded, or the user has not enabled banner
+    // rating
     if (!config || !config.rankInBanner) return [<Original {...props} />];
 
     // If there is no rank, return the original component.
@@ -82,10 +84,10 @@ PluginApi.patch.instead(
 
     return [
       <>
-        <Original {...props} />
-        <div className="rating-banner rating-100-20 glicko-rating-banner">
+        <div className="rating-banner glicko-rating-banner">
           <FAIcon icon={faChessRook} /> <span>{rank}</span>
         </div>
+        <Original {...props} />
       </>,
     ];
   }
