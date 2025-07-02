@@ -14,9 +14,19 @@
     "description": "When enabled, the performer's Glicko rank is displayed in the bottom-left corner of their card image.",
     "type": "BOOLEAN"
   },
+  "rankOnPage": {
+    "displayName": "Show rank on performer page",
+    "description": "When enabled, the performer's Glicko rank is displayed next to their Stash rating on their profile page.",
+    "type": "BOOLEAN"
+  },
+  "ratingOnPage": {
+    "displayName": "Show rating on performer page",
+    "description": "When enabled, the performer's Glicko rating is displayed next to their Stash rating on their profile page.",
+    "type": "BOOLEAN"
+  },
   "ratingNotRank": {
     "displayName": "Show rating instead of rank",
-    "description": "When enabled, the performer's Glicko rating is displayed in place of their rank in the Stash UI.",
+    "description": "When enabled, the performer's Glicko rating is displayed in place of their rank in the Stash performer cards.",
     "type": "BOOLEAN"
   }
 }
