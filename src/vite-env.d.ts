@@ -58,6 +58,10 @@ type GlickoMatchResult = [p1ID: number, p2ID: number, p1Outcome: 0 | 1 | 0.5];
 interface GlickoPluginConfig {
   /** The stringified PerformerFilters */
   performerFilters?: string;
+  /** The stringified array of session dates. */
+  sessionHistory?: string;
+  /** The total number of performers with a Glicko rating. */
+  totalPerformers?: number;
   /** The stringified UserSettings */
   userSettings?: string;
 }

@@ -138,5 +138,6 @@ export const StashPluginUserSettingsParsed = z.object({
 export const StashPluginConfigParsed = z.object({
   performerFilters: z.object({ ...StashPluginPerformerFiltersParsed.shape }),
   sessionHistory: z.array(z.coerce.date()),
+  totalPerformers: z.number().optional(),
   userSettings: z.object({ ...StashPluginUserSettingsParsed.shape }),
 });

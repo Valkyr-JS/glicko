@@ -613,8 +613,7 @@ function App() {
       }
     }
 
-    // Create Glicko players from ALL performers in Stash, then sort them by
-    // name then rating.
+    // Create Glicko players then sort them by name then rating.
     const allGlickoPerformers = allStashPerformers
       .map((p) => {
         const rating = p.custom_fields?.glicko_rating ?? GLICKO.RATING_DEFAULT;
@@ -671,6 +670,7 @@ function App() {
         input: {
           ...queryStashConfiguration.data?.configuration.plugins.glicko,
           sessionHistory: JSON.stringify(updatedHistory),
+          totalPerformers: allGlickoPerformers.length,
         },
       },
     });
@@ -842,13 +842,28 @@ function App() {
 
   /** Handle wiping all Glicko data from all Stash performers */
   const handleWipePerformerData = async () => {
-    // Update the plugin config with the new session history
+    // Remove session history and total performers properties from the config.
+    const disallowedKeys = ["sessionHistory", "totalPerformers"];
+
+    const validKeys = Object.keys(
+      queryStashConfiguration.data?.configuration.plugins.glicko ?? {}
+    ).filter((k) => !disallowedKeys.includes(k));
+
+    const updatedConfig = validKeys.reduce(
+      (obj, key) => ({
+        ...obj,
+        [key]: (
+          queryStashConfiguration.data?.configuration.plugins.glicko as {
+            [key: string]: unknown;
+          }
+        )[key],
+      }),
+      {}
+    );
+
     const mutationResponse = await mutateStashPluginConfig({
       variables: {
-        input: {
-          ...queryStashConfiguration.data?.configuration.plugins.glicko,
-          sessionHistory: JSON.stringify([]),
-        },
+        input: updatedConfig,
       },
     });
 
