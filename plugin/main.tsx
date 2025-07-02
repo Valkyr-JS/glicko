@@ -163,6 +163,43 @@ PluginApi.patch.instead(
   }
 );
 
+PluginApi.patch.instead("PerformerDetailsPanel", function (props, _, Original) {
+  // If there is no rank, return the original component.
+  if (!props.performer.custom_fields.glicko_session_history)
+    return [<Original {...props} />];
+
+  // If the glicko_session_history does not resolve to valid data, return the
+  // original component.
+  const { glicko_session_history } = props.performer.custom_fields;
+  const sessionHistory = resolveJSON<PerformerSessionRecord[]>(
+    glicko_session_history ?? ""
+  );
+  if (!sessionHistory) return [<Original {...props} />];
+
+  const rank = "#" + sessionHistory[sessionHistory.length - 1].n;
+  const rating = Math.floor(props.performer.custom_fields.glicko_rating ?? 0);
+
+  return [
+    <>
+      <div className="ml-2 glicko-rating-number">
+        <span>
+          <FAIcon icon={faChessRook} />{" "}
+          <span>
+            <span className="sr-only">Glicko rank:</span>
+            {rank}
+          </span>{" "}
+          |{" "}
+          <span>
+            <span className="sr-only">Glicko rating:</span>
+            {rating}
+          </span>
+        </span>
+      </div>
+      <Original {...props} />
+    </>,
+  ];
+});
+
 /* ---------------------------------------------------------------------------------------------- */
 /*                                              Types                                             */
 /* ---------------------------------------------------------------------------------------------- */
@@ -242,6 +279,14 @@ declare global {
               Original: JSXElementConstructor<IPerformerCardProps>
             ) => React.JSX.Element[]
           ): void;
+          (
+            component: "PerformerDetailsPanel",
+            fn: (
+              props: IPerformerDetails,
+              _: object,
+              Original: JSXElementConstructor<IPerformerDetails>
+            ) => React.JSX.Element[]
+          ): void;
         };
       };
       React: typeof React;
@@ -249,23 +294,31 @@ declare global {
   }
 }
 
-interface IPerformerCardProps {
-  performer: Performer & {
-    custom_fields: {
-      glicko_deviation?: number;
-      glicko_rating?: number;
-      glicko_volatility?: number;
-      glicko_wins?: number;
-      glicko_losses?: number;
-      glicko_ties?: number;
-      glicko_match_history?: string;
-      glicko_session_history?: string;
-    };
+type PerformerData = Performer & {
+  custom_fields: {
+    glicko_deviation?: number;
+    glicko_rating?: number;
+    glicko_volatility?: number;
+    glicko_wins?: number;
+    glicko_losses?: number;
+    glicko_ties?: number;
+    glicko_match_history?: string;
+    glicko_session_history?: string;
   };
+};
+
+interface IPerformerCardProps {
+  performer: PerformerData;
   cardWidth?: number;
   ageFromDate?: string;
   selecting?: boolean;
   selected?: boolean;
   zoomIndex?: number;
   onSelectedChanged?: (selected: boolean, shiftKey: boolean) => void;
+}
+
+interface IPerformerDetails {
+  performer: PerformerData;
+  collapsed?: boolean;
+  fullWidth?: boolean;
 }
