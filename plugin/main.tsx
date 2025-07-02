@@ -164,6 +164,18 @@ PluginApi.patch.instead(
 );
 
 PluginApi.patch.instead("PerformerDetailsPanel", function (props, _, Original) {
+  const [config, setConfig] = React.useState<PluginOptions | null>(null);
+  const configResult = PluginApi.GQL.useConfigurationQuery();
+
+  React.useEffect(() => {
+    setConfig(configResult.data?.configuration.plugins.glicko ?? null);
+  }, [configResult]);
+
+  // If plugin options have not yet loaded, or the user has not enabled display,
+  // return the original component.
+  if (!config || (!config.rankOnPage && !config.ratingOnPage))
+    return [<Original {...props} />];
+
   // If there is no rank, return the original component.
   if (!props.performer.custom_fields.glicko_session_history)
     return [<Original {...props} />];
@@ -176,23 +188,33 @@ PluginApi.patch.instead("PerformerDetailsPanel", function (props, _, Original) {
   );
   if (!sessionHistory) return [<Original {...props} />];
 
-  const rank = "#" + sessionHistory[sessionHistory.length - 1].n;
-  const rating = Math.floor(props.performer.custom_fields.glicko_rating ?? 0);
+  const rank = config.rankOnPage ? (
+    <span>
+      <span className="sr-only">Glicko rank:</span>
+      {"#" + sessionHistory[sessionHistory.length - 1].n}
+    </span>
+  ) : null;
+
+  const rating = config.ratingOnPage ? (
+    <span>
+      <span className="sr-only">Glicko rating:</span>
+      {Math.floor(props.performer.custom_fields.glicko_rating ?? 0)}
+    </span>
+  ) : null;
+
+  const separator =
+    config.rankOnPage && config.ratingOnPage ? (
+      <span className="mx-2">|</span>
+    ) : null;
 
   return [
     <>
       <div className="ml-2 glicko-rating-number">
         <span>
-          <FAIcon icon={faChessRook} />{" "}
-          <span>
-            <span className="sr-only">Glicko rank:</span>
-            {rank}
-          </span>{" "}
-          |{" "}
-          <span>
-            <span className="sr-only">Glicko rating:</span>
-            {rating}
-          </span>
+          <FAIcon icon={faChessRook} />
+          {rank}
+          {separator}
+          {rating}
         </span>
       </div>
       <Original {...props} />
@@ -223,8 +245,14 @@ interface PluginOptions {
   /** When enabled, the performer's Glicko rank is displayed in the bottom-left
    * corner of their card image. */
   rankInImage?: boolean;
-  /** When enabled, the performer's Glicko rating is displayed in Stash in place
-   * of their rank. */
+  /** When enabled, the performer's Glicko rank is displayed next to their Stash
+   * rating on their profile page. */
+  rankOnPage?: boolean;
+  /** When enabled, the performer's Glicko rating is displayed next to their
+   * Stash rating on their profile page. */
+  ratingOnPage?: boolean;
+  /** When enabled, the performer's Glicko rating is displayed in place of their
+   * rank in the Stash performer cards. */
   ratingNotRank?: boolean;
 }
 
