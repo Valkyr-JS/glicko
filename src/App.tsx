@@ -613,8 +613,7 @@ function App() {
       }
     }
 
-    // Create Glicko players from ALL performers in Stash, then sort them by
-    // name then rating.
+    // Create Glicko players then sort them by name then rating.
     const allGlickoPerformers = allStashPerformers
       .map((p) => {
         const rating = p.custom_fields?.glicko_rating ?? GLICKO.RATING_DEFAULT;
@@ -671,6 +670,7 @@ function App() {
         input: {
           ...queryStashConfiguration.data?.configuration.plugins.glicko,
           sessionHistory: JSON.stringify(updatedHistory),
+          totalPerformers: allGlickoPerformers.length,
         },
       },
     });
