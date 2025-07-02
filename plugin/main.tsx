@@ -6,7 +6,7 @@ import * as FontAwesomeRegular from "@fortawesome/free-regular-svg-icons";
 import * as FontAwesomeSolid from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ConfigResult, Performer } from "./stashGQL";
-import "./styles.scss"
+import "./styles.scss";
 
 const PluginApi = window.PluginApi;
 const FAIcon = PluginApi.components.Icon;
@@ -81,11 +81,13 @@ PluginApi.patch.instead(
     if (!sessionHistory) return [<Original {...props} />];
 
     const rank = "#" + sessionHistory[sessionHistory.length - 1].n;
+    const rating = Math.floor(props.performer.custom_fields.glicko_rating ?? 0);
 
     return [
       <>
         <div className="rating-banner glicko-rating-banner">
-          <FAIcon icon={faChessRook} /> <span>{rank}</span>
+          <FAIcon icon={faChessRook} />{" "}
+          <span>{config.ratingNotRank ? rating : rank}</span>
         </div>
         <Original {...props} />
       </>,
@@ -121,10 +123,15 @@ PluginApi.patch.instead(
 
     const rank = "#" + sessionHistory[sessionHistory.length - 1].n;
     const rating = props.performer.custom_fields.glicko_rating
-      ? "Rating: " + Math.floor(props.performer.custom_fields.glicko_rating)
+      ? Math.floor(props.performer.custom_fields.glicko_rating)
       : "Error getting rating";
 
-    const tooltip = <Tooltip id="glicko-rating-tooltip">{rating}</Tooltip>;
+    const tooltipContent = config.ratingNotRank ? rank : rating;
+    const buttonContent = config.ratingNotRank ? rating : rank;
+
+    const tooltip = (
+      <Tooltip id="glicko-rating-tooltip">{tooltipContent}</Tooltip>
+    );
 
     return [
       <>
@@ -134,7 +141,7 @@ PluginApi.patch.instead(
             <OverlayTrigger placement="bottom" overlay={tooltip}>
               <button type="button" className="minimal btn btn-primary">
                 <FAIcon icon={faChessRook} />
-                <span>{rank}</span>
+                <span>{buttonContent}</span>
               </button>
             </OverlayTrigger>
           </div>
@@ -164,6 +171,9 @@ interface PluginOptions {
   /** When enabled, the performer's Glicko rank is displayed in their card
    * footer. */
   rankInCardFooter?: boolean;
+  /** When enabled, the performer's Glicko rating is displayed in Stash in place
+   * of their rank. */
+  ratingNotRank?: boolean;
 }
 
 declare global {
