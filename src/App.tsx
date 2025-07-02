@@ -773,12 +773,9 @@ function App() {
             n: rank,
           },
         ];
-        console.log("fullSessionHistory", fullSessionHistory);
         const sizedSessionHistory = userSettings.minimalHistory
           ? fullSessionHistory.slice(Math.max(fullSessionHistory.length - 2, 0))
           : fullSessionHistory;
-
-        console.log("sizedSessionHistory", sizedSessionHistory);
 
         const glicko_session_history = JSON.stringify(sizedSessionHistory);
 
