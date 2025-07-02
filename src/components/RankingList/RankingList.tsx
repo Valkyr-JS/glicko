@@ -1,11 +1,13 @@
 import React, { useState } from "react";
+import { faChevronsDown } from "@fortawesome/pro-solid-svg-icons/faChevronsDown";
+import { faChevronsUp } from "@fortawesome/pro-solid-svg-icons/faChevronsUp";
 import { faSort } from "@fortawesome/pro-solid-svg-icons/faSort";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { default as cx } from "classnames";
-import styles from "./RankingList.module.scss";
 import { getStashUrl } from "@/helpers/stash";
 import TextUtils from "@/utils/text";
 import Pagination from "../Pagination/Pagination";
+import styles from "./RankingList.module.scss";
 
 interface RankingListProps {
   /** The ranked performer performer data. */
@@ -172,6 +174,10 @@ const RankingList: React.FC<RankingListProps> = (props) => {
                 <tr key={i}>
                   <th scope="row">
                     <span>{p.rank}</span>
+                    <RankChangeIcon
+                      new={p.sessions[0].n}
+                      prev={p.sessions[1]?.n}
+                    />
                   </th>
                   <td>
                     <a href={link} target="_blank">
@@ -180,6 +186,14 @@ const RankingList: React.FC<RankingListProps> = (props) => {
                   </td>
                   <td>
                     <span>{Math.floor(p.rating)}</span>
+                    <DataChange
+                      new={Math.floor(p.rating)}
+                      prev={
+                        p.sessions[1]?.g
+                          ? Math.floor(p.sessions[1].g)
+                          : undefined
+                      }
+                    />
                   </td>
                   <td>
                     <span>{p.wins}</span>
@@ -320,3 +334,78 @@ const sortMethodDate = {
   name: "date",
   sorter: sortByDate,
 } as const;
+
+/* ---------------------------------------------------------------------------------------------- */
+/*                                        Rank change icon                                        */
+/* ---------------------------------------------------------------------------------------------- */
+
+interface RankChangeIconProps {
+  new: number;
+  prev?: number;
+}
+
+const RankChangeIcon: React.FC<RankChangeIconProps> = (props) => {
+  const commonClasses = (color: string) =>
+    cx("font-weight-normal", "text-" + color);
+  const commonIconClasses = (color: string) =>
+    cx("ml-1", "small", "text-" + color);
+
+  // New entry
+  if (!props.prev) return <div className={commonClasses("warning")}>*New*</div>;
+
+  const changeValue = props.prev - props.new;
+
+  // Lower rank
+  if (props.prev < props.new)
+    return (
+      <div className={commonClasses("danger")}>
+        <span>{changeValue}</span>
+        <FontAwesomeIcon
+          icon={faChevronsDown}
+          className={commonIconClasses("danger")}
+        />
+      </div>
+    );
+
+  // Higher rank
+  if (props.prev > props.new)
+    return (
+      <div className={commonClasses("success")}>
+        <span>+{changeValue}</span>
+        <FontAwesomeIcon
+          icon={faChevronsUp}
+          className={commonIconClasses("success")}
+        />
+      </div>
+    );
+
+  // No change in rank
+  return null;
+};
+
+/* ---------------------------------------------------------------------------------------------- */
+/*                                        Rank change data                                        */
+/* ---------------------------------------------------------------------------------------------- */
+
+interface DataChangeProps {
+  new: number;
+  prev?: number;
+}
+
+const DataChange: React.FC<DataChangeProps> = (props) => {
+  // New entry
+  if (!props.prev) return null;
+
+  const changeValue = props.new - props.prev;
+
+  // Increased value
+  if (props.prev < props.new)
+    return <div className="small text-success">+{changeValue.toString()}</div>;
+
+  // Decreased value
+  if (props.prev > props.new)
+    return <div className="small text-danger">{changeValue.toString()}</div>;
+
+  // No change in rank
+  return null;
+};
