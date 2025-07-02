@@ -65,7 +65,8 @@ PluginApi.patch.instead(
 
     // If plugin options have not yet loaded, or the user has not enabled banner
     // rating
-    if (!config || !config.rankInBanner) return [<Original {...props} />];
+    if (!config || (!config.rankInBanner && !config.rankInImage))
+      return [<Original {...props} />];
 
     // If there is no rank, return the original component.
     if (!props.performer.custom_fields.glicko_session_history)
@@ -83,13 +84,24 @@ PluginApi.patch.instead(
     const rank = "#" + sessionHistory[sessionHistory.length - 1].n;
     const rating = Math.floor(props.performer.custom_fields.glicko_rating ?? 0);
 
+    const banner = config.rankInBanner ? (
+      <div className="rating-banner glicko-rating-banner">
+        <FAIcon icon={faChessRook} />{" "}
+        <span>{config.ratingNotRank ? rating : rank}</span>
+      </div>
+    ) : null;
+
+    const rankOverlay = config.rankInImage ? (
+      <div className="glicko-rating-overlay small">
+        <FAIcon icon={faChessRook} /> {config.ratingNotRank ? rating : rank}
+      </div>
+    ) : null;
+
     return [
       <>
-        <div className="rating-banner glicko-rating-banner">
-          <FAIcon icon={faChessRook} />{" "}
-          <span>{config.ratingNotRank ? rating : rank}</span>
-        </div>
+        {banner}
         <Original {...props} />
+        {rankOverlay}
       </>,
     ];
   }
@@ -171,6 +183,9 @@ interface PluginOptions {
   /** When enabled, the performer's Glicko rank is displayed in their card
    * footer. */
   rankInCardFooter?: boolean;
+  /** When enabled, the performer's Glicko rank is displayed in the bottom-left
+   * corner of their card image. */
+  rankInImage?: boolean;
   /** When enabled, the performer's Glicko rating is displayed in Stash in place
    * of their rank. */
   ratingNotRank?: boolean;

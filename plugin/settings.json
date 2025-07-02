@@ -9,6 +9,11 @@
     "description": "When enabled, the performer's Glicko rank is displayed in their card footer.",
     "type": "BOOLEAN"
   },
+  "rankInImage": {
+    "displayName": "Show rank in card image",
+    "description": "When enabled, the performer's Glicko rank is displayed in the bottom-left corner of their card image.",
+    "type": "BOOLEAN"
+  },
   "ratingNotRank": {
     "displayName": "Show rating instead of rank",
     "description": "When enabled, the performer's Glicko rating is displayed in place of their rank in the Stash UI.",

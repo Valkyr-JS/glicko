@@ -9,4 +9,16 @@
       display: none;
     }
   }
+
+  .glicko-rating-overlay {
+    position: absolute;
+    bottom: 1rem;
+    left: 1rem;
+
+    padding: 0.5rem;
+    border-radius: 3px;
+
+    line-height: 1;
+    background-color: rgba(black, 0.8);
+  }
 }
