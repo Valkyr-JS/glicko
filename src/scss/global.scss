@@ -1,5 +1,12 @@
 @use "./spacing";
 
+// WCAG AA-compliancy for various font colors against Stash background color.
+:root {
+  --danger: #ff6b6b;
+  --info: #8bf7ee;
+  --success: #11b06e;
+}
+
 body {
   padding-top: 0;
   padding-bottom: 0;
@@ -16,12 +23,11 @@ body {
   margin-top: spacing.$large;
 }
 
-// WCAG AA-compliancy for various font colors against Stash background color.
 code {
-  color: #8bf7ee;
+  color: var(--info);
 }
 .invalid-feedback {
-  color: #e66969;
+  color: var(--danger);
 }
 
 table {
@@ -32,4 +38,12 @@ table {
       text-align: center;
     }
   }
+}
+
+.text-danger {
+  color: var(--danger) !important;
+}
+
+.text-success {
+  color: var(--success) !important;
 }

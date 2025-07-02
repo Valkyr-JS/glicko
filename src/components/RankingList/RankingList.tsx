@@ -345,7 +345,8 @@ interface RankChangeIconProps {
 }
 
 const RankChangeIcon: React.FC<RankChangeIconProps> = (props) => {
-  const commonClasses = (color: string) => cx("small", "text-" + color);
+  const commonClasses = (color: string) =>
+    cx("font-weight-normal", "text-" + color);
   const commonIconClasses = (color: string) =>
     cx("ml-1", "small", "text-" + color);
 
