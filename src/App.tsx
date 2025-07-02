@@ -842,13 +842,28 @@ function App() {
 
   /** Handle wiping all Glicko data from all Stash performers */
   const handleWipePerformerData = async () => {
-    // Update the plugin config with the new session history
+    // Remove session history and total performers properties from the config.
+    const disallowedKeys = ["sessionHistory", "totalPerformers"];
+
+    const validKeys = Object.keys(
+      queryStashConfiguration.data?.configuration.plugins.glicko ?? {}
+    ).filter((k) => !disallowedKeys.includes(k));
+
+    const updatedConfig = validKeys.reduce(
+      (obj, key) => ({
+        ...obj,
+        [key]: (
+          queryStashConfiguration.data?.configuration.plugins.glicko as {
+            [key: string]: unknown;
+          }
+        )[key],
+      }),
+      {}
+    );
+
     const mutationResponse = await mutateStashPluginConfig({
       variables: {
-        input: {
-          ...queryStashConfiguration.data?.configuration.plugins.glicko,
-          sessionHistory: JSON.stringify([]),
-        },
+        input: updatedConfig,
       },
     });
 
