@@ -67,9 +67,9 @@ const StashVersionReport: React.FC<StashVersionReportProps> = (props) => {
       />
       This version is compatible with Glicko but with some limitations:
       <ul>
-        {versionWarnings.map((w) => {
+        {versionWarnings.map((w, i) => {
           return (
-            <li>
+            <li key={i}>
               <FontAwesomeIcon
                 className="mr-2"
                 icon={faCircle}

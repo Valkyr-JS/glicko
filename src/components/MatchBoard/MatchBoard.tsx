@@ -1,13 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import type { OperationVariables, QueryResult } from "@apollo/client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChessRook } from "@fortawesome/pro-solid-svg-icons/faChessRook";
 import { faImage } from "@fortawesome/pro-solid-svg-icons/faImage";
 import { faImagePortrait } from "@fortawesome/pro-solid-svg-icons/faImagePortrait";
 import { faRotateLeft } from "@fortawesome/pro-solid-svg-icons/faRotateLeft";
 import { faSend } from "@fortawesome/pro-solid-svg-icons/faSend";
 import { faSpinnerThird } from "@fortawesome/pro-solid-svg-icons/faSpinnerThird";
 import { faStop } from "@fortawesome/pro-solid-svg-icons/faStop";
-import { faTrophy } from "@fortawesome/pro-solid-svg-icons/faTrophy";
 import { default as cx } from "classnames";
 import type { StashFindImagesResult, StashPerformer } from "@/apollo/schema";
 import { DEFAULT_BOARD_WIDTH, DEFAULT_IMAGE_QUALITY } from "@/constants";
@@ -249,7 +249,7 @@ const PlayerProfile = (props: PlayerProfileProps) => {
         />
       </div>
       <span className={styles["rating"]}>
-        <FontAwesomeIcon icon={faTrophy} />{" "}
+        <FontAwesomeIcon icon={faChessRook} />{" "}
         <span className="sr-only">{props.name}'s rating: </span>
         {Math.round(props.initialRating)}
       </span>
