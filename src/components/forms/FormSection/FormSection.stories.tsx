@@ -1,14 +1,16 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import SettingSection from "./SettingSection";
+import FormSection from "./FormSection";
 
 const meta = {
-  title: "Components/SettingSection",
-  component: SettingSection,
-  args: {},
+  title: "Components/FormSection",
+  component: FormSection,
+  args: {
+    heading: "Heading",
+  },
   parameters: {
     layout: "padded",
   },
-} satisfies Meta<typeof SettingSection>;
+} satisfies Meta<typeof FormSection>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
