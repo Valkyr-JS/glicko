@@ -45,10 +45,11 @@ export const formatPerformersToRanked = (
     const sessionHistory = JSON.parse(
       p.custom_fields?.glicko_session_history ?? "[]"
     ) as PerformerSessionRecord[];
-    const latestSession =
-      sessionHistory.length === 1 ? sessionHistory[0] : sessionHistory[1];
+    const latestSession = sessionHistory[sessionHistory.length - 1];
     const previousSession =
-      sessionHistory.length === 1 ? undefined : sessionHistory[0];
+      sessionHistory.length === 1
+        ? undefined
+        : sessionHistory[sessionHistory.length - 2];
     const sessions: RankedPerformer["sessions"] = [
       latestSession,
       previousSession,
