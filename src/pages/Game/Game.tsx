@@ -78,7 +78,7 @@ const GamePage: React.FC<GamePageProps> = (props) => {
     // one match has been played.
     if (!props.userSettings.readOnly && !!props.results.length)
       setShowAbandonModal(true);
-    else props.setActivePage("HOME");
+    else handleConfirmAbandonProgress();
   };
 
   /** Handler for cancelling abandonment of the current session. */
