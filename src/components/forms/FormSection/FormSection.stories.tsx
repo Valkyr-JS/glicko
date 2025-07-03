@@ -9,6 +9,9 @@ const meta = {
   args: {
     heading: "Heading",
   },
+  parameters: {
+    layout: "padded",
+  },
   decorators: [WithContainer],
 } satisfies Meta<typeof FormSection>;
 

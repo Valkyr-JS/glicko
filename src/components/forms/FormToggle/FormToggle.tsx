@@ -17,12 +17,13 @@ const FormToggle: React.FC<FormToggleProps> = (props) => {
   return (
     <div className="setting">
       <div>
-        <h3>{props.label}</h3>
+        <h3 id={props.id + "_label"}>{props.label}</h3>
         <div className="sub-heading">{props.children}</div>
       </div>
       <div>
         <div className="custom-control custom-switch">
           <input
+            aria-labelledby={props.id + "_label"}
             checked={checked}
             className="custom-control-input"
             type="checkbox"
@@ -31,7 +32,7 @@ const FormToggle: React.FC<FormToggleProps> = (props) => {
             onChange={() => toggleChecked(!checked)}
             value={checked + ""}
           />
-          <label className="custom-control-label" htmlFor={props.id}></label>
+          <label className="custom-control-label" htmlFor={props.id} />
         </div>
       </div>
     </div>
