@@ -81,19 +81,30 @@ PluginApi.patch.instead(
 
     if (!sessionHistory) return [<Original {...props} />];
 
-    const rank = "#" + sessionHistory[sessionHistory.length - 1].n;
+    const rank = sessionHistory[sessionHistory.length - 1].n;
+    const rankString = "#" + rank;
     const rating = Math.floor(props.performer.custom_fields.glicko_rating ?? 0);
 
+    // Get the rank of the performer out of 20 in order to use the native Stash
+    // banner background colors.
+    const ratingValue = config.totalPerformers
+      ? Math.ceil(((rank / config.totalPerformers) * 20 - 20) * -1)
+      : null;
+
+    const bannerClasses =
+      "rating-banner rating-100-" + ratingValue + " glicko-rating-banner";
+
     const banner = config.rankInBanner ? (
-      <div className="rating-banner glicko-rating-banner">
+      <div className={bannerClasses}>
         <FAIcon icon={faChessRook} />{" "}
-        <span>{config.ratingNotRank ? rating : rank}</span>
+        <span>{config.ratingNotRank ? rating : rankString}</span>
       </div>
     ) : null;
 
     const rankOverlay = config.rankInImage ? (
       <div className="glicko-rating-overlay small">
-        <FAIcon icon={faChessRook} /> {config.ratingNotRank ? rating : rank}
+        <FAIcon icon={faChessRook} />{" "}
+        {config.ratingNotRank ? rating : rankString}
       </div>
     ) : null;
 
@@ -254,6 +265,8 @@ interface PluginOptions {
   /** When enabled, the performer's Glicko rating is displayed in place of their
    * rank in the Stash performer cards. */
   ratingNotRank?: boolean;
+  /** The total number of performers with a Glicko rating. */
+  totalPerformers?: number;
 }
 
 declare global {
