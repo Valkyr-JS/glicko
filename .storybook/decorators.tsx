@@ -18,6 +18,24 @@ type Decorator =
       }
     >;
 
+export const WithApollo: Decorator = (Story) => {
+  return (
+    <ApolloProvider client={client}>
+      <Story />
+    </ApolloProvider>
+  );
+};
+
+/** Storybook decorator which wraps the story in a `.container` Bootstrap 4
+ * class. */
+export const WithContainer: Decorator = (Story) => {
+  return (
+    <div className="container">
+      <Story />
+    </div>
+  );
+};
+
 /** Storybook decorator which wraps the story in a form with a submit button.
  * The form response value is displayed in a code block beneath it. */
 export const WithFormSubmission: Decorator = (Story) => {
@@ -48,13 +66,5 @@ export const WithFormSubmission: Decorator = (Story) => {
       </form>
       {responseEl}
     </div>
-  );
-};
-
-export const WithApollo: Decorator = (Story) => {
-  return (
-    <ApolloProvider client={client}>
-      <Story />
-    </ApolloProvider>
   );
 };
