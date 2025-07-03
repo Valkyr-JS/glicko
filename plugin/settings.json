@@ -1,32 +1,32 @@
 {
   "rankInBanner": {
-    "displayName": "Show rank in card banner",
+    "displayName": "Performer card: Show rank in banner",
     "description": "When enabled, the performer's Glicko rank is displayed in place of their Stash rating.",
     "type": "BOOLEAN"
   },
   "rankInCardFooter": {
-    "displayName": "Show rank in card footer",
+    "displayName": "Performer card: Show rank in footer",
     "description": "When enabled, the performer's Glicko rank is displayed in their card footer.",
     "type": "BOOLEAN"
   },
   "rankInImage": {
-    "displayName": "Show rank in card image",
+    "displayName": "Performer card: Show rank in image",
     "description": "When enabled, the performer's Glicko rank is displayed in the bottom-left corner of their card image.",
     "type": "BOOLEAN"
   },
+  "ratingNotRank": {
+    "displayName": "Performer card: Show rating instead of rank",
+    "description": "When enabled, the performer's Glicko rating is displayed in place of their rank in the Stash performer cards.",
+    "type": "BOOLEAN"
+  },
   "rankOnPage": {
-    "displayName": "Show rank on performer page",
+    "displayName": "Performer page: Show rank",
     "description": "When enabled, the performer's Glicko rank is displayed next to their Stash rating on their profile page.",
     "type": "BOOLEAN"
   },
   "ratingOnPage": {
-    "displayName": "Show rating on performer page",
+    "displayName": "Performer page: Show rating",
     "description": "When enabled, the performer's Glicko rating is displayed next to their Stash rating on their profile page.",
-    "type": "BOOLEAN"
-  },
-  "ratingNotRank": {
-    "displayName": "Show rating instead of rank",
-    "description": "When enabled, the performer's Glicko rating is displayed in place of their rank in the Stash performer cards.",
     "type": "BOOLEAN"
   }
 }
