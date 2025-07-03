@@ -27,8 +27,9 @@ export const FormToggleItem: Story = {
         label='Enable "read-only" mode'
         name="form-toggle-item"
       >
-        Abbreviate counters in cards and details view pages, for example "1831"
-        will get formated to "1.8K".
+        Read-only mode disables saving performer results to the Stash database.
+        User settings and performer filters will still be saved to the Stash
+        config.yml file as normal.
       </FormToggle>,
     ],
   },
