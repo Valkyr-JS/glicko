@@ -1,5 +1,6 @@
-@use "@/scss/typography";
-
 .heading {
-  @include typography.heading;
+  font-size: 1.25rem;
+  font-weight: 500;
+  line-height: 1.2;
+  margin-bottom: 0;
 }

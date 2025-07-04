@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import formStyles from "../forms.module.scss";
 
 interface FormToggleProps extends React.PropsWithChildren {
   /** The unique toggle ID. */
@@ -17,7 +18,9 @@ const FormToggle: React.FC<FormToggleProps> = (props) => {
   return (
     <div className="setting">
       <div>
-        <h3 id={props.id + "_label"}>{props.label}</h3>
+        <div id={props.id + "_label"} className={formStyles.heading}>
+          {props.label}
+        </div>
         <div className="sub-heading">{props.children}</div>
       </div>
       <div>
