@@ -129,10 +129,10 @@ export const StashPluginPerformerFiltersParsed = z.object({
 export const StashPluginUserSettingsParsed = z.object({
   arrowKeys: z.boolean().optional(),
   boardWidth: z.number().optional(),
-  imageQuality: z.literal(["original", "thumbnail"]).optional(),
   minimalHistory: z.boolean().optional(),
   progressMaxRows: z.number().optional(),
   readOnly: z.boolean().optional(),
+  useThumbnails: z.boolean().optional(),
 });
 
 export const StashPluginConfigParsed = z.object({

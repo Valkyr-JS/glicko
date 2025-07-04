@@ -24,8 +24,6 @@ interface GamePageProps extends PageProps {
   ) => Promise<QueryResult<StashFindImagesResult, OperationVariables> | null>;
   /** Any kind of game error that stop the user from playing. */
   gameError: GameError | null;
-  /** The quality of the performer images as set by the user. */
-  imageQuality: UserSettings["imageQuality"];
   /** The data for the players involved in the match. */
   match: Match;
   /** The zero-based index of the current match in the match list. */
@@ -42,6 +40,8 @@ interface GamePageProps extends PageProps {
   setWinnerHandler: (winnerIndex: 0 | 1) => Promise<void>;
   /** Handle for submitting the match results. */
   submitHandler: () => void;
+  /** Whether to use thumbnails instead of original-quality performer images. */
+  useThumbnails: UserSettings["useThumbnails"];
   /** Handler for reloading the previous match. */
   undoMatchHandler: () => Promise<void>;
   /** The user's game settings. */
@@ -117,9 +117,9 @@ const GamePage: React.FC<GamePageProps> = (props) => {
           clickStopHandler={handleAbandonProgress}
           clickSubmitHandler={handleSubmitClick}
           clickUndoHandler={props.undoMatchHandler}
-          imageQuality={props.imageQuality}
           matchIndex={props.matchIndex}
           match={props.match}
+          useThumbnails={props.useThumbnails}
           userSettings={props.userSettings}
         />
         <ProgressBoard

@@ -1001,7 +1001,7 @@ function App() {
           <GamePage
             changeImageHandler={handleChangeImage}
             gameError={gameError}
-            imageQuality={userSettings.imageQuality}
+            useThumbnails={userSettings.useThumbnails}
             match={currentMatch}
             matchIndex={results.length}
             performerData={slimPerformerData}

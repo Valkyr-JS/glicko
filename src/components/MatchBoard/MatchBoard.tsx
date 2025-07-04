@@ -10,7 +10,7 @@ import { faSpinnerThird } from "@fortawesome/pro-solid-svg-icons/faSpinnerThird"
 import { faStop } from "@fortawesome/pro-solid-svg-icons/faStop";
 import { default as cx } from "classnames";
 import type { StashFindImagesResult, StashPerformer } from "@/apollo/schema";
-import { DEFAULT_BOARD_WIDTH, DEFAULT_IMAGE_QUALITY } from "@/constants";
+import { DEFAULT_BOARD_WIDTH, DEFAULT_USE_THUMBNAILS } from "@/constants";
 import { getStashUrl } from "@/helpers/stash";
 import styles from "./MatchBoard.module.scss";
 import { faBookOpen } from "@fortawesome/pro-solid-svg-icons/faBookOpen";
@@ -34,8 +34,8 @@ interface MatchBoardProps {
   clickSubmitHandler: React.MouseEventHandler<HTMLButtonElement>;
   /** Handler for clicking the undo button. */
   clickUndoHandler: () => Promise<void>;
-  /** The quality of the performer images as set by the user. */
-  imageQuality: UserSettings["imageQuality"];
+  /** Whether to use thumbnails instead of original-quality performer images. */
+  useThumbnails: UserSettings["useThumbnails"];
   /** The zero-based index of the match in the current game session. */
   matchIndex: number;
   /** The players in the current match. */
@@ -101,7 +101,7 @@ const MatchBoard: React.FC<MatchBoardProps> = ({
           {...props.match[0]}
           changeImageHandler={props.changeImageHandler}
           clickSelectHandler={clickSelectHandler}
-          imageQuality={props.imageQuality}
+          useThumbnails={props.useThumbnails}
           loading={loading}
           position={0}
           setLoading={setLoading}
@@ -110,7 +110,7 @@ const MatchBoard: React.FC<MatchBoardProps> = ({
           {...props.match[1]}
           changeImageHandler={props.changeImageHandler}
           clickSelectHandler={clickSelectHandler}
-          imageQuality={props.imageQuality}
+          useThumbnails={props.useThumbnails}
           loading={loading}
           position={1}
           setLoading={setLoading}
@@ -173,7 +173,7 @@ interface PlayerProfileProps extends MatchPerformer {
   /** Executes when the user selects the winning player. */
   clickSelectHandler: (winner: 0 | 1) => void;
   /** The quality of the performer images as set by the user. */
-  imageQuality: UserSettings["imageQuality"];
+  useThumbnails: UserSettings["useThumbnails"];
   /** Whether a match is currently being loaded. */
   loading: boolean;
   /** Whether the profile is on the left, i.e. `0`, or right, i.e. `1` */
@@ -212,12 +212,11 @@ const PlayerProfile = (props: PlayerProfileProps) => {
 
   // When image change is detected, update the state
   useEffect(() => {
-    const imgQuality =
-      props.imageQuality === "original" ? "image" : DEFAULT_IMAGE_QUALITY;
+    const imgQuality = props.useThumbnails ?? DEFAULT_USE_THUMBNAILS;
     if (props.imageID)
       setImageSource(getStashUrl("/image/" + props.imageID + "/" + imgQuality));
     else setImageSource(props.coverImg);
-  }, [props.coverImg, props.imageID, props.imageQuality]);
+  }, [props.coverImg, props.imageID, props.useThumbnails]);
 
   const imageButtonDisabled = imageLoading || !props.imagesAvailable;
   const coverButtonDisabled =
