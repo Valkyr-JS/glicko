@@ -26,6 +26,7 @@ export const FormToggleItem: Story = {
   args: {
     children: [
       <FormToggle
+        key="toggle"
         id="formToggleItem"
         isActive={false}
         label='Enable "read-only" mode'
