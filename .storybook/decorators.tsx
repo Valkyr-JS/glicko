@@ -50,11 +50,11 @@ export const WithFormSubmission: Decorator = (Story) => {
     setResponse(formJson);
   };
 
-  const responseEl = Object.keys(response).length ? (
+  const responseEl = (
     <code className="d-block mt-3" data-testid="form-response">
       {JSON.stringify(response)}
     </code>
-  ) : null;
+  );
 
   return (
     <div>
