@@ -58,9 +58,7 @@ table {
     margin-right: 10px;
   }
   & > div:nth-child(2) {
-    display: flex;
-    justify-content: right;
-    align-items: center;
-    gap: 8px;
+    width: 150px;
+    max-width: 100%;
   }
 }
