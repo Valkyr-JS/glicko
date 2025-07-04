@@ -57,7 +57,14 @@ const MatchBoard: React.FC<MatchBoardProps> = ({
     setLoading(false);
   }, [props.match]);
 
-  const boardWidth = props.boardWidth ?? DEFAULT_BOARD_WIDTH;
+  // Only apply the board width if it has been set by the user
+  const boardWidth =
+    props.boardWidth === undefined || props.boardWidth === DEFAULT_BOARD_WIDTH
+      ? null
+      : props.boardWidth;
+
+  const profilesStyles: React.HTMLAttributes<HTMLDivElement>["style"] =
+    boardWidth ? { maxWidth: boardWidth + "px" } : undefined;
 
   /* --------------------------------------- Keyboard events -------------------------------------- */
 
@@ -93,10 +100,7 @@ const MatchBoard: React.FC<MatchBoardProps> = ({
   return (
     <section className={styles["one-vs-one-board"]}>
       <h2>Round {props.matchIndex + 1}</h2>
-      <div
-        className={styles["profiles"]}
-        style={{ maxWidth: boardWidth + "px" }}
-      >
+      <div className={styles["profiles"]} style={profilesStyles}>
         <PlayerProfile
           {...props.match[0]}
           changeImageHandler={props.changeImageHandler}

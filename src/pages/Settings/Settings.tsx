@@ -250,10 +250,16 @@ const convertFormDataToUserSettings = (data: FormData): UserSettings => {
   const arrowKeys = !!formKeys.find((k) => k === "arrow-keys");
 
   // Progress max rows
-  const progressMaxRows = +formJson["progress-max-rows"];
+  const formProgressMaxRows = +formJson["progress-max-rows"];
+  const progressMaxRows =
+    formProgressMaxRows === DEFAULT_MAX_PROGRESS_BOARD_ROWS
+      ? undefined
+      : formProgressMaxRows;
 
   // Board width
-  const boardWidth = +formJson["board-width"];
+  const formBoardWidth = +formJson["board-width"];
+  const boardWidth =
+    formBoardWidth === DEFAULT_BOARD_WIDTH ? undefined : formBoardWidth;
 
   const updatedSettings: UserSettings = {
     arrowKeys,
