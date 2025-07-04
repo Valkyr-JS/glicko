@@ -122,11 +122,8 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
               label="Enable arrow keys"
               name="arrow-keys"
             >
-              When enabled, only the data for each performer's most recent match
-              and two most recent sessions will be saved to their profile, as
-              opposed to saving data for all matches and sessions. This may
-              impact future planned features, but reduce loading times and the
-              size of performers' custom data.
+              When enabled, the left and right arrow keys can be used to select
+              performers in a matchup.
             </FormToggle>
           </FormSection>
           <div className="row">
