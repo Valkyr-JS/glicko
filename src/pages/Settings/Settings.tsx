@@ -2,16 +2,15 @@ import React, { useRef, useState } from "react";
 import { faHand } from "@fortawesome/pro-solid-svg-icons/faHand";
 import { default as cx } from "classnames";
 import Modal from "@/components/Modal/Modal";
-import ArrowKeys from "./options/ArrowKeys";
 import BoardWidth from "./options/BoardWidth";
 import ImageQuality from "./options/ImageQuality";
 import ProgressMaxRows from "./options/ProgressMaxRows";
-import ReadOnlyMode from "./options/ReadOnlyMode";
 import WipePerformerData, {
   WipePerformerDataModal,
 } from "./options/WipePerformerData";
 import styles from "./Settings.module.scss";
-import MinimalHistory from "./options/MinimalHistory";
+import FormSection from "@/components/forms/FormSection/FormSection";
+import FormToggle from "@/components/forms/FormToggle/FormToggle";
 
 interface SettingsPageProps extends PageProps {
   /** The user's game settings. */
@@ -94,18 +93,45 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
           onChange={onFormChange}
         >
           <h1>Settings</h1>
+          <FormSection heading="Game settings">
+            <FormToggle
+              id="readOnly"
+              isActive={!!props.settings.readOnly}
+              label='Enable "read-only" mode'
+              name="read-only"
+            >
+              Read-only mode disables saving performer results to the Stash
+              database. User settings and performer filters will still be saved
+              to the Stash config.yml file as normal.
+            </FormToggle>
+            <FormToggle
+              id="minimalHistory"
+              isActive={!!props.settings.minimalHistory}
+              label="Enable minimal match history"
+              name="minimal-history"
+            >
+              When enabled, only the data for each performer's most recent match
+              and two most recent sessions will be saved to their profile, as
+              opposed to saving data for all matches and sessions. This may
+              impact future planned features, but reduce loading times and the
+              size of performers' custom data.
+            </FormToggle>
+            <FormToggle
+              id="arrowKeys"
+              isActive={!!props.settings.arrowKeys}
+              label="Enable arrow keys"
+              name="arrow-keys"
+            >
+              When enabled, only the data for each performer's most recent match
+              and two most recent sessions will be saved to their profile, as
+              opposed to saving data for all matches and sessions. This may
+              impact future planned features, but reduce loading times and the
+              size of performers' custom data.
+            </FormToggle>
+          </FormSection>
           <div className="row">
             <div className="col-12 col-lg-6 mt-3">
-              <ReadOnlyMode enabled={props.settings.readOnly} />
-            </div>
-            <div className="col-12 col-lg-6 mt-3">
-              <MinimalHistory enabled={props.settings.minimalHistory} />
-            </div>
-            <div className="col-12 col-lg-6 mt-3">
               <ImageQuality imageQuality={props.settings.imageQuality} />
-            </div>
-            <div className="col-12 col-lg-6 mt-3">
-              <ArrowKeys enabled={props.settings.arrowKeys} />
             </div>
             <div className="col-12 col-lg-6 mt-3">
               <ProgressMaxRows userMaxRows={props.settings.progressMaxRows} />
