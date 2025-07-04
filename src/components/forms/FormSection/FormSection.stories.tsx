@@ -1,5 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { WithContainer } from "../../../../.storybook/decorators";
+import { expect, userEvent, within } from "storybook/test";
+import {
+  WithContainer,
+  WithFormSubmission,
+} from "../../../../.storybook/decorators";
 import FormToggle from "../FormToggle/FormToggle";
 import FormSection from "./FormSection";
 
@@ -12,7 +16,7 @@ const meta = {
   parameters: {
     layout: "padded",
   },
-  decorators: [WithContainer],
+  decorators: [WithFormSubmission, WithContainer],
 } satisfies Meta<typeof FormSection>;
 
 export default meta;
@@ -23,7 +27,7 @@ export const FormToggleItem: Story = {
     children: [
       <FormToggle
         id="formToggleItem"
-        isActive
+        isActive={false}
         label='Enable "read-only" mode'
         name="form-toggle-item"
       >
@@ -32,5 +36,40 @@ export const FormToggleItem: Story = {
         config.yml file as normal.
       </FormToggle>,
     ],
+  },
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+    const submit = canvas.getByRole<HTMLButtonElement>("button", {
+      name: "Submit form",
+    });
+    const checkbox = canvas.getByRole("checkbox", {
+      name: 'Enable "read-only" mode',
+    });
+
+    await step("Click on the toggle", () => {
+      userEvent.click(checkbox);
+    });
+
+    await step("Get the response", async () => {
+      await userEvent.click(submit);
+
+      const response = canvas.getByTestId("form-response");
+      expect(response.textContent).toBe(
+        JSON.stringify({
+          "form-toggle-item": "true",
+        })
+      );
+    });
+
+    await step("Click on the toggle again", () => {
+      userEvent.click(checkbox);
+    });
+
+    await step("Get the response", async () => {
+      await userEvent.click(submit);
+
+      const response = canvas.getByTestId("form-response");
+      expect(response.textContent).toBe(JSON.stringify({}));
+    });
   },
 };
