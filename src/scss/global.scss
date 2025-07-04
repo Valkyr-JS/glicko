@@ -48,6 +48,11 @@ table {
   color: var(--success) !important;
 }
 
+.form-control:disabled,
+.form-control[readonly] {
+  opacity: 0.5;
+}
+
 .setting-section .setting {
   & > div:first-child {
     margin-right: 10px;
