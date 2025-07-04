@@ -2,8 +2,6 @@ import React, { useRef, useState } from "react";
 import { faHand } from "@fortawesome/pro-solid-svg-icons/faHand";
 import { default as cx } from "classnames";
 import Modal from "@/components/Modal/Modal";
-import BoardWidth from "./options/BoardWidth";
-import ProgressMaxRows from "./options/ProgressMaxRows";
 import WipePerformerData, {
   WipePerformerDataModal,
 } from "./options/WipePerformerData";
@@ -11,7 +9,10 @@ import styles from "./Settings.module.scss";
 import FormSection from "@/components/forms/FormSection/FormSection";
 import FormToggle from "@/components/forms/FormToggle/FormToggle";
 import FormNumberInput from "@/components/forms/FormNumberInput/FormNumberInput";
-import { DEFAULT_MAX_PROGRESS_BOARD_ROWS } from "@/constants";
+import {
+  DEFAULT_BOARD_WIDTH,
+  DEFAULT_MAX_PROGRESS_BOARD_ROWS,
+} from "@/constants";
 
 interface SettingsPageProps extends PageProps {
   /** The user's game settings. */
@@ -149,15 +150,26 @@ const SettingsPage: React.FC<SettingsPageProps> = (props) => {
               This is the maximum number of previous matches that will be
               displayed at the bottom of the game screen.
             </FormNumberInput>
+            <FormNumberInput
+              id="boardWidth"
+              initialValue={props.settings.boardWidth ?? DEFAULT_BOARD_WIDTH}
+              label="Maximum game board width"
+              name="board-width"
+              max={DEFAULT_BOARD_WIDTH}
+              min={320}
+              toggleable
+            >
+              <p>
+                If you find yourself needing to scroll up and down to see the
+                whole game board, you can try reducing the size of the board for
+                a better experience.
+              </p>
+              <p>
+                This value is measured in pixels. The board cannot be increased
+                beyond {DEFAULT_BOARD_WIDTH}px.
+              </p>
+            </FormNumberInput>
           </FormSection>
-          <div className="row">
-            <div className="col-12 col-lg-6 mt-3">
-              <ProgressMaxRows userMaxRows={props.settings.progressMaxRows} />
-            </div>
-            <div className="col-12 col-lg-6 mt-3">
-              <BoardWidth width={props.settings.boardWidth} />
-            </div>
-          </div>
           <div className="row mt-3">
             <div className="col-12 col-lg-6">
               <WipePerformerData

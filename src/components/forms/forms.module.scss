@@ -4,3 +4,12 @@
   line-height: 1.2;
   margin-bottom: 0;
 }
+
+.number-input {
+  width: 200px;
+  max-width: 100%;
+
+  &[disabled] {
+    opacity: 0.5;
+  }
+}

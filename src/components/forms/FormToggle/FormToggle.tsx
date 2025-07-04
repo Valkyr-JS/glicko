@@ -43,3 +43,28 @@ const FormToggle: React.FC<FormToggleProps> = (props) => {
 };
 
 export default FormToggle;
+
+interface OnlyToggleProps {
+  /** The unique toggle ID. */
+  id: string;
+  /** The initial checked state of the toggle. */
+  isActive: boolean;
+  setIsActive: (isActive: boolean) => void;
+}
+
+export const OnlyToggle: React.FC<OnlyToggleProps> = (props) => {
+  console.log("isActive", props.isActive);
+  return (
+    <div className="custom-control custom-switch">
+      <input
+        aria-labelledby={props.id + "_label"}
+        checked={props.isActive}
+        className="custom-control-input"
+        type="checkbox"
+        id={props.id}
+        onChange={() => props.setIsActive(!props.isActive)}
+      />
+      <label className="custom-control-label" htmlFor={props.id} />
+    </div>
+  );
+};
